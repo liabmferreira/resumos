@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C II — guia de estudo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB; --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC; --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8; --ex:#475569; --ex-bg:#EEF1F5;
+  --code-bg:#F0F2F7; --kw:#7A2BB0; --str:#1C7A3A; --cm:#7A8494; --num:#9A5700;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.confirm{font-size:12.5px;color:var(--muted);margin-top:8px}
+.mnav{display:none}
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:940px;width:100%;min-width:0}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em;text-wrap:balance}
+.hero p{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;text-wrap:balance}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);margin-left:10px}
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0;min-width:0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:12px 0;max-width:100%}
+pre code{background:none;padding:0;font-size:inherit}
+.box pre{background:var(--card)}
+pre .k{color:var(--kw);font-weight:500} pre .s{color:var(--str)} pre .c{color:var(--cm);font-style:italic} pre .n{color:var(--num)}
+.out{border-left:3px solid var(--teo)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+td code,th code{white-space:nowrap}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px;min-width:0}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px;min-width:0}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+.ov{text-decoration:overline;text-decoration-thickness:1px}
+.bits td{font-family:var(--mono);text-align:center;font-size:13px}
+.fig{margin:16px 0;overflow-x:auto}
+.fig svg{display:block;max-width:100%;height:auto}
+.fig figcaption{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:6px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details>summary{display:none}
+  .box,pre{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+
+.fm{font-family:var(--mono);font-size:14px;line-height:1.75;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:10px 0;overflow-x:auto;white-space:pre-wrap;max-width:100%}
+.fm.nw{white-space:normal}
+.fm.center{text-align:center}
+.box .fm{background:var(--card)}
+.fm .cm{color:var(--cm);font-style:italic}
+.lead{color:var(--muted)}
+.kicker{font-family:var(--sans);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:24px 0 0}
+.box.row{display:flex;gap:10px;align-items:flex-start}
+.box.row>.ic{flex:none}
+.ckl{list-style:none;padding-left:0}
+.ckl li::before{content:"☐ ";color:var(--accent)}
+.q{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:12px 16px 6px;margin:14px 0;min-width:0}
+.q-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-family:var(--sans);font-weight:600;color:var(--accent);margin-bottom:4px}
+.q-num{font-family:var(--sans);font-weight:600;color:var(--accent)}
+.q-pts,.q-head span{font-weight:400;color:var(--muted);font-size:13px}
+.q-head .q-num{color:var(--accent);font-weight:600;font-size:15px}
+.ans{display:inline-block;margin:4px 0;padding:2px 10px;border-radius:6px;background:var(--teo-bg);border:1px solid var(--teo);color:var(--teo);font-family:var(--sans);font-weight:600;font-size:14.5px}
+.sn{font-family:var(--mono);font-size:12px;color:var(--muted);margin-right:6px}
+em{font-style:italic}
+main{overflow-wrap:break-word}
+mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;max-width:100%}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>C II — guia de estudo</h1>
+  <p class="sub">Cálculo II · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 30 capítulos estudados</div>
+  <nav id="nav">
+<div class="grp">Capítulo 1 · Séries Numéricas</div>
+<a href="#sn-def"><input type="checkbox" data-sec="sn-def" aria-label="Marcar Definições como estudado"><span>Definições</span></a>
+<a href="#sn-geo"><input type="checkbox" data-sec="sn-geo" aria-label="Marcar Geométricas/Mengoli como estudado"><span>Geométricas/Mengoli</span></a>
+<a href="#sn-pos"><input type="checkbox" data-sec="sn-pos" aria-label="Marcar Termos não-neg. como estudado"><span>Termos não-neg.</span></a>
+<a href="#sn-abs"><input type="checkbox" data-sec="sn-abs" aria-label="Marcar Abs./Quociente/Raiz como estudado"><span>Abs./Quociente/Raiz</span></a>
+<a href="#sn-leib"><input type="checkbox" data-sec="sn-leib" aria-label="Marcar Leibniz como estudado"><span>Leibniz</span></a>
+<div class="grp">Capítulo 2.1 · Séries de Potências e Série de Taylor</div>
+<a href="#sp-pot"><input type="checkbox" data-sec="sp-pot" aria-label="Marcar Séries Potências como estudado"><span>Séries Potências</span></a>
+<a href="#sp-tay"><input type="checkbox" data-sec="sp-tay" aria-label="Marcar Taylor como estudado"><span>Taylor</span></a>
+<a href="#sp-tayf"><input type="checkbox" data-sec="sp-tayf" aria-label="Marcar Fórmula de Taylor/Erro como estudado"><span>Fórmula de Taylor/Erro</span></a>
+<a href="#sp-somas"><input type="checkbox" data-sec="sp-somas" aria-label="Marcar Somas de Séries como estudado"><span>Somas de Séries</span></a>
+<div class="grp">Capítulo 2.2 · Sucessões e Séries de Funções</div>
+<a href="#sp-suc"><input type="checkbox" data-sec="sp-suc" aria-label="Marcar Suc./Séries Funções como estudado"><span>Suc./Séries Funções</span></a>
+<a href="#s-rie-de-fun-es-e-crit-rio-de-weierstras"><input type="checkbox" data-sec="s-rie-de-fun-es-e-crit-rio-de-weierstras" aria-label="Marcar Série de Funções e Critério de Weierstrass como estudado"><span>Série de Funções e Critério de Weierstrass</span></a>
+<a href="#sp-pow"><input type="checkbox" data-sec="sp-pow" aria-label="Marcar Pot. Revisitadas como estudado"><span>Pot. Revisitadas</span></a>
+<a href="#sp-fou"><input type="checkbox" data-sec="sp-fou" aria-label="Marcar Fourier como estudado"><span>Fourier</span></a>
+<div class="grp">Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas</div>
+<a href="#fv-top"><input type="checkbox" data-sec="fv-top" aria-label="Marcar Topologia Rⁿ como estudado"><span>Topologia Rⁿ</span></a>
+<a href="#dom-nio-contradom-nio-gr-fico-e-conjunto"><input type="checkbox" data-sec="dom-nio-contradom-nio-gr-fico-e-conjunto" aria-label="Marcar Domínio, Contradomínio, Gráfico e Conjuntos de Nível como estudado"><span>Domínio, Contradomínio, Gráfico e Conjuntos de Nível</span></a>
+<a href="#fv-lim"><input type="checkbox" data-sec="fv-lim" aria-label="Marcar Limites/Continuidade como estudado"><span>Limites/Continuidade</span></a>
+<a href="#fv-lim2"><input type="checkbox" data-sec="fv-lim2" aria-label="Marcar Limites: Curvas/Polares como estudado"><span>Limites: Curvas/Polares</span></a>
+<a href="#fv-der"><input type="checkbox" data-sec="fv-der" aria-label="Marcar Derivadas Parciais como estudado"><span>Derivadas Parciais</span></a>
+<a href="#fv-dif"><input type="checkbox" data-sec="fv-dif" aria-label="Marcar Diferenciabilidade como estudado"><span>Diferenciabilidade</span></a>
+<a href="#fv-cad"><input type="checkbox" data-sec="fv-cad" aria-label="Marcar Regra Cadeia/Implícita como estudado"><span>Regra Cadeia/Implícita</span></a>
+<a href="#deriva-o-impl-cita"><input type="checkbox" data-sec="deriva-o-impl-cita" aria-label="Marcar Derivação Implícita como estudado"><span>Derivação Implícita</span></a>
+<div class="grp">Capítulo 3.2 · Extremos de Funções de Várias Variáveis</div>
+<a href="#fv-ext"><input type="checkbox" data-sec="fv-ext" aria-label="Marcar Extremos como estudado"><span>Extremos</span></a>
+<a href="#matriz-hessiana-e-teste-da-hessiana"><input type="checkbox" data-sec="matriz-hessiana-e-teste-da-hessiana" aria-label="Marcar Matriz Hessiana e Teste da Hessiana como estudado"><span>Matriz Hessiana e Teste da Hessiana</span></a>
+<a href="#c-lculo-de-extremos-globais-em-compactos"><input type="checkbox" data-sec="c-lculo-de-extremos-globais-em-compactos" aria-label="Marcar Cálculo de Extremos Globais em Compactos como estudado"><span>Cálculo de Extremos Globais em Compactos</span></a>
+<a href="#extremos-condicionados-multiplicadores-d"><input type="checkbox" data-sec="extremos-condicionados-multiplicadores-d" aria-label="Marcar Extremos Condicionados — Multiplicadores de Lagrange como estudado"><span>Extremos Condicionados — Multiplicadores de Lagrange</span></a>
+<a href="#cheat-sheet-f-rmulas-e-crit-rios-essenci"><input type="checkbox" data-sec="cheat-sheet-f-rmulas-e-crit-rios-essenci" aria-label="Marcar ⚡ Cheat Sheet — Fórmulas e Critérios Essenciais como estudado"><span>⚡ Cheat Sheet — Fórmulas e Critérios Essenciais</span></a>
+<div class="grp">Testes Resolvidos 2023/24</div>
+<a href="#t-c2-t1"><input type="checkbox" data-sec="t-c2-t1" aria-label="Marcar 1.º Teste — 17/04/2024 como estudado"><span>1.º Teste — 17/04/2024</span></a>
+<a href="#t-c2-t2"><input type="checkbox" data-sec="t-c2-t2" aria-label="Marcar 2.º Teste — 11/06/2024 como estudado"><span>2.º Teste — 11/06/2024</span></a>
+<a href="#t-c2-ef"><input type="checkbox" data-sec="t-c2-ef" aria-label="Marcar Exame Final — 11/06/2024 como estudado"><span>Exame Final — 11/06/2024</span></a>
+<a href="#t-c2-rec"><input type="checkbox" data-sec="t-c2-rec" aria-label="Marcar Exame de Recurso — 27/06/2024 como estudado"><span>Exame de Recurso — 27/06/2024</span></a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+  <div class="confirm" id="cf" hidden>Carrega outra vez para apagar o progresso guardado neste navegador.</div>
+</aside>
+<main>
+<div class="hero" id="top"><h1>Cálculo II</h1><p>Resumo completo de Cálculo II (séries numéricas, séries de potências, Taylor, Fourier, funções de várias variáveis e extremos) e testes resolvidos de 2023/24.</p></div>
+
+
+<section id="sn-def" data-nav="Definições" data-grp="Capítulo 1 · Séries Numéricas" data-track>
+<h2>Definições Fundamentais<span class="done-tag" hidden>estudado ✓</span></h2>
+<p class="lead">Estudo das somas infinitas de números reais. Duas tarefas: determinar a <em>natureza</em> da série (converge ou diverge) e, em caso de convergência, calcular a <em>soma</em>.</p>
+
+<div class="box def">
+<span class="t">Definição — Série e Soma Parcial</span>
+      Seja (aₙ)ₙ∈ℕ uma sucessão. A expressão a₁ + a₂ + a₃ + … chama-se <b>série</b> gerada por (aₙ), denotada Σaₙ. aₙ é o <b>termo geral</b>.
+      <div class="fm">Sₙ = a₁ + a₂ + … + aₙ = Σ_{k=1}^n aₖ   (sucessão das somas parciais)</div>
+</div>
+<div class="box def">
+<span class="t">Convergência</span>
+      A série Σaₙ é <b>convergente</b> se lim Sₙ (n→∞) existe e é finito. Nesse caso, a <b>soma</b> da série é:
+      <div class="fm">Σ_{n=1}^∞ aₙ = lim_{n→∞} Sₙ</div>
+      Se o limite não existe ou é infinito, a série é <b>divergente</b>.
+    </div>
+<div class="box teo">
+<span class="t">Teorema — Resto de Ordem m</span>
+      Σaₙ é convergente ⟺ a série dos termos após m, Rₘ = Σ_{n=m+1}^∞ aₙ, é convergente.<br/>
+      Além disso, se Σaₙ converge, então lim_{m→∞} Rₘ = 0.<br/>
+<b>Consequência:</b> a natureza de uma série não depende dos seus primeiros termos.
+    </div>
+<div class="box teo">
+<span class="t">Condição Necessária de Convergência (1º Critério)</span>
+      Se Σaₙ é convergente, então <b>lim aₙ = 0</b>.<br/>
+      Forma contrapositiva (mais útil — "critério de divergência"):
+      <div class="fm">lim aₙ ≠ 0  ou  lim aₙ não existe  ⟹  Σaₙ diverge</div>
+<b>⚠ Atenção:</b> se lim aₙ = 0, nada se pode concluir sobre a natureza da série!
+    </div>
+<h4>Limites Notáveis Úteis</h4>
+<div class="fm">lim ⁿ√n = 1
+lim ⁿ√(nᵖ) = 1   (p ∈ ℕ)
+lim ⁿ√(n!) = +∞
+lim (1 + b/n)ⁿ = e^b   (b ∈ ℝ)
+lim aⁿ/nᵏ = +∞   se a &gt; 1   (k ∈ ℝ)</div>
+
+</section>
+<section id="sn-geo" data-nav="Geométricas/Mengoli" data-grp="Capítulo 1 · Séries Numéricas" data-track>
+<h2>Séries Geométricas e de Mengoli<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Série Geométrica</span>
+      Gerada por uma progressão geométrica: a + ar + ar² + … = Σ_{n=0}^∞ ar^n, com a≠0 (1º termo) e r≠0 (razão).
+      <div class="fm">Sₙ = na           se r = 1
+Sₙ = a(1-rⁿ)/(1-r)  se r ≠ 1</div>
+</div>
+<div class="box teo">
+<span class="t">Proposição — Convergência da Série Geométrica</span>
+      Σ_{n=1}^∞ ar^{n-1} converge ⟺ |r| &lt; 1. Em caso de convergência:
+      <div class="fm">Soma = a / (1 - r)</div>
+</div>
+<div class="box def">
+<span class="t">Série de Mengoli (Telescópica/Redutível)</span>
+      Σaₙ diz-se de Mengoli se aₙ se escreve como aₙ = uₙ - u_{n+p} ou aₙ = u_{n+p} - uₙ, com p ∈ ℕ.
+      <div class="fm">Caso aₙ = uₙ - u_{n+p}:
+Sₙ = u₁ + … + uₚ - (u_{n+1} + … + u_{n+p})
+
+Caso aₙ = u_{n+p} - uₙ:
+Sₙ = u_{n+1} + … + u_{n+p} - (u₁ + … + uₚ)</div>
+      Calcular o limite de Sₙ quando n→∞ dá a soma (se existir).
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Série de Mengoli</span>
+      Σ_{n=2}^∞ 2/(n²-1). Decompondo: 2/(n²-1) = 1/(n-1) - 1/(n+1), com p=2.
+      <div class="fm">Sₙ = (1/1 + 1/2) - (1/(n) + 1/(n+1)) → 3/2  quando n→∞
+Soma = 3/2</div>
+</div>
+
+</section>
+<section id="sn-pos" data-nav="Termos não-neg." data-grp="Capítulo 1 · Séries Numéricas" data-track>
+<h2>Propriedades Aritméticas e Séries de Termos Não Negativos<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box teo">
+<span class="t">Propriedades Aritméticas</span>
+      Se Σaₙ = A e Σbₙ = B (convergentes), então:
+      <div class="fm">Σ(aₙ + bₙ) = A + B    (convergente)
+Σ(λaₙ) = λA           ∀λ∈ℝ  (convergente)</div>
+      Se Σaₙ diverge e λ≠0, então Σ(λaₙ) diverge.<br/>
+      Se Σaₙ converge e Σbₙ diverge, então Σ(aₙ+bₙ) diverge.<br/>
+<b>⚠</b> Se ambas Σaₙ e Σbₙ divergem, Σ(aₙ+bₙ) pode convergir OU divergir (nada garantido).
+    </div>
+<div class="box def">
+<span class="t">Série de Termos Não Negativos</span>
+      Σaₙ tem termos não negativos se aₙ ≥ 0 para todo n.<br/>
+<b>Propriedade:</b> a sucessão (Sₙ) é monótona crescente.<br/>
+<b>Teorema:</b> Σaₙ converge ⟺ (Sₙ) é limitada superiormente.
+    </div>
+<div class="box teo">
+<span class="t">Critério do Integral</span>
+      Seja Σaₙ série de termos não negativos e f: [1,∞[→ℝ decrescente com f(n) = aₙ. Então:
+      <div class="fm">Σaₙ  e  ∫₁^∞ f(x)dx   têm a mesma natureza</div>
+</div>
+<div class="box teo">
+<span class="t">Série Harmónica/Dirichlet de Ordem p — RESULTADO FUNDAMENTAL</span>
+<div class="fm">Σ_{n=1}^∞ 1/nᵖ   converge ⟺ p &gt; 1   (diverge se p ≤ 1)</div>
+      (Para p=1: série harmónica, diverge. Decora este resultado — é usado como referência em quase todos os critérios de comparação!)
+    </div>
+<div class="box teo">
+<span class="t">Critério da Comparação</span>
+      Se ∃n₀∈ℕ: 0 ≤ aₙ ≤ bₙ, ∀n≥n₀, então:
+      <div class="fm">Σbₙ converge  ⟹  Σaₙ converge
+Σaₙ diverge   ⟹  Σbₙ diverge</div>
+<b>⚠</b> Se Σbₙ diverge ou Σaₙ converge: nada se pode concluir.
+    </div>
+<div class="box teo">
+<span class="t">Critério do Limite</span>
+      Sejam Σaₙ, Σbₙ com aₙ≥0, bₙ&gt;0. Seja L = lim(aₙ/bₙ).
+      <div class="fm">L ∈ ℝ⁺ (finito e positivo)  ⟹  séries têm a MESMA natureza
+L = 0   e  Σbₙ converge      ⟹  Σaₙ converge
+L = +∞  e  Σbₙ diverge       ⟹  Σaₙ diverge</div>
+<b>Dica:</b> usar séries de Dirichlet (1/nᵖ) ou geométricas como Σbₙ de referência.
+    </div>
+<div class="box exa">
+<span class="t">Exemplos Resolvidos</span>
+<b>Σ sin²(n)/n⁴:</b> 0 ≤ sin²(n)/n⁴ ≤ 1/n⁴, e Σ1/n⁴ converge (p=4&gt;1) → converge por comparação.<br/>
+<b>Σ 1/(n+√n³):</b> comparar com 1/n^{3/2} (Critério do Limite, L=1) → p=3/2&gt;1 → converge.<br/>
+<b>Σ sin(1/n):</b> usar Critério do Limite com bₙ=1/n: lim[sin(1/n)/(1/n)]=1 → mesma natureza que Σ1/n → diverge.
+    </div>
+
+</section>
+<section id="sn-abs" data-nav="Abs./Quociente/Raiz" data-grp="Capítulo 1 · Séries Numéricas" data-track>
+<h2>Convergência Absoluta, D'Alembert e Cauchy<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Convergência Simples e Absoluta</span>
+      Seja Σ|aₙ| a série dos módulos.
+      <div class="fm">Σ|aₙ| converge  ⟹  Σaₙ é ABSOLUTAMENTE convergente
+Σ|aₙ| diverge MAS Σaₙ converge  ⟹  Σaₙ é SIMPLESMENTE convergente</div>
+<b>Teorema:</b> Toda série absolutamente convergente é convergente.<br/>
+<b>⚠</b> Se Σ|aₙ| diverge, nada se conclui sobre Σaₙ (pode convergir ou divergir).<br/>
+      Como Σ|aₙ| tem termos não negativos, podem usar-se todos os critérios da secção anterior!
+    </div>
+<div class="box teo">
+<span class="t">Critério de D'Alembert (Quociente)</span>
+      Seja Σaₙ com aₙ≠0, e L = lim |a_{n+1}/aₙ|.
+      <div class="fm">0 ≤ L &lt; 1  ⟹  Σaₙ ABSOLUTAMENTE convergente
+L &gt; 1       ⟹  Σaₙ DIVERGENTE
+L = 1       ⟹  inconclusivo (usar outro critério)</div>
+</div>
+<div class="box teo">
+<span class="t">Critério de Cauchy (Raiz)</span>
+      Seja Σaₙ e L = lim ⁿ√|aₙ|.
+      <div class="fm">0 ≤ L &lt; 1  ⟹  Σaₙ ABSOLUTAMENTE convergente
+L &gt; 1       ⟹  Σaₙ DIVERGENTE
+L = 1       ⟹  inconclusivo</div>
+<b>Quando usar qual:</b> D'Alembert é melhor quando há fatoriais ou produtos; Cauchy é melhor quando há potências de n (nⁿ, etc.)
+    </div>
+<div class="box exa">
+<span class="t">Exemplos Típicos</span>
+<b>Σ 2ⁿn!/nⁿ</b> (D'Alembert): L = lim[2^{n+1}(n+1)!/(n+1)^{n+1} · nⁿ/(2ⁿn!)] = lim[2nⁿ/(n+1)ⁿ] = 2/e &lt; 1 → converge.<br/>
+<b>Σ (n/(n+1))^{n²}</b> (Cauchy): L = lim (n/(n+1))ⁿ = lim 1/(1+1/n)ⁿ = 1/e &lt; 1 → converge.<br/>
+<b>Σ (2n)!/n^n</b> (D'Alembert): cresce mais rápido → L=+∞ → diverge.
+    </div>
+
+</section>
+<section id="sn-leib" data-nav="Leibniz" data-grp="Capítulo 1 · Séries Numéricas" data-track>
+<h2>Séries Alternadas — Critério de Leibniz<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Série Alternada</span>
+      Série do tipo Σ(-1)ⁿaₙ ou Σ(-1)^{n+1}aₙ, com aₙ&gt;0 ∀n.
+    </div>
+<div class="box teo">
+<span class="t">Critério de Leibniz</span>
+      Seja Σ(-1)ⁿaₙ tal que:
+      <ol>
+<li>aₙ &gt; 0, ∀n</li>
+<li>lim aₙ = 0</li>
+<li>(aₙ) é monótona decrescente</li>
+</ol>
+      Então a série alternada é <b>convergente</b>.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Convergência Simples vs Absoluta</span>
+<b>Σ(-1)ⁿ/n:</b> aₙ=1/n satisfaz Leibniz (decrescente, →0) → converge.<br/>
+      Mas Σ|(-1)ⁿ/n| = Σ1/n diverge (harmónica) → <b>convergência SIMPLES</b> (não absoluta).<br/><br/>
+<b>Σ(-1)ⁿ/n²:</b> Σ|(-1)ⁿ/n²| = Σ1/n² converge (p=2&gt;1) → <b>convergência ABSOLUTA</b>.<br/><br/>
+<b>Σ(-1)ⁿ/√(2n+1):</b> aₙ=1/√(2n+1) decrescente, →0 → Leibniz aplica-se → converge.<br/>
+      Σ|aₙ| = Σ1/√(2n+1) compara-se com Σ1/√n (p=1/2≤1) → diverge → <b>convergência SIMPLES</b>.
+    </div>
+<h4>Fluxograma de Decisão — Estudar a Natureza de uma Série</h4>
+<div class="box ex">
+<span class="t">Estratégia Geral</span>
+<ol>
+<li>Verificar a condição necessária: lim aₙ ≠ 0 ⟹ diverge imediatamente</li>
+<li>É geométrica ou de Mengoli? Calcular Sₙ diretamente</li>
+<li>Termos não-negativos? Usar Integral, Comparação, ou Critério do Limite (comparar com Dirichlet 1/nᵖ ou geométrica)</li>
+<li>Tem fatoriais/potências de n na base e expoente? D'Alembert ou Cauchy</li>
+<li>É alternada? Verificar convergência absoluta primeiro (Σ|aₙ|); se não, tentar Leibniz para convergência simples</li>
+</ol>
+</div>
+
+</section>
+<section id="sp-pot" data-nav="Séries Potências" data-grp="Capítulo 2.1 · Séries de Potências e Série de Taylor" data-track>
+<h2>Séries de Potências — Conceitos<span class="done-tag" hidden>estudado ✓</span></h2>
+<p class="lead">Séries cujos termos são potências de (x - c). Generalizam os polinómios para "polinómios de grau infinito" e permitem representar funções complicadas.</p>
+
+<div class="box def">
+<span class="t">Definição — Série de Potências</span>
+      Série de potências <b>centrada em c</b> (de x-c):
+      <div class="fm">Σ_{n=0}^∞ aₙ(x-c)ⁿ = a₀ + a₁(x-c) + a₂(x-c)² + …</div>
+      aₙ são os <b>coeficientes</b>. Se c=0: série de potências centrada na origem. Convenção: a₀(x-c)⁰=a₀ mesmo se x=c (0⁰=1).
+    </div>
+<div class="box def">
+<span class="t">Domínio de Convergência</span>
+      D_c = conjunto de x∈ℝ para os quais a série converge. Como a série converge trivialmente em x=c, D_c ≠ ∅.
+    </div>
+<div class="box teo">
+<span class="t">Teorema — Raio e Intervalo de Convergência</span>
+      Para qualquer série Σaₙ(x-c)ⁿ, ocorre exatamente uma de:
+      <div class="fm">(i) converge SÓ em x=c (diverge se x≠c)        → R = 0
+(ii) converge absolutamente em TODO x∈ℝ        → R = +∞
+(iii) ∃R&gt;0 único: converge absol. se x∈]c-R,c+R[
+                  diverge se x∈]-∞,c-R[∪]c+R,+∞[</div>
+      R = <b>raio de convergência</b>. I_c = ]c-R, c+R[ = <b>intervalo de convergência</b>.<br/>
+<b>⚠</b> Nos extremos do intervalo (x=c±R), a série pode convergir ou divergir — estudar caso a caso!
+    </div>
+<div class="box teo">
+<span class="t">Cálculo do Raio de Convergência (via coeficientes)</span>
+      Se aₙ≠0 ∀n:
+      <div class="fm">R = lim |aₙ| / |a_{n+1}|     (se existir, via D'Alembert)
+
+R = 1 / lim ⁿ√|aₙ|         (se existir, via Cauchy)</div>
+<b>⚠</b> A série precisa estar escrita exatamente na forma Σaₙ(x-c)ⁿ para aplicar diretamente.
+    </div>
+<div class="box exa">
+<span class="t">Exemplos de Domínios de Convergência</span>
+<div class="fm">Σ xⁿ/n!         → R=+∞,  D_c = ℝ
+Σ (-1)^{n+1}/n · (x+1)ⁿ → R=1,  D_c = ]-2, 0]  (converge no extremo -2? não; em 0? sim, por Leibniz)
+Σ n!(x-2)ⁿ      → R=0,  D_c = {2}  (só converge no centro)</div>
+</div>
+
+</section>
+<section id="sp-tay" data-nav="Taylor" data-grp="Capítulo 2.1 · Séries de Potências e Série de Taylor" data-track>
+<h2>Séries de Taylor e MacLaurin<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Série de Taylor</span>
+      Se f admite derivadas finitas de todas as ordens em c, a série de potências
+      <div class="fm">Σ_{n=0}^∞ f⁽ⁿ⁾(c)/n! · (x-c)ⁿ = f(c) + f'(c)(x-c) + f''(c)/2!·(x-c)² + …</div>
+      chama-se <b>série de Taylor</b> de f em c. Se c=0: <b>série de MacLaurin</b>.
+    </div>
+<div class="box def">
+<span class="t">Função Analítica</span>
+      f é <b>analítica em c</b> se ∃r&gt;0: para todo x∈]c-r,c+r[, a série de Taylor de f converge para f(x).<br/>
+<b>Exemplo de função NÃO analítica:</b> f(x)=e^{-1/x²} (x≠0), f(0)=0. Apesar de ter todas as derivadas em 0 (todas nulas), a série de MacLaurin converge para a função NULA, não para f. Logo f não é analítica em 0.
+    </div>
+<div class="box teo">
+<span class="t">Teorema — Convergência da Série de Taylor para f</span>
+      Para todo x∈I:
+      <div class="fm">f(x) = Σ f⁽ⁿ⁾(c)/n! (x-c)ⁿ  ⟺  lim Rₙᶜf(x) = 0   (Rₙᶜf é o resto de Lagrange)</div>
+<b>Teorema (condição suficiente prática):</b> se ∃M&gt;0: |f⁽ⁿ⁾(x)| ≤ M, ∀x∈I, ∀n∈ℕ₀, então f(x) = Σf⁽ⁿ⁾(c)/n!(x-c)ⁿ, ∀x∈I.<br/>
+      (Aplica-se diretamente a sin, cos, exponencial, pois as suas derivadas são uniformemente limitadas.)
+    </div>
+<h4>Desenvolvimentos de MacLaurin "Famosos" — DECORAR!</h4>
+<div class="tw"><table>
+<thead><tr><th>Função</th><th>Série de MacLaurin</th><th>Domínio de validade</th></tr></thead>
+<tbody>
+<tr><td><code>1/(1-x)</code></td><td>Σ xⁿ</td><td>x ∈ ]-1,1[</td></tr>
+<tr><td><code>eˣ</code></td><td>Σ xⁿ/n!</td><td>x ∈ ℝ</td></tr>
+<tr><td><code>sin(x)</code></td><td>Σ (-1)ⁿ x^{2n+1}/(2n+1)!</td><td>x ∈ ℝ</td></tr>
+<tr><td><code>cos(x)</code></td><td>Σ (-1)ⁿ x^{2n}/(2n)!</td><td>x ∈ ℝ</td></tr>
+<tr><td><code>cosh(x)</code></td><td>Σ x^{2n}/(2n)!</td><td>x ∈ ℝ</td></tr>
+<tr><td><code>sinh(x)</code></td><td>Σ x^{2n+1}/(2n+1)!</td><td>x ∈ ℝ</td></tr>
+<tr><td><code>ln(1/(1-x))</code></td><td>Σ x^{n+1}/(n+1)</td><td>x ∈ [-1,1[</td></tr>
+<tr><td><code>ln(1+x)</code></td><td>Σ (-1)ⁿ x^{n+1}/(n+1)</td><td>x ∈ ]-1,1]</td></tr>
+<tr><td><code>arctan(x)</code></td><td>Σ (-1)ⁿ x^{2n+1}/(2n+1)</td><td>x ∈ [-1,1]</td></tr>
+</tbody>
+</table></div>
+<h4>Obter Novos Desenvolvimentos a partir dos Conhecidos</h4>
+<div class="box exa">
+<span class="t">Técnicas: Derivar, Integrar, Substituir</span>
+      Partindo de 1/(1-x) = Σxⁿ, x∈]-1,1[:
+      <div class="fm">Derivando: 1/(1-x)² = Σ(n+1)xⁿ,  x∈]-1,1[
+Integrando: ln(1/(1-x)) = Σxⁿ⁺¹/(n+1), x∈[-1,1[  → ln(x) = Σ(-1)ⁿ/(n+1)·(x-1)ⁿ⁺¹, x∈]0,2]
+Substituindo x→-x²: 1/(1+x²) = Σ(-1)ⁿx²ⁿ → integrando: arctan(x) = Σ(-1)ⁿx^{2n+1}/(2n+1)</div>
+</div>
+
+</section>
+<section id="sp-tayf" data-nav="Fórmula de Taylor/Erro" data-grp="Capítulo 2.1 · Séries de Potências e Série de Taylor" data-track>
+<h2>Polinómio de Taylor e Fórmula de Taylor com Resto de Lagrange<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<p>Sai em <b>todos</b> os testes: aproximar um valor (ln 2, ln 1.2, 1/√e, sen 3…), majorar o erro ou provar uma desigualdade. A série de Taylor é infinita; aqui corta-se na ordem n e controla-se o que se deitou fora.</p>
+<div class="box def">
+<span class="t">Polinómio de Taylor de ordem n de f em c</span>
+      Se f tem derivadas até à ordem n em c:
+      <div class="fm">Tₙᶜf(x) = f(c) + f'(c)(x−c) + f''(c)/2!·(x−c)² + … + f⁽ⁿ⁾(c)/n!·(x−c)ⁿ
+         = Σ_{k=0}^{n} f⁽ᵏ⁾(c)/k! · (x−c)ᵏ</div>
+      Se c = 0: <b>polinómio de MacLaurin</b>. Tₙᶜf é o único polinómio de grau ≤ n com as mesmas derivadas que f em c até à ordem n.
+    </div>
+<div class="box teo">
+<span class="t">Teorema — Fórmula de Taylor com Resto de Lagrange</span>
+      Se f tem derivadas contínuas até à ordem n e f⁽ⁿ⁺¹⁾ existe num intervalo I que contém c e x, então existe ξ <b>estritamente entre c e x</b> tal que:
+      <div class="fm">f(x) = Tₙᶜf(x) + Rₙᶜf(x),        Rₙᶜf(x) = f⁽ⁿ⁺¹⁾(ξ)/(n+1)! · (x−c)ⁿ⁺¹</div>
+      O <b>erro absoluto</b> da aproximação f(x) ≈ Tₙᶜf(x) é |Rₙᶜf(x)|. (Para n = 0 é o Teorema de Lagrange do Cálculo I.)
+    </div>
+<div class="box met">
+<span class="t">Método — Majorar o erro (receita de exame)</span>
+<ol>
+<li>Calcular f, f', …, f⁽ⁿ⁾ em c e escrever Tₙᶜf. Calcular também a expressão de f⁽ⁿ⁺¹⁾(t).</li>
+<li>Escrever o resto: |Rₙ| = |f⁽ⁿ⁺¹⁾(ξ)|/(n+1)! · |x−c|ⁿ⁺¹, com ξ entre c e x.</li>
+<li>Majorar |f⁽ⁿ⁺¹⁾(ξ)| no intervalo entre c e x, usando monotonia: |sen|,|cos| ≤ 1; e^ξ &lt; e^x se ξ &lt; x; 1/ξᵏ &lt; 1/cᵏ se ξ &gt; c &gt; 0.</li>
+<li>Concluir com desigualdade <b>estrita</b> (ξ nunca é extremo do intervalo).</li>
+</ol>
+</div>
+<h4>Polinómios de MacLaurin mais usados</h4>
+<div class="tw"><table>
+<thead><tr><th>f</th><th>Tₙ⁰f(x)</th><th>Resto (ξ entre 0 e x)</th></tr></thead>
+<tbody>
+<tr><td><code>eˣ</code></td><td>1 + x + x²/2! + … + xⁿ/n!</td><td>e^ξ·xⁿ⁺¹/(n+1)!</td></tr>
+<tr><td><code>sen x</code></td><td>x − x³/3! + x⁵/5! − …</td><td>|R| ≤ |x|ⁿ⁺¹/(n+1)!</td></tr>
+<tr><td><code>cos x</code></td><td>1 − x²/2! + x⁴/4! − …</td><td>|R| ≤ |x|ⁿ⁺¹/(n+1)!</td></tr>
+<tr><td><code>ln(1+x)</code></td><td>x − x²/2 + x³/3 − … + (−1)ⁿ⁺¹xⁿ/n</td><td>(−1)ⁿ xⁿ⁺¹/[(n+1)(1+ξ)ⁿ⁺¹]</td></tr>
+<tr><td><code>1/(1−x)</code></td><td>1 + x + x² + … + xⁿ</td><td>xⁿ⁺¹/(1−ξ)ⁿ⁺²</td></tr>
+</tbody>
+</table></div>
+<div class="box ex">
+<span class="t">Truque das ordens "grátis"</span>
+      Para sen e cos, metade das derivadas em 0 são nulas: T₅⁰ sen = T₆⁰ sen. Então pode usar-se o resto de ordem 6 (com x⁷/7!), que dá um majorante melhor. O mesmo vale para cosh: T₄⁰ cosh = T₅⁰ cosh.
+    </div>
+<h4>Exemplos Resolvidos (das Fichas e Testes)</h4>
+<div class="box exa">
+<span class="t">Exemplo 1 — ln(1.2) com T₂ em c = 1 (Ficha 2-I, 7)</span>
+<div class="fm">f = ln x:   f(1) = 0,  f'(x) = 1/x → 1,  f''(x) = −1/x² → −1,  f'''(x) = 2/x³
+T₂¹f(x) = (x−1) − (x−1)²/2
+ln(1.2) ≈ 0.2 − 0.04/2 = 0.18
+
+|R₂| = |f'''(ξ)|/3! · 0.2³ = (2/ξ³)/6 · 0.008 = 0.008/(3ξ³),  ξ ∈ ]1; 1.2[
+     &lt; 0.008/3 ≈ 2.7×10⁻³ &lt; 3×10⁻³   ✓     (valor real: 0.18232…)</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo 2 — 1/√e com MacLaurin de eˣ (Ficha 2-I, 4)</span>
+<div class="fm">1/√e = e^(−1/2).   Rₙ = e^ξ/(n+1)! · (−1/2)ⁿ⁺¹,  ξ ∈ ]−1/2, 0[  ⟹  e^ξ &lt; e⁰ = 1
+|Rₙ| &lt; 1/[(n+1)!·2ⁿ⁺¹]
+
+n = 3:  e^(−1/2) ≈ 1 − 1/2 + 1/8 − 1/48 = 29/48 ≈ 0.6042,   erro &lt; 1/(24·16) ≈ 2.6×10⁻³
+n = 4:  ≈ 233/384 ≈ 0.60677,                                 erro &lt; 1/(120·32) ≈ 2.6×10⁻⁴
+(valor real 0.60653…)</div>
+      Em geral, para x ∈ ]−1, 0[: |Rₙ| &lt; 1/(n+1)! — é a alínea (b) da mesma pergunta.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo 3 — sen(3) com T₅ em c = π (Ficha 2-I, 5)</span>
+<div class="fm">sen π = 0, sen' = cos → −1, sen'' = −sen → 0, sen''' = −cos → 1, sen⁽⁴⁾ → 0, sen⁽⁵⁾ = cos → −1
+T₅^π(x) = −(x−π) + (x−π)³/6 − (x−π)⁵/120
+
+|R₅(3)| = |sen⁽⁶⁾(ξ)|/6! · |3−π|⁶ ≤ (π−3)⁶/720 ≈ 1.1×10⁻⁸</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo 4 — ln 2 com erro &lt; 1/48 (Exame Final 2023/24)</span>
+      f(x) = (x²/4)·ln x, que dá f(2) = ln 2. Com T₃ em c = 1: ln 2 ≈ 1/4 + 3/8 + 1/12 = 17/24, e |R₃| = 1/(48ξ²) &lt; 1/48 porque ξ &gt; 1. Resolução completa na secção de testes.
+    </div>
+<div class="box teo">
+<span class="t">Provar Desigualdades com o Sinal do Resto</span>
+      Se se souber o <b>sinal</b> de Rₙ para todo o x, obtém-se f(x) ≥ Tₙ(x) ou f(x) ≤ Tₙ(x).
+      <div class="fm">eˣ = 1 + x + e^ξ x²/2   e  e^ξ x²/2 ≥ 0      ⟹  eˣ ≥ 1 + x,  ∀x∈ℝ
+ln(1+x) = x − x²/[2(1+ξ)²]   e  o resto é ≤ 0   ⟹  ln(1+x) ≤ x,  ∀x &gt; −1
+cosh x = T₅⁰ + cosh(ξ)·x⁶/6!  e  cosh ξ &gt; 0  ⟹  cosh x ≥ 1 + x²/2 + x⁴/24  (Recurso 2023/24)</div>
+</div>
+
+</section>
+<section id="sp-somas" data-nav="Somas de Séries" data-grp="Capítulo 2.1 · Séries de Potências e Série de Taylor" data-track>
+<h2>Mais Desenvolvimentos e Somas de Séries<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box exa">
+<span class="t">Desenvolvimentos que aparecem nas fichas</span>
+<div class="fm">1/(1+x) = Σ(−1)ⁿxⁿ   ⟹ integrando:   ln(1+x) = Σ_{n≥0} (−1)ⁿ xⁿ⁺¹/(n+1),   x∈]−1,1]
+e^(−x²) = Σ (−1)ⁿ x²ⁿ/n!,   x∈ℝ                     (substituir x → −x² em eˣ)
+senh(3x) = Σ 3²ⁿ⁺¹ x²ⁿ⁺¹/(2n+1)!,   x∈ℝ             (senh x = (eˣ − e⁻ˣ)/2)
+2cos²x = 1 + cos(2x) = 2 + Σ_{n≥1} (−1)ⁿ 2²ⁿ x²ⁿ/(2n)!,   x∈ℝ
+1/(4+x²) = (1/4)·1/(1+(x/2)²) = Σ (−1)ⁿ x²ⁿ/4ⁿ⁺¹,   |x| &lt; 2
+arctg(2x): derivada 2/(1+4x²) = 2Σ(−1)ⁿ4ⁿx²ⁿ ⟹ arctg(2x) = Σ(−1)ⁿ 2²ⁿ⁺¹x²ⁿ⁺¹/(2n+1), |x| ≤ 1/2</div>
+</div>
+<div class="box met">
+<span class="t">Método — Calcular a soma de uma série numérica</span>
+<ol>
+<li>Reconhecer na série uma série de potências conhecida avaliada num ponto "óbvio" (x = 1, 1/3, 2π…).</li>
+<li>Se aparecer n a multiplicar, <b>derivar</b> uma série conhecida; se aparecer n+1 a dividir, <b>primitivar</b>.</li>
+<li>Confirmar que o ponto está dentro do domínio de validade.</li>
+</ol>
+<div class="fm">Σ (−1)ⁿ 2²ⁿπ²ⁿ/(2n)! = Σ (−1)ⁿ (2π)²ⁿ/(2n)! = cos(2π) = 1
+Σ 1/(3ⁿ(n+1)) = 3·Σ (1/3)ⁿ⁺¹/(n+1) = 3·ln(1/(1−1/3)) = 3 ln(3/2)
+Σ (2n+1)/(2ⁿn!) = 2Σ n(1/2)ⁿ/n! + Σ(1/2)ⁿ/n! = 2·(1/2)e^(1/2) + e^(1/2) = 2√e
+Σ_{n≥1} n xⁿ/2ⁿ = (x/2)·1/(1−x/2)² = 2x/(2−x)²,   |x| &lt; 2</div>
+</div>
+<div class="box ex">
+<span class="t">Limites com séries</span>
+      sen x / x = 1 − x²/3! + x⁴/5! − … → 1 quando x→0;   (eˣ − 1)/x = 1 + x/2! + x²/3! + … → 1.
+    </div>
+
+</section>
+<section id="sp-suc" data-nav="Suc./Séries Funções" data-grp="Capítulo 2.2 · Sucessões e Séries de Funções" data-track>
+<h2>Convergência Pontual e Uniforme<span class="done-tag" hidden>estudado ✓</span></h2>
+<p class="lead">Distinção crucial entre convergência pontual (cada ponto converge independentemente) e convergência uniforme (toda a função converge "uniformemente" sem distorção).</p>
+
+<div class="box def">
+<span class="t">Sucessão de Funções e Convergência Pontual</span>
+      (fₙ)ₙ∈ℕ sucessão de funções definidas em D. Converge <b>pontualmente</b> para f em D se, para CADA x∈D:
+      <div class="fm">f(x) = lim_{n→∞} fₙ(x)</div>
+      (Cada ponto x tem o seu próprio "ritmo" de convergência.)
+    </div>
+<div class="box def">
+<span class="t">Convergência Uniforme — Definição Mais Exigente</span>
+      (fₙ) converge <b>uniformemente</b> para f em D se a sucessão numérica Mₙ := sup_{x∈D}|fₙ(x)-f(x)| satisfaz lim Mₙ = 0.
+      <div class="fm">Convergência uniforme: TODOS os pontos convergem "ao mesmo ritmo" (controlado por uma cota uniforme)</div>
+<b>Implicação:</b> convergência uniforme ⟹ convergência pontual (mas não o recíproco!).
+    </div>
+<div class="box exa">
+<span class="t">Exemplos Clássicos (memorizar a intuição!)</span>
+<div class="tw"><table>
+<thead><tr><th>Sucessão</th><th>Domínio</th><th>Conv. Pontual</th><th>Conv. Uniforme?</th></tr></thead>
+<tbody>
+<tr><td>fₙ(x)=x/n</td><td>[0,1]</td><td>f≡0</td><td>SIM</td></tr>
+<tr><td>hₙ(x)=xⁿ</td><td>[0,1]</td><td>h(x)=0 se x&lt;1, h(1)=1</td><td>NÃO (limite descontínuo)</td></tr>
+<tr><td>gₙ(x)=xⁿ/n</td><td>[0,1]</td><td>g≡0</td><td>SIM</td></tr>
+<tr><td>pₙ(x)=xⁿ(1-xⁿ)</td><td>[0,1]</td><td>p≡0</td><td>NÃO (sup não →0)</td></tr>
+<tr><td>cₙ(x)=cos(nx)</td><td>[0,π]</td><td>Nem converge pontualmente</td><td>—</td></tr>
+</tbody>
+</table></div>
+</div>
+<div class="box teo">
+<span class="t">Teorema — Propriedades Preservadas pela Convergência Uniforme</span>
+      Se (fₙ) são contínuas em [a,b] e convergem uniformemente para f, então:
+      <ol>
+<li>f é <b>contínua</b> em [a,b]</li>
+<li>f é <b>integrável</b> e ∫ₐᵇf(x)dx = lim∫ₐᵇfₙ(x)dx (integração termo a termo)</li>
+<li>Se fₙ têm derivadas contínuas e (fₙ') converge uniformemente, então f é diferenciável e f'(x) = lim fₙ'(x)</li>
+</ol>
+<b>Uso prático invertido:</b> se f (limite pontual) NÃO satisfaz uma destas propriedades (ex: é descontínua), a convergência NÃO é uniforme!
+    </div>
+
+</section>
+<section id="s-rie-de-fun-es-e-crit-rio-de-weierstras" data-nav="Série de Funções e Critério de Weierstrass" data-grp="Capítulo 2.2 · Sucessões e Séries de Funções" data-track>
+<h2>Série de Funções e Critério de Weierstrass<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Série de Funções</span>
+      Σfₙ converge pontualmente/uniformemente em D se a sucessão das somas parciais (Sₙ) (com Sₙ=f₁+…+fₙ) converge pontualmente/uniformemente em D.
+    </div>
+<div class="box teo">
+<span class="t">Critério de Weierstrass — CONDIÇÃO SUFICIENTE para Convergência Uniforme</span>
+      Sejam (fₙ) definidas em D e Σaₙ série numérica de termos não-negativos tal que:
+      <div class="fm">|fₙ(x)| ≤ aₙ,  ∀n∈ℕ, ∀x∈D</div>
+      Se Σaₙ converge, então Σfₙ converge UNIFORMEMENTE em D.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo de Aplicação</span>
+      Σ1/(n²+x²) converge uniformemente em ℝ pois |1/(n²+x²)| ≤ 1/n² (para todo x) e Σ1/n² converge (Dirichlet p=2).<br/>
+      Logo, podemos integrar e derivar termo a termo:
+      <div class="fm">∫₀¹ Σ1/(n²+x²) dx = Σ∫₀¹ 1/(n²+x²) dx = Σ (1/n)·arctan(1/n)
+(Σ1/(n²+x²))' = Σ(-2x)/(n²+x²)²</div>
+</div>
+<div class="box teo">
+<span class="t">Propriedades das Séries Uniformemente Convergentes</span>
+      Se Σfₙ (funções contínuas em [a,b]) converge uniformemente com soma S, então:<br/>
+      (i) S é contínua; (ii) S integrável com integração termo a termo; (iii) se fₙ' existem e Σfₙ' converge uniformemente, então S é diferenciável com derivação termo a termo.
+    </div>
+
+</section>
+<section id="sp-pow" data-nav="Pot. Revisitadas" data-grp="Capítulo 2.2 · Sucessões e Séries de Funções" data-track>
+<h2>Séries de Potências — Convergência Uniforme<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box teo">
+<span class="t">Teorema — Convergência Uniforme em Subintervalos Compactos</span>
+      Seja Σaₙ(x-c)ⁿ com raio R≠0. Então a série converge UNIFORMEMENTE em qualquer [a,b] ⊂ I_c = ]c-R,c+R[ (subintervalo fechado e limitado do intervalo de convergência).<br/>
+<b>Demonstração (esboço):</b> Para x∈[a,b]⊂]-R,R[, |x|≤M=max{|a|,|b|}; logo |aₙxⁿ|≤|aₙ|Mⁿ, e como ΣaₙMⁿ converge absolutamente, Weierstrass garante convergência uniforme.
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Abel</span>
+      Se Σaₙ(x-c)ⁿ converge no ponto x=c+R (ou x=c-R), então converge uniformemente em [c, c+R] (ou [c-R, c]).
+    </div>
+<div class="box teo">
+<span class="t">Propriedades da Função Soma (resultado central!)</span>
+      Seja f(x) = Σaₙ(x-c)ⁿ no intervalo de convergência I_c.
+      <ol>
+<li>f é <b>contínua</b> em todo I_c</li>
+<li>f é <b>diferenciável</b>: f'(x) = Σ n·aₙ(x-c)^{n-1}, ∀x∈I_c (derivação termo a termo)</li>
+<li>A função F(x) = Σ aₙ/(n+1)·(x-c)^{n+1} é a primitiva de f tal que F(c)=0</li>
+<li>f é <b>integrável</b> em qualquer [a,b]⊂I_c: ∫ₐᵇf(x)dx = Σ∫ₐᵇaₙ(x-c)ⁿdx</li>
+</ol>
+</div>
+<div class="box teo">
+<span class="t">Teorema — Unicidade da Representação</span>
+      Se f(x) = Σaₙ(x-c)ⁿ em I_c, então f tem derivadas finitas de qualquer ordem e:
+      <div class="fm">aₙ = f⁽ⁿ⁾(c)/n!,  ∀n∈ℕ₀</div>
+<b>Conclusão:</b> qualquer série de potências que convirja para f é necessariamente a SUA série de Taylor!
+    </div>
+
+</section>
+<section id="sp-fou" data-nav="Fourier" data-grp="Capítulo 2.2 · Sucessões e Séries de Funções" data-track>
+<h2>Séries de Fourier<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Série Trigonométrica</span>
+      Σ_{n=0}^∞ [aₙcos(nωx) + bₙsin(nωx)], com ω∈ℝ⁺. Se Σ|aₙ| e Σ|bₙ| convergem, a série é absoluta e uniformemente convergente em ℝ. A soma S(x), se existir, é periódica com período 2π/ω.
+    </div>
+<div class="box def">
+<span class="t">Função Periódica</span>
+      f é T-periódica se f(x+T)=f(x), ∀x, com T = menor tal valor. Qualquer função T-periódica pode converter-se numa 2π-periódica via F(x)=f(Tx/2π). Por isso estudamos apenas funções 2π-periódicas.
+    </div>
+<div class="box def">
+<span class="t">Coeficientes de Fourier</span>
+      Para f: ℝ→ℝ, 2π-periódica e integrável:
+      <div class="fm">a₀ = (1/π) ∫_{-π}^{π} f(x) dx
+
+aₙ = (1/π) ∫_{-π}^{π} f(x)cos(nx) dx,  n=1,2,…
+
+bₙ = (1/π) ∫_{-π}^{π} f(x)sin(nx) dx,  n=1,2,…</div>
+<b>Série de Fourier de f:</b>
+<div class="fm">f(x) ~ a₀/2 + Σ_{n=1}^∞ [aₙcos(nx) + bₙsin(nx)]</div>
+      Notação "~" porque a série pode não convergir para f. Pode calcular-se com qualquer intervalo de amplitude 2π (devido à periodicidade).
+    </div>
+<div class="box ex">
+<span class="t">Simetrias — Atalhos Importantes</span>
+<div class="fm">f ÍMPAR  →  série de Fourier é uma SÉRIE DE SENOS (aₙ=0, ∀n)
+f PAR    →  série de Fourier é uma SÉRIE DE COSSENOS (bₙ=0, ∀n)</div>
+</div>
+<div class="box def">
+<span class="t">Extensões Periódicas — Extensão Par e Ímpar</span>
+      Para f: [0,π]→ℝ integrável:
+      <div class="fm">Extensão ÍMPAR f_i: [-π,π]→ℝ
+  f_i(x) = -f(-x)  se -π≤x&lt;0
+  f_i(x) = f(x)    se 0≤x≤π
+  → série de Fourier de f_i é série de SENOS
+
+Extensão PAR f_p: [-π,π]→ℝ
+  f_p(x) = f(-x)  se -π≤x&lt;0
+  f_p(x) = f(x)   se 0≤x≤π
+  → série de Fourier de f_p é série de COSSENOS</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplos Clássicos de Séries de Fourier</span>
+<b>f(x)=|x|, 2π-periódica:</b>
+<div class="fm">f(x) ~ π/2 - (4/π) Σ_{n=1}^∞ cos[(2n-1)x]/(2n-1)²</div>
+<b>g(x): 0 em [-π,0[, π em [0,π[, 2π-periódica:</b>
+<div class="fm">g(x) ~ π/2 + Σ_{n=1}^∞ (2/(2n-1)) sin[(2n-1)x]</div>
+<b>Extensão par e ímpar de f(x)=x em [0,π]:</b>
+<div class="fm">Extensão par (|x|):  π/2 - (4/π)Σcos[(2n-1)x]/(2n-1)²
+Extensão ímpar (x):  2·Σ(-1)^{n+1} sin(nx)/n</div>
+</div>
+<div class="box teo">
+<span class="t">Função Seccionalmente Contínua / Diferenciável</span>
+      f é <b>seccionalmente contínua</b> em [a,b] se existe partição {a₀,…,aₙ} tal que f é contínua em cada subintervalo aberto e existem (finitos) os limites laterais em cada ponto de partição.<br/>
+      f é <b>seccionalmente diferenciável</b> se f e f' são seccionalmente contínuas.
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Dirichlet — Convergência Pontual da Série de Fourier</span>
+      Se f: ℝ→ℝ é 2π-periódica e seccionalmente diferenciável, então a série de Fourier de f converge em cada c∈ℝ para:
+      <div class="fm">[f(c⁺) + f(c⁻)] / 2   (média dos limites laterais)</div>
+<b>Em particular:</b>
+<div class="fm">Se x é ponto de continuidade de f:  S(x) = f(x)
+Se x não é ponto de continuidade: S(x) = [f(x⁺)+f(x⁻)]/2</div>
+      S é periódica com período 2π.
+    </div>
+<div class="box exa">
+<span class="t">Aplicação — Calcular Somas de Séries Numéricas!</span>
+      Usando f(x)=|x| e Dirichlet com x=0 (f contínua):
+      <div class="fm">0 = π/2 - (4/π)Σ1/(2n-1)²
+⟹  Σ_{n=1}^∞ 1/(2n-1)² = π²/8
+
+Usando a decomposição Σ1/n² = Σ1/(2n)² + Σ1/(2n-1)²:
+Σ1/n² = (1/4)Σ1/n² + π²/8  ⟹  Σ1/n² = π²/6  (problema de Basileia!)</div>
+      Usando g(x) com x=π/2:
+      <div class="fm">π = π/2 + Σ(2/(2n-1))sin[(2n-1)π/2]
+⟹  Σ_{n=1}^∞ (-1)^{n+1}/(2n-1) = π/4   (série de Leibniz para π!)</div>
+</div>
+
+</section>
+<section id="fv-top" data-nav="Topologia Rⁿ" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Noções Topológicas em ℝⁿ<span class="done-tag" hidden>estudado ✓</span></h2>
+<p class="lead">Generalização do Cálculo I para funções f: ℝⁿ→ℝ. A principal dificuldade: em ℝⁿ (n≥2) há infinitas direções de aproximação a um ponto.</p>
+
+<div class="box def">
+<span class="t">Distância Euclidiana</span>
+      Para X=(x₁,…,xₙ), Y=(y₁,…,yₙ):
+      <div class="fm">d(X,Y) = √[(x₁-y₁)² + … + (xₙ-yₙ)²]</div>
+</div>
+<div class="box def">
+<span class="t">Bolas Abertas e Fechadas</span>
+<div class="fm">Bᵣ(P) = {X∈ℝⁿ : d(X,P) &lt; r}    (bola aberta de centro P, raio r)
+B̄ᵣ(P) = {X∈ℝⁿ : d(X,P) ≤ r}    (bola fechada)</div>
+      n=1: intervalo aberto; n=2: círculo (sem fronteira); n=3: esfera sólida (sem casca).
+    </div>
+<div class="box def">
+<span class="t">Pontos Interiores, Fronteiros, Conjuntos Abertos/Fechados</span>
+<b>P é ponto interior</b> de D se ∃r&gt;0: Bᵣ(P)⊂D. <b>int(D)</b> = conjunto dos pontos interiores.<br/>
+<b>P é ponto fronteiro</b> de D se ∀r&gt;0: Bᵣ(P)∩D≠∅ E Bᵣ(P)∩(ℝⁿ\D)≠∅. <b>fr(D)</b> = fronteira.<br/>
+<div class="fm">D é ABERTO  ⟺  D = int(D)
+D é FECHADO ⟺  fr(D) ⊆ D
+D é LIMITADO ⟺  ∃ bola fechada que contém D</div>
+      D COMPACTO = fechado e limitado.
+    </div>
+<div class="box def">
+<span class="t">Ponto de Acumulação e Ponto Isolado</span>
+<b>P é ponto de acumulação</b> de D se ∀r&gt;0: Bᵣ(P)∩(D\{P})≠∅ (toda bola aberta em P contém pontos de D distintos de P, mesmo que P∉D!)<br/>
+<b>P∈D é ponto isolado</b> se NÃO é ponto de acumulação.<br/>
+<b>Nota:</b> todo ponto interior é ponto de acumulação.
+    </div>
+
+</section>
+<section id="dom-nio-contradom-nio-gr-fico-e-conjunto" data-nav="Domínio, Contradomínio, Gráfico e Conjuntos de Nível" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Domínio, Contradomínio, Gráfico e Conjuntos de Nível<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Função Real de n Variáveis</span>
+      f: D⊆ℝⁿ→ℝ, (x₁,…,xₙ) ↦ z=f(x₁,…,xₙ).<br/>
+<b>Contradomínio:</b> CD_f = {f(X) : X∈D}<br/>
+<b>Gráfico:</b> G_f = {(x₁,…,xₙ,z)∈ℝⁿ⁺¹ : z=f(x₁,…,xₙ)}
+    </div>
+<div class="box def">
+<span class="t">Conjuntos/Curvas/Superfícies de Nível</span>
+      Para k∈CD_f: N_k = {X∈D_f : f(X)=k}.<br/>
+      n=2: <b>curva de nível</b> C_k (interseção do gráfico com plano z=k)<br/>
+      n=3: <b>superfície de nível</b> S_k
+    </div>
+<div class="box exa">
+<span class="t">Exemplos de Gráficos Importantes</span>
+<div class="tw"><table>
+<thead><tr><th>Função</th><th>Gráfico</th><th>Curvas de nível</th></tr></thead>
+<tbody>
+<tr><td>f(x,y)=2x-y</td><td>Plano</td><td>retas paralelas</td></tr>
+<tr><td>f(x,y)=x²+y²</td><td>Paraboloide circular</td><td>circunferências concêntricas</td></tr>
+<tr><td>g(x,y)=4-y²</td><td>Cilindro parabólico</td><td>retas (k=4) ou pares de retas paralelas</td></tr>
+<tr><td>h(x,y)=x²-y²</td><td>Paraboloide hiperbólico (sela)</td><td>hipérboles (k≠0); duas retas y=±x (k=0)</td></tr>
+</tbody>
+</table></div>
+</div>
+
+</section>
+<section id="fv-lim" data-nav="Limites/Continuidade" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Limites e Continuidade<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Limite de uma Função (via sucessões)</span>
+      Seja A ponto de acumulação de D. lim_{X→A} f(X) = ℓ se para QUALQUER sucessão (Xₙ) em D\{A} com Xₙ→A, tem-se f(Xₙ)→ℓ.<br/>
+<b>Crucial:</b> isto deve valer para TODAS as sucessões/direções de aproximação!
+    </div>
+<div class="box def">
+<span class="t">Limite Segundo um Conjunto (ferramenta para provar NÃO existência)</span>
+      Para R⊆D com A ponto de acumulação de R: lim_{X→A, X∈R} f(X) = lim_{X→A} f|_R(X).<br/>
+      Casos especiais: <b>limites direcionais</b> (segundo retas y=mx).
+    </div>
+<div class="box teo">
+<span class="t">Critérios de Não-Existência de Limite — FERRAMENTA MAIS USADA EM EXAME!</span>
+<ol>
+<li>Se ∃R⊆D tal que lim_{X→A,X∈R}f(X) NÃO existe → lim_{X→A}f(X) NÃO existe</li>
+<li>Se ∃R₁,R₂⊆D com lim_{X→A,X∈R₁}f(X) ≠ lim_{X→A,X∈R₂}f(X) → o limite NÃO existe</li>
+</ol>
+<b>Estratégia padrão:</b> testar y=0, x=0, e y=mx (família de retas) — se derem valores diferentes, o limite não existe.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo Clássico — xy/(x²+y²) em (0,0)</span>
+<div class="fm">R₁={y=0}: lim 0/x² = 0
+R₂={x=0}: lim 0/y² = 0   (iguais até agora!)
+R_m={y=mx}: lim (x·mx)/(x²+m²x²) = m/(1+m²)   (varia com m!)
+⟹ limite NÃO existe (diferentes retas dão valores diferentes)</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo — Limite que EXISTE: x²y/(x²+y²) em (0,0)</span>
+      Para qualquer sucessão (xₙ,yₙ)→(0,0): |x²y/(x²+y²)| = |y|·x²/(x²+y²) ≤ |y| → 0.<br/>
+      (Produto de infinitésimo |y|→0 por função limitada x²/(x²+y²)≤1.) <b>Limite = 0.</b>
+</div>
+<div class="box teo">
+<span class="t">Propriedades Algébricas dos Limites</span>
+      Se lim f(X)=ℓ₁ e lim g(X)=ℓ₂ (X→A):
+      <div class="fm">lim(f+g)=ℓ₁+ℓ₂;  lim(λf)=λℓ₁;  lim(fg)=ℓ₁ℓ₂;  lim(f/g)=ℓ₁/ℓ₂ (se ℓ₂≠0)</div>
+</div>
+<div class="box teo">
+<span class="t">Duas Proposições Úteis para Cálculo de Limites</span>
+<b>Infinitésimo × função limitada:</b> Se lim f(X)=0 e g é limitada perto de A, então lim f(X)g(X)=0.<br/>
+<b>Mudança de variável:</b> Se f(X)=g(u(X)) com lim u(X)=c e lim_{z→c} g(z)=ℓ (g contínua ou não-definida em c), então lim f(X) = ℓ.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Mudança de Variável</span>
+      lim_{(x,y)→(1,1)} (e^{x-y}-1)/(y-x). Seja u=x-y; quando (x,y)→(1,1), u→0.
+      <div class="fm">(e^u-1)/(-u) = -(e^u-1)/u → -1   (limite notável conhecido em Cálc. I)</div>
+</div>
+<div class="box def">
+<span class="t">Continuidade</span>
+      f é <b>contínua</b> em P (ponto de acumulação de D) se lim_{X→P}f(X) = f(P). Se P é isolado, f é automaticamente contínua aí.<br/>
+      Propriedades: somas, produtos, λf, quociente (g(P)≠0) e composição com função contínua preservam continuidade.
+    </div>
+
+</section>
+<section id="fv-lim2" data-nav="Limites: Curvas/Polares" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Limites — Para Além das Retas: Curvas e Coordenadas Polares<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Retas não chegam — usar curvas y = mx², x = y², …</span>
+      Se todas as retas y = mx dão o mesmo valor, o limite <b>ainda pode não existir</b>. Escolhe-se uma curva que "equilibre" os graus do numerador e do denominador.
+      <div class="fm">f(x,y) = x²y/(x⁴ + y²) em (0,0)   (Ficha 3-I, 6)
+Retas y = mx:   x²·mx/(x⁴ + m²x²) = mx/(x² + m²) → 0   (para todo m)
+Parábolas y = mx²:  x²·mx²/(x⁴ + m²x⁴) = m/(1 + m²)    (depende de m!)
+⟹ o limite NÃO existe.</div>
+      Truque: em x⁴ + y², x tem "peso" 1 e y "peso" 2, por isso testa-se y = mx².
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Caminhos que não são eixos</span>
+<div class="fm">lim x⁴/(y⁴ + (y−x)²)  em (0,0)   (Ficha 3-I, 5e)
+x = 0:  0/y⁴ = 0
+y = x:  x⁴/(x⁴ + 0) = 1          ⟹  limites diferentes, NÃO existe</div>
+      Escolhe-se y = x porque anula o termo (y−x)² do denominador.
+    </div>
+<div class="box teo">
+<span class="t">Coordenadas Polares — para provar que o limite EXISTE</span>
+      Em (0,0) faz-se x = r cos θ, y = r sen θ (r → 0⁺). Se
+      <div class="fm">|f(r cos θ, r sen θ) − ℓ| ≤ g(r)   com  g(r) → 0  (independente de θ)</div>
+      então lim f = ℓ. ⚠ A majoração tem de ser <b>uniforme em θ</b>; um limite que depende de θ prova a não existência.
+      <div class="fm">3x²y/(x² + 2y²):   |3r³cos²θ senθ| / (r²(cos²θ + 2sen²θ)) ≤ 3r³/r² = 3r → 0
+   (porque cos²θ + 2sen²θ ≥ 1)   ⟹ limite = 0      (Ficha 3-I, 5d)
+
+(x⁴ − 4y⁴)/(2x² + 4y²) = (x² − 2y²)(x² + 2y²)/[2(x² + 2y²)] = (x² − 2y²)/2 → 0   (fatorizar!)</div>
+</div>
+<div class="box met">
+<span class="t">Estratégia completa para lim em (0,0)</span>
+<ol>
+<li>Tentar substituir (se o denominador não se anula, é contínua: acabou).</li>
+<li>Simplificar/fatorizar (diferença de quadrados, conjugado).</li>
+<li>Testar x = 0, y = 0, y = mx. Se der valores diferentes ⟹ não existe.</li>
+<li>Se todas iguais a ℓ: testar curvas (y = mx², x = my², y = x se houver (y−x)).</li>
+<li>Suspeita de que existe: provar com infinitésimo × limitada ou polares.</li>
+</ol>
+</div>
+<div class="box ex">
+<span class="t">Funções definidas por ramos (continuidade)</span>
+      Num ponto da linha onde muda a fórmula (ex.: x = 0 no T2 2023/24), calcula-se o limite usando <b>os dois ramos</b>: os pontos com x ≠ 0 usam a 1.ª fórmula e os da reta x = 0 usam a 2.ª. É contínua só se ambos tenderem para o valor da função no ponto.
+    </div>
+
+</section>
+<section id="fv-der" data-nav="Derivadas Parciais" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Derivação Parcial e Derivadas Direcionais<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Derivada Parcial</span>
+      Para f: D⊆ℝ²→ℝ e (a,b)∈int(D):
+      <div class="fm">∂f/∂x (a,b) = lim_{h→0} [f(a+h,b) - f(a,b)] / h
+
+∂f/∂y (a,b) = lim_{h→0} [f(a,b+h) - f(a,b)] / h</div>
+<b>Na prática:</b> derivar em ordem a x tratando y como constante (e vice-versa).
+    </div>
+<div class="box def">
+<span class="t">Interpretação Geométrica</span>
+      ∂f/∂x(a,b) é o declive da reta tangente à curva de interseção do gráfico de f com o plano y=b, no ponto (a,b,f(a,b)).<br/>
+      Vetor diretor desta reta: (1, 0, ∂f/∂x(a,b)). Analogamente para ∂f/∂y com (0,1,∂f/∂y(a,b)).
+    </div>
+<div class="box def">
+<span class="t">Derivadas Parciais de Ordem Superior</span>
+<div class="fm">∂²f/∂x² = ∂/∂x(∂f/∂x)
+∂²f/∂y² = ∂/∂y(∂f/∂y)
+∂²f/∂x∂y = ∂/∂x(∂f/∂y)    [derivadas MISTAS]
+∂²f/∂y∂x = ∂/∂y(∂f/∂x)</div>
+<b>⚠</b> As derivadas mistas podem ser DIFERENTES em geral!
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Schwarz (Igualdade das Derivadas Mistas)</span>
+      Se existem ∂f/∂x, ∂f/∂y, ∂²f/∂x∂y numa bola aberta em (a,b) e ∂²f/∂x∂y é contínua em (a,b), então existe ∂²f/∂y∂x(a,b) e:
+      <div class="fm">∂²f/∂y∂x (a,b) = ∂²f/∂x∂y (a,b)</div>
+<b>Corolário prático:</b> se f∈C²(D) (classe C², i.e. todas as derivadas até ordem 2 são contínuas), então as derivadas mistas são SEMPRE iguais.
+    </div>
+<div class="box exa">
+<span class="t">Contra-Exemplo — Derivadas Mistas Diferentes</span>
+      f(x,y) = xy(x²-y²)/(x²+y²) se (x,y)≠(0,0), f(0,0)=0.
+      <div class="fm">∂²f/∂y∂x (0,0) = -1  ≠  ∂²f/∂x∂y (0,0) = 1</div>
+      (Mostra que sem a hipótese de continuidade de Schwarz, podem diferir.)
+    </div>
+<div class="box def">
+<span class="t">Derivada Direcional</span>
+      Para U vetor UNITÁRIO de ℝⁿ:
+      <div class="fm">D_U f(P) = lim_{h→0} [f(P+hU) - f(P)] / h</div>
+      As derivadas parciais são casos particulares com U=(1,0) ou (0,1).
+    </div>
+<div class="box ex">⚠ <b>Existir todas as derivadas direcionais NÃO garante continuidade!</b> Exemplo: f(x,y)=xy²/(x²+y⁴) (e f(0,0)=0) não é contínua em (0,0), mas todas as derivadas direcionais existem aí (com valor u₂²/u₁ se u₁≠0, e 0 se u₁=0).</div>
+
+</section>
+<section id="fv-dif" data-nav="Diferenciabilidade" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Diferenciabilidade e Planos Tangentes<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Função Diferenciável (n=2)</span>
+      f é diferenciável em (a,b) se existem ∂f/∂x(a,b), ∂f/∂y(a,b) e:
+      <div class="fm">lim_{(h,k)→(0,0)}  [f(a+h,b+k) - f(a,b) - ∂f/∂x(a,b)·h - ∂f/∂y(a,b)·k] / √(h²+k²)  =  0</div>
+      Isto garante que f é "bem aproximada" pelo plano tangente (linearização).
+    </div>
+<div class="box teo">
+<span class="t">Condição SUFICIENTE de Diferenciabilidade</span>
+      Se ∂f/∂x e ∂f/∂y existem numa bola aberta centrada em P, e PELO MENOS UMA é contínua em P, então f é diferenciável em P.<br/>
+<b>Corolário:</b> Se f é de classe C¹ numa bola aberta em P, então f é diferenciável em P (e em toda a bola).
+    </div>
+<div class="box teo">
+<span class="t">Condição NECESSÁRIA de Diferenciabilidade</span>
+      Se f é diferenciável em P, então f é CONTÍNUA em P.<br/>
+<b>Forma contrapositiva (mais útil):</b> se f NÃO é contínua em P, então f NÃO é diferenciável em P.
+    </div>
+<div class="box exa">
+<span class="t">Exemplos Famosos de (Não-)Diferenciabilidade</span>
+<b>f(x,y)=√(x²+y²):</b> diferenciável em todo (a,b)≠(0,0); NÃO diferenciável em (0,0) (a função tem um "bico" cónico).<br/>
+<b>f(x,y)=x²/(x²+y²), f(0,0)=0:</b> NÃO contínua em (0,0) (limites direcionais distintos) ⟹ NÃO diferenciável aí.
+    </div>
+<div class="box def">
+<span class="t">Plano Tangente e Vetor Normal</span>
+      Para f diferenciável em (a,b), o <b>plano tangente</b> ao gráfico em (a,b,f(a,b)):
+      <div class="fm">z = f(a,b) + ∂f/∂x(a,b)·(x-a) + ∂f/∂y(a,b)·(y-b)</div>
+<b>Vetor normal:</b> N = (-∂f/∂x(a,b), -∂f/∂y(a,b), 1)<br/>
+<b>Reta normal:</b> (x,y,z) = (a,b,f(a,b)) + λN, λ∈ℝ
+    </div>
+<div class="box exa">
+<span class="t">Exemplo Completo — Plano Tangente</span>
+      f(x,y)=4-x²-y² em P=(1,-1,2). ∂f/∂x=-2x, ∂f/∂y=-2y, ambas contínuas em ℝ² ⟹ f diferenciável em ℝ².
+      <div class="fm">Plano tangente: z = 2 + (-2)(x-1) + 2(y+1)  ⟺  2x - 2y + z = 6
+Reta normal: (x,y,z) = (1,-1,2) + λ(2,-2,1)</div>
+</div>
+<div class="box def">
+<span class="t">Vetor Gradiente</span>
+<div class="fm">∇f(P) = (∂f/∂x₁(P), ∂f/∂x₂(P), …, ∂f/∂xₙ(P))</div>
+</div>
+<div class="box teo">
+<span class="t">Teorema — Gradiente e Derivada Direcional</span>
+      Se f é diferenciável e U é vetor unitário:
+      <div class="fm">D_U f(P) = ∇f(P) · U   (produto interno)</div>
+      Usando D_U f(P) = ‖∇f(P)‖cos θ:<br/>
+      • A derivada direcional MÁXIMA ocorre na direção do gradiente (θ=0)<br/>
+      • ‖∇f(P)‖ = valor da maior taxa de crescimento de f em P<br/>
+      • ∇f(a,b) é ORTOGONAL à curva de nível que passa em (a,b)
+    </div>
+<div class="box teo">
+<span class="t">Gradiente e Plano Tangente a Superfícies de Nível (n=3)</span>
+      Para h: B⊆ℝ³→ℝ diferenciável, S_k = {h=k} superfície de nível e P∈S_k:<br/>
+      ∇h(P) é ORTOGONAL a S_k em P. Se ∇h(P)≠(0,0,0), o plano tangente a S_k em P=(a,b,c):
+      <div class="fm">(x-a)·∂h/∂x(a,b,c) + (y-b)·∂h/∂y(a,b,c) + (z-c)·∂h/∂z(a,b,c) = 0</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo — Plano Tangente a Elipsoide</span>
+      Elipsoide 4x²+9y²+z²=49, P=(1,-2,3). h(x,y,z)=4x²+9y²+z², ∇h=(8x,18y,2z).
+      <div class="fm">∇h(P) = (8,-36,6)
+Plano tangente: 8(x-1) - 36(y+2) + 6(z-3) = 0</div>
+</div>
+
+</section>
+<section id="fv-cad" data-nav="Regra Cadeia/Implícita" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Regra da Cadeia<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box teo">
+<span class="t">Regra da Cadeia — Caso 1 (uma variável independente)</span>
+      z=f(x,y) diferenciável, x=g(t), y=h(t) diferenciáveis. Então:
+      <div class="fm">dz/dt = ∂z/∂x · dx/dt + ∂z/∂y · dy/dt</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo Caso 1</span>
+      z=x²y+3xy⁴, x=sin(2t), y=cos(t). Calcular dz/dt em t=0.
+      <div class="fm">dz/dt = (2xy+3y⁴)·2cos(2t) + (x²+12xy³)·(-sin t)
+Em t=0: x=0, y=1 → dz/dt(0) = (0+3)·2·1 + 0 = 6</div>
+</div>
+<div class="box teo">
+<span class="t">Regra da Cadeia — Caso 2 (duas variáveis independentes)</span>
+      z=f(x,y), x=g(s,t), y=h(s,t). Então:
+      <div class="fm">∂z/∂s = ∂z/∂x · ∂x/∂s + ∂z/∂y · ∂y/∂s
+∂z/∂t = ∂z/∂x · ∂x/∂t + ∂z/∂y · ∂y/∂t</div>
+      Três tipos de variáveis: s,t (independentes); x,y (intermédias); z (dependente).
+    </div>
+<div class="box teo">
+<span class="t">Regra da Cadeia — Caso Geral</span>
+      z função de x₁,…,xₙ, cada xⱼ função de t₁,…,tₘ. Para cada i:
+      <div class="fm">∂z/∂tᵢ = Σ_{j=1}^n  ∂z/∂xⱼ · ∂xⱼ/∂tᵢ</div>
+</div>
+
+</section>
+<section id="deriva-o-impl-cita" data-nav="Derivação Implícita" data-grp="Capítulo 3.1 · Funções de Várias Variáveis — Topologia, Limites e Derivadas" data-track>
+<h2>Derivação Implícita<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Função Explícita vs Implícita</span>
+      y=g(x): função explícita.<br/>
+      f(x,y)=0: pode definir implicitamente y como função de x (se para cada x houver um único y que resolva).
+    </div>
+<div class="box teo">
+<span class="t">Teorema da Função Implícita (2 variáveis)</span>
+      D aberto, f:D→ℝ com derivadas parciais contínuas, (x₀,y₀)∈D com f(x₀,y₀)=0. Se ∂f/∂y(x₀,y₀)≠0, então f(x,y)=0 define implicitamente y=g(x) numa vizinhança de x₀, e g é diferenciável com:
+      <div class="fm">g'(x) = - [∂f/∂x(x,y)] / [∂f/∂y(x,y)]</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo Completo</span>
+      x³+y³=6xy+1. f(x,y)=x³+y³-6xy-1. ∂f/∂x=3x²-6y, ∂f/∂y=3y²-6x (ambas contínuas em ℝ²).
+      <div class="fm">y'(x) = -(3x²-6y)/(3y²-6x) = -(x²-2y)/(y²-2x)
+Em (x₀,y₀)=(0,1): f(0,1)=0 ✓, ∂f/∂y(0,1)=3≠0 ⟹ y'(0) = -(0-2)/(1-0) = 2</div>
+</div>
+
+</section>
+<section id="fv-ext" data-nav="Extremos" data-grp="Capítulo 3.2 · Extremos de Funções de Várias Variáveis" data-track>
+<h2>Definições — Teorema de Weierstrass e Fermat<span class="done-tag" hidden>estudado ✓</span></h2>
+<p class="lead">Como classificar máximos, mínimos e pontos de sela usando derivadas parciais e a matriz Hessiana. Tema de exame quase garantido!</p>
+
+<div class="box def">
+<span class="t">Extremos Locais e Globais</span>
+<div class="fm">P maximizante LOCAL: ∃Bᵣ(P): ∀X∈Bᵣ(P)∩D, f(X)≤f(P)
+P maximizante GLOBAL: ∀X∈D, f(X)≤f(P)
+(análogo para minimizante, trocando ≤ por ≥)</div>
+      Máximos/mínimos = <b>extremos</b>; pontos onde ocorrem = <b>extremantes</b>.
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Weierstrass — Existência de Extremos Globais</span>
+      Se f:D⊆ℝⁿ→ℝ é contínua e D é COMPACTO (fechado e limitado), então f admite máximo e mínimo globais em D.<br/>
+<b>⚠</b> Sem compacidade, extremos globais podem não existir (e.g. f(x,y)=4-x²-y² em ℝ² tem máximo mas não mínimo).
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Fermat — Condição NECESSÁRIA para Extremo Local</span>
+      Se P∈int(D), f tem derivadas parciais de 1ª ordem em P, e P é extremante local, então:
+      <div class="fm">∇f(P) = (0, 0, …, 0)</div>
+<b>Ponto crítico:</b> P∈int(D) com ∇f(P)=0̄.<br/>
+<b>⚠ Cuidado:</b> nem todo ponto crítico é extremante! Pode ser <b>ponto de sela</b>. Também: extremante interior pode ocorrer onde alguma derivada parcial NÃO existe (não é necessariamente ponto crítico nesse caso).
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Ponto de Sela</span>
+      f(x,y)=x²-y². ∇f(0,0)=(0,0) → ponto crítico. Mas ao longo de y=0: f(x,0)=x²≥0 (parece mínimo); ao longo de x=0: f(0,y)=-y²≤0 (parece máximo). Logo (0,0) NÃO é extremante — é <b>ponto de sela</b>.
+    </div>
+
+</section>
+<section id="matriz-hessiana-e-teste-da-hessiana" data-nav="Matriz Hessiana e Teste da Hessiana" data-grp="Capítulo 3.2 · Extremos de Funções de Várias Variáveis" data-track>
+<h2>Matriz Hessiana e Teste da Hessiana<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Matriz Hessiana</span>
+      Para f de classe C² em int(D), P∈int(D):
+      <div class="fm">Hf(P) =  [ ∂²f/∂x₁²(P)    ∂²f/∂x₁∂x₂(P)  …  ∂²f/∂x₁∂xₙ(P) ]
+         [ ∂²f/∂x₂∂x₁(P)  ∂²f/∂x₂²(P)    …  ∂²f/∂x₂∂xₙ(P) ]
+         [      ⋮              ⋮         ⋱        ⋮       ]
+         [ ∂²f/∂xₙ∂x₁(P)  ∂²f/∂xₙ∂x₂(P)  …  ∂²f/∂xₙ²(P)   ]</div>
+      Matriz SIMÉTRICA (por Schwarz, se f∈C²). O <b>Hessiano</b> = determinante de Hf(P).
+    </div>
+<div class="box def">
+<span class="t">Cadeia de Menores Principais Líderes</span>
+      Para A=[aᵢⱼ] matriz n×n:
+      <div class="fm">M₁ = |a₁₁|
+M₂ = det [[a₁₁,a₁₂],[a₂₁,a₂₂]]
+…
+Mₖ = determinante do bloco superior-esquerdo k×k
+…
+Mₙ = det(A)</div>
+</div>
+<div class="box teo">
+<span class="t">Teste da Hessiana — Caso Geral (n variáveis)</span>
+      Seja P ponto crítico, f∈C², det(Hf(P))≠0 (Mₙ(P)≠0):
+      <div class="fm">Mₖ(P) &gt; 0, ∀k=1,…,n  (todos positivos)
+   →  P é MINIMIZANTE local
+
+Mₖ(P) alternado: M₁&lt;0, M₂&gt;0, M₃&lt;0, …
+   →  P é MAXIMIZANTE local
+
+Caso contrário (sem ser nenhum dos padrões acima)
+   →  P é PONTO DE SELA</div>
+      Se det(Hf(P))=0: teste INCONCLUSIVO (recorrer à definição).
+    </div>
+<div class="box teo">
+<span class="t">Teste da Hessiana — Caso n=2 (versão simplificada, MAIS USADA)</span>
+      P ponto crítico, det(Hf(P))≠0:
+      <div class="fm">det(Hf(P)) &gt; 0  e  ∂²f/∂x²(P) &gt; 0   →  MINIMIZANTE local
+det(Hf(P)) &gt; 0  e  ∂²f/∂x²(P) &lt; 0   →  MAXIMIZANTE local
+det(Hf(P)) &lt; 0                       →  PONTO DE SELA
+det(Hf(P)) = 0                       →  inconclusivo</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo Completo — Teste da Hessiana</span>
+      f(x,y)=-x³+4xy-2y²+1. ∇f=(0,0) ⟺ -3x²+4y=0 e 4x-4y=0.
+      <div class="fm">Resolvendo: P=(0,0) e Q=(4/3, 4/3)
+
+Hf(x,y) = [-6x  4]
+          [ 4  -4]
+
+Hf(P)=[[0,4],[4,-4]]: M₂(P)=-16≠0, M₁(P)=0 (não positivo nem padrão alternado correto)
+→ P=(0,0) é PONTO DE SELA
+
+Hf(Q)=[[-8,4],[4,-4]]: M₁(Q)=-8&lt;0, M₂(Q)=16&gt;0 (alternado correto: M₁&lt;0, M₂&gt;0)
+→ Q=(4/3,4/3) é MAXIMIZANTE local, f(Q) = 59/27</div>
+</div>
+<div class="box ex">⚠ <b>Quando det(Hf(P))=0, o teste é INCONCLUSIVO</b> — não se pode concluir nada a partir da Hessiana, mesmo que Hessianas "parecidas" deem extremantes de natureza diferente!<br/><br/>
+<b>Exemplo 1:</b> f(x,y)=x⁴+x²+y³. Em (0,0): det(Hf)=0. Mas perto de (0,0), f(0,b)=b³ muda de sinal → PONTO DE SELA.<br/>
+<b>Exemplo 2:</b> f(x,y)=x⁴+x²+y⁴. Em (0,0): também det(Hf)=0. Mas f(0,b)=b⁴≥0 sempre → MINIMIZANTE local. (Mesma Hessiana nula, naturezas diferentes!)</div>
+
+</section>
+<section id="c-lculo-de-extremos-globais-em-compactos" data-nav="Cálculo de Extremos Globais em Compactos" data-grp="Capítulo 3.2 · Extremos de Funções de Várias Variáveis" data-track>
+<h2>Cálculo de Extremos Globais em Compactos<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box met">
+<span class="t">Procedimento Completo (4 Passos)</span>
+<ol>
+<li>Determinar, no INTERIOR de D, os pontos críticos de f (∇f=0̄)</li>
+<li>Determinar, no interior de D, pontos onde alguma derivada parcial NÃO existe</li>
+<li>Determinar os candidatos a extremantes da restrição de f à FRONTEIRA de D (frequentemente via parametrização)</li>
+<li>Calcular f em TODOS os pontos obtidos (1-3): o MAIOR valor é o máximo global, o MENOR é o mínimo global</li>
+</ol>
+</div>
+<div class="box exa">
+<span class="t">Exemplo Completo — f(x,y)=x²+y²-x-y+1, D={x²+y²≤1}</span>
+<div class="fm">Passo 1 (interior): ∇f=(2x-1,2y-1)=(0,0) → P₁=(1/2,1/2). Único ponto crítico interior.
+Passo 2: f tem derivadas parciais em todo o interior → nada a acrescentar.
+Passo 3 (fronteira x²+y²=1): parametrizar x=cosθ, y=sinθ, θ∈[0,2π]
+  g(θ) = f(cosθ,sinθ) = 2 - cosθ - sinθ
+  g'(θ) = sinθ - cosθ = 0  → θ=π/4 ou θ=5π/4
+  Candidatos: P₂=(√2/2,√2/2), P₃=(-√2/2,-√2/2), e extremos do parâmetro θ=0, θ=2π (mesmo ponto P₄=(1,0))
+
+Passo 4: f(P₁)=1/2, f(P₂)=2-√2, f(P₃)=2+√2, f(P₄)=1
+→ MÁXIMO global = 2+√2 (em P₃)
+→ MÍNIMO global = 1/2 (em P₁)</div>
+</div>
+
+</section>
+<section id="extremos-condicionados-multiplicadores-d" data-nav="Extremos Condicionados — Multiplicadores de Lagrange" data-grp="Capítulo 3.2 · Extremos de Funções de Várias Variáveis" data-track>
+<h2>Extremos Condicionados — Multiplicadores de Lagrange<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="box def">
+<span class="t">Extremo Condicionado</span>
+      Dados f:D→ℝ, g:D→ℝ, e C={(x,y)∈D : g(x,y)=0}, os extremos da restrição f|_C dizem-se <b>extremos condicionados</b> de f sujeitos à restrição g(x,y)=0.
+      <div class="fm">min/max f(x,y)
+s.a.  g(x,y) = 0</div>
+</div>
+<div class="box teo">
+<span class="t">Teorema dos Multiplicadores de Lagrange</span>
+      D aberto, f,g∈C¹(D), C={g=0}. Se P∈C é extremante de f|_C e ∇g(P)≠(0,0), então existe λ∈ℝ (multiplicador de Lagrange) tal que:
+      <div class="fm">∇f(P) = λ∇g(P)</div>
+      Geometricamente: nos extremos condicionados, os gradientes de f e g são COLINEARES (as curvas de nível de f são tangentes à restrição C).
+    </div>
+<div class="box met">
+<span class="t">Método dos Multiplicadores de Lagrange — Procedimento</span>
+<ol>
+<li>Resolver o sistema {∇f(x,y)=λ∇g(x,y), g(x,y)=0}, admitindo ∇g≠(0,0)</li>
+<li>Verificar separadamente se ∇g(x₀,y₀)=(0,0) em algum ponto de C — esse ponto pode também ser extremante</li>
+<li>Estudar a natureza dos pontos obtidos (geralmente via Weierstrass, se C é compacto, ou comparando valores de f)</li>
+</ol>
+</div>
+<div class="box exa">
+<span class="t">Exemplo Completo — Lagrange</span>
+      min/max f(x,y)=x²+y²-x-y+1 s.a. g(x,y)=x²+y²-1=0.
+      <div class="fm">∂f/∂x=2x-1, ∂f/∂y=2y-1, ∂g/∂x=2x, ∂g/∂y=2y
+
+Sistema: { 2x-1=λ2x,  2y-1=λ2y,  x²+y²=1 }
+
+Resolvendo: x=y=√2/2, λ=1-√2/2   OU   x=y=-√2/2, λ=1+√2/2
+
+Candidatos: P=(√2/2,√2/2), Q=(-√2/2,-√2/2)
+
+Como a restrição é compacta e f contínua, Weierstrass garante que P,Q
+são os extremantes:
+f(P) = 2-√2 → MÍNIMO condicionado
+f(Q) = 2+√2 → MÁXIMO condicionado</div>
+      (Note: coincide com o resultado obtido via parametrização da fronteira no exemplo anterior — duas formas diferentes do mesmo problema!)
+    </div>
+
+</section>
+<section id="cheat-sheet-f-rmulas-e-crit-rios-essenci" data-nav="⚡ Cheat Sheet — Fórmulas e Critérios Essenciais" data-grp="Capítulo 3.2 · Extremos de Funções de Várias Variáveis" data-track>
+<h2>⚡ Cheat Sheet — Fórmulas e Critérios Essenciais<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<div class="cols">
+<div>
+<h4>Séries Numéricas</h4>
+<ul>
+<li>Geométrica: conv ⟺ <b>|r|&lt;1</b>, soma=a/(1-r)</li>
+<li>Dirichlet 1/nᵖ: conv ⟺ <b>p&gt;1</b></li>
+<li>D'Alembert/Cauchy: L&lt;1 conv abs; L&gt;1 div</li>
+<li>Leibniz: aₙ&gt;0, →0, decrescente ⟹ conv</li>
+<li>lim aₙ≠0 ⟹ DIVERGE sempre</li>
+</ul>
+</div>
+<div>
+<h4>Critérios — Quando Usar</h4>
+<ul>
+<li>Comparação/Limite: termos não-negativos, comparar c/ Dirichlet</li>
+<li>D'Alembert: fatoriais, produtos</li>
+<li>Cauchy: potências nⁿ</li>
+<li>Integral: f decrescente conhecida</li>
+<li>Leibniz: só séries alternadas</li>
+</ul>
+</div>
+<div>
+<h4>Séries de Potências/Taylor</h4>
+<ul>
+<li>R = lim|aₙ/a_{n+1}| ou 1/lim ⁿ√|aₙ|</li>
+<li>aₙ = f⁽ⁿ⁾(c)/n!  (Taylor)</li>
+<li>Derivar/Integrar termo a termo (dentro de I_c)</li>
+<li>1/(1-x)=Σxⁿ, eˣ=Σxⁿ/n!, sin/cos conhecidas</li>
+</ul>
+</div>
+<div>
+<h4>Fourier</h4>
+<ul>
+<li>aₙ=(1/π)∫f·cos(nx)dx; bₙ análogo c/ sin</li>
+<li>f ímpar → série de senos</li>
+<li>f par → série de cossenos</li>
+<li>Dirichlet: soma = [f(c⁺)+f(c⁻)]/2</li>
+<li>Usar p/ calcular Σ1/n² = π²/6, etc.</li>
+</ul>
+</div>
+<div>
+<h4>Limites em ℝⁿ</h4>
+<ul>
+<li>Testar y=0, x=0, y=mx → se diferem, NÃO existe</li>
+<li>Infinitésimo × limitada = infinitésimo</li>
+<li>f diferenciável ⟹ f contínua (NÃO recíproco)</li>
+<li>Existir derivadas direcionais NÃO garante continuidade</li>
+</ul>
+</div>
+<div>
+<h4>Derivadas e Diferenciabilidade</h4>
+<ul>
+<li>Schwarz: f∈C² ⟹ ∂²f/∂x∂y = ∂²f/∂y∂x</li>
+<li>∂f/∂x, ∂f/∂y contínuas ⟹ f diferenciável</li>
+<li>Plano tg: z=f(a,b)+fx(a,b)(x-a)+fy(a,b)(y-b)</li>
+<li>D_Uf(P) = ∇f(P)·U; máx na direção ∇f</li>
+</ul>
+</div>
+<div>
+<h4>Extremos — Hessiana (n=2)</h4>
+<ul>
+<li>∇f(P)=0̄ ⟹ ponto crítico</li>
+<li>det(H)&gt;0, fxx&gt;0 → MIN; fxx&lt;0 → MAX</li>
+<li>det(H)&lt;0 → SELA</li>
+<li>det(H)=0 → inconclusivo, usar definição</li>
+</ul>
+</div>
+<div>
+<h4>Extremos Globais e Lagrange</h4>
+<ul>
+<li>Weierstrass: f contínua + D compacto ⟹ extremos existem</li>
+<li>Procedimento: interior + não-diferenciáveis + fronteira</li>
+<li>Lagrange: ∇f=λ∇g, g=0</li>
+<li>Verificar separadamente ∇g=0̄</li>
+</ul>
+</div>
+</div>
+
+</section>
+<section id="t-c2-t1" data-nav="1.º Teste — 17/04/2024" data-grp="Testes Resolvidos 2023/24" data-track>
+<h2>1.º Teste — 17/04/2024<span class="done-tag" hidden>estudado ✓</span></h2>
+<p class="lead">Teste 1, Teste 2, Exame Final e Exame de Recurso de 2023/24 (versão 1). As respostas batem com as soluções oficiais e foram confirmadas por cálculo; aqui tens também o raciocínio, que é o que dá cotação.</p><div class="box bad">⚠ <b>Pergunta 1 é sempre escolha múltipla</b> (60 pts): +10 certa, −3 errada, 0 em branco. Só respondas se conseguires eliminar pelo menos duas opções. <b>T1</b> = séries numéricas + séries de potências + Taylor. <b>T2</b> = Fourier + funções de várias variáveis (limites, derivadas, função implícita, extremos, Lagrange).</div>
+
+<p class="lead">Duração 2h00 · séries numéricas, séries de potências, Taylor</p>
+<div class="q">
+<div class="q-head"><span class="q-num">1.</span><span class="q-pts">60 pts · escolha múltipla</span></div>
+<details><summary>Ver respostas e justificação</summary><div class="in"><div class="tw">
+<table>
+<tr><td>(a)</td><td>Σuₙ converge, soma 1</td><td>lim(u₁+…+uₙ₊₁) = lim S_{n+1} = 1 é exatamente a definição de soma da série.</td></tr>
+<tr><td>(b)</td><td>9/5</td><td>Σ(2²ⁿ−1)/6ⁿ = Σ(4/6)ⁿ − Σ(1/6)ⁿ = 1/(1−2/3) − 1/(1−1/6) = 3 − 6/5 = 9/5.</td></tr>
+<tr><td>(c)</td><td>Σ(aₙ + 1/n³) converge</td><td>aₙ/bₙ → 3 ⟹ |aₙ|/|bₙ| → 3; como Σ|bₙ| converge, Σ|aₙ| converge (critério do limite). Soma de convergentes converge. Σ(|bₙ| + 1/n) diverge por causa da harmónica.</td></tr>
+<tr><td>(d)</td><td>alternada absolutamente convergente</td><td>Σaₙ converge ⟹ aₙ → 0. Critério da raiz em |(aₙ)ⁿ|: ⁿ√(aₙⁿ) = aₙ → 0 &lt; 1.</td></tr>
+<tr><td>(e)</td><td>divergente em x = −1</td><td>Centro 1. Diverge em x = 2 ⟹ R ≤ 1. x = −1 está a distância 2 &gt; R ⟹ diverge.</td></tr>
+<tr><td>(f)</td><td>Σ 2ⁿxⁿ/3ⁿ⁺¹, |x| &lt; 3/2</td><td>1/(3−2x) = (1/3)·1/(1 − 2x/3) = (1/3)Σ(2x/3)ⁿ, válido se |2x/3| &lt; 1.</td></tr>
+</table></div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">2.</span><span class="q-pts">15 pts</span></div>
+<p>Σaₙ é de termos positivos e convergente. Natureza de Σ arctg(n)/aₙ.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Σaₙ convergente ⟹ aₙ → 0⁺ (condição necessária). Então:</p>
+<div class="fm">arctg(n)/aₙ → (π/2)/0⁺ = +∞ ≠ 0</div>
+<p>O termo geral não tende para 0 ⟹ pela condição necessária de convergência, <span class="ans">a série é divergente</span>.</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">3.</span><span class="q-pts">20 pts</span></div>
+<p>Mostre que a série de Mengoli Σ<sub>n≥1</sub> [ ln(n/(n+1)) − ln((n+2)/(n+3)) ] converge e calcule a soma.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Com bₙ = ln(n/(n+1)), o termo geral é bₙ − bₙ₊₂ (Mengoli com salto p = 2).</p>
+<div class="fm">Sₙ = (b₁ − b₃) + (b₂ − b₄) + … + (bₙ − bₙ₊₂) = b₁ + b₂ − bₙ₊₁ − bₙ₊₂
+
+lim bₙ = lim ln(n/(n+1)) = ln 1 = 0   (existe e é finito ⟹ série convergente)
+
+S = b₁ + b₂ − 2·0 = ln(1/2) + ln(2/3) = ln(1/3) = −ln 3</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">4.</span><span class="q-pts">50 pts</span></div>
+<p>Natureza (simples ou absoluta): (a) Σ sen(n³−1)/[(n²+1)(n²+2)];  (b) Σ (−2)ⁿ (2n)!/nⁿ;  (c) Σ (−1)ⁿ/√(n+1).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Comparação em módulo:</p>
+<div class="fm">|sen(n³−1)| / [(n²+1)(n²+2)] ≤ 1/(n²·n²) = 1/n⁴,   Σ1/n⁴ converge (Dirichlet, α = 4 &gt; 1)</div>
+<p><span class="ans">Absolutamente convergente</span></p>
+<p><b>(b)</b> Critério de D'Alembert (quociente) em |aₙ| = 2ⁿ(2n)!/nⁿ:</p>
+<div class="fm">|aₙ₊₁|/|aₙ| = 2·(2n+2)(2n+1)/(n+1) · nⁿ/(n+1)ⁿ = 2·2(2n+1)·(n/(n+1))ⁿ
+            → +∞ · e⁻¹ = +∞ &gt; 1</div>
+<p>Com L &gt; 1, |aₙ| não tende para 0 ⟹ <span class="ans">divergente</span>.</p>
+<p><b>(c)</b> Leibniz: 1/√(n+1) é decrescente e tende para 0 ⟹ converge. Em módulo, 1/√(n+1) ~ 1/√n (critério do limite com Σ1/n^{1/2}, α = 1/2 ≤ 1) ⟹ diverge.</p>
+<p><span class="ans">Simplesmente convergente</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">5.</span><span class="q-pts">25 pts</span></div>
+<p>Raio e domínio de convergência de Σ<sub>n≥1</sub> (x+6)ⁿ/(3ⁿn²), indicando onde é simples ou absoluta.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">aₙ = 1/(3ⁿn²):   R = lim |aₙ/aₙ₊₁| = lim 3(n+1)²/n² = 3
+Centro −6  ⟹  converge absolutamente em ]−9, −3[
+
+x = −3:  Σ 3ⁿ/(3ⁿn²) = Σ1/n²          convergente (absolutamente)
+x = −9:  Σ (−3)ⁿ/(3ⁿn²) = Σ(−1)ⁿ/n²   |·| = 1/n² ⟹ absolutamente convergente</div>
+<p><span class="ans">R = 3, D_c = [−9, −3], convergência absoluta em todo o D_c</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">6.</span><span class="q-pts">30 pts</span></div>
+<p>f(x) = x + sen(x). (a) Polinómio de Taylor de ordem 3 em c = π. (b) Mostre que o erro de aproximar f(2) por T³_π f(2) é ≤ (π−2)⁴/4!.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">f(π) = π + 0 = π
+f′(x) = 1 + cos x     → f′(π) = 0
+f″(x) = −sen x        → f″(π) = 0
+f‴(x) = −cos x        → f‴(π) = 1
+
+T³_π f(x) = π + (1/3!)(x−π)³ = π + (x−π)³/6</div>
+<p><b>(b)</b> Resto de Lagrange: existe ξ entre 2 e π com</p>
+<div class="fm">R₃(2) = f⁽⁴⁾(ξ)/4! · (2−π)⁴,    f⁽⁴⁾(x) = sen x
+|R₃(2)| = |sen ξ|·(π−2)⁴/4! ≤ (π−2)⁴/4!     (porque |sen ξ| ≤ 1)</div>
+</div></details>
+</div>
+
+</section>
+<section id="t-c2-t2" data-nav="2.º Teste — 11/06/2024" data-grp="Testes Resolvidos 2023/24" data-track>
+<h2>2.º Teste — 11/06/2024<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<p class="lead">Duração 2h00 · Fourier, funções de várias variáveis</p>
+<div class="q">
+<div class="q-head"><span class="q-num">1.</span><span class="q-pts">60 pts · escolha múltipla</span></div>
+<details><summary>Ver respostas e justificação</summary><div class="in"><div class="tw">
+<table>
+<tr><td>(a)</td><td>absoluta e uniformemente</td><td>|cos(nx)/n³ + (−1)ⁿsen(nx)/n²| ≤ 1/n³ + 1/n² e Σ(1/n³+1/n²) converge ⟹ critério de Weierstrass.</td></tr>
+<tr><td>(b)</td><td>{y = |x|}</td><td>D é a região acima das duas retas y = x e y = −x; a fronteira é a união das duas meias-retas que formam o "V", isto é, o gráfico de y = |x|.</td></tr>
+<tr><td>(c)</td><td>reta de declive −1/2</td><td>N_k = {x + 2y = k} ⟺ y = −x/2 + k/2. Um conjunto de nível de f : ℝ² → ℝ vive em ℝ², não é um plano.</td></tr>
+<tr><td>(d)</td><td>−4</td><td>D_U f = ∇f·U = (−f_x − f_y)/√2 = 1/√2 ⟹ −f_x − 3 = 1 ⟹ f_x = −4.</td></tr>
+<tr><td>(e)</td><td>x − 3y − z = −5</td><td>f(0,1) = 2, f_x = cos x + 2xy = 1, f_y = x² − 3y² = −3. z − 2 = 1·x − 3(y−1) ⟹ x − 3y − z = −5.</td></tr>
+<tr><td>(f)</td><td>−4 ∂f/∂x(1,0)</td><td>z_s = f_x·x_s + f_y·y_s, x_s = 4s³ = −4, y_s = 3t = 0; em (s,t) = (−1,0): (x,y) = (1,0).</td></tr>
+</table></div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">2.</span><span class="q-pts">15 pts</span></div>
+<p>Σ<sub>n≥1</sub> (x−1)ⁿ/(n3ⁿ) tem D_c = [−2, 4[ e f(x) é a sua soma. Determine f′(2).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>No interior do intervalo de convergência (x = 2 ∈ ]−2,4[) pode derivar-se termo a termo:</p>
+<div class="fm">f′(x) = Σ n(x−1)ⁿ⁻¹/(n3ⁿ) = Σ_{n≥1} (x−1)ⁿ⁻¹/3ⁿ = (1/3)·Σ_{k≥0} ((x−1)/3)ᵏ
+      = (1/3)·1/(1 − (x−1)/3)
+
+f′(2) = (1/3)·1/(1 − 1/3) = (1/3)·(3/2) = 1/2</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">3.</span><span class="q-pts">25 pts</span></div>
+<p>g 2π-periódica, g(x) = π(1 − 2x²) em [−π, π]. (a) Justifique que a série de Fourier só tem cossenos e calcule a₀. (b) Soma da série em x = −3π.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> g(−x) = π(1 − 2x²) = g(x): g é <b>par</b> ⟹ bₙ = (1/π)∫g(x)sen(nx)dx = 0 (integranda ímpar em intervalo simétrico).</p>
+<div class="fm">a₀ = (1/π)∫_{−π}^{π} π(1−2x²) dx = ∫_{−π}^{π}(1−2x²) dx = [x − 2x³/3]_{−π}^{π}
+   = 2π − (4/3)π³ = 2(π − (2/3)π³)</div>
+<p><b>(b)</b> −3π ≡ π (mod 2π). g é seccionalmente C¹ e a extensão periódica é contínua em π (g(−π) = g(π) = π − 2π³). Pelo Teorema de Dirichlet a série converge para g:</p>
+<div class="fm">S(−3π) = g(π) = π(1 − 2π²) = π − 2π³</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">4.</span><span class="q-pts">30 pts</span></div>
+<p>f(x,y) = (x² + y²)/(x⁴ + y²) se x ≠ 0;  f(0,y) = sen(y).<br/>(a) Existe lim<sub>(x,y)→(0,0)</sub> f? (b) f é contínua em (0, π/2)?</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Limites por caminhos:</p>
+<div class="fm">Ao longo de x = 0:  f(0,y) = sen y → 0
+Ao longo de y = 0 (x ≠ 0):  f(x,0) = x²/x⁴ = 1/x² → +∞</div>
+<p>Caminhos com limites diferentes ⟹ <span class="ans">o limite não existe</span>.</p>
+<p><b>(b)</b> f(0, π/2) = sen(π/2) = 1. Perto de (0, π/2), o denominador x⁴ + y² → π²/4 ≠ 0, logo:</p>
+<div class="fm">pontos com x ≠ 0:  (x² + y²)/(x⁴ + y²) → (0 + π²/4)/(0 + π²/4) = 1
+pontos com x = 0:  sen y → 1</div>
+<p>Ambos os ramos tendem para 1 = f(0, π/2) ⟹ <span class="ans">f é contínua em (0, π/2)</span>.</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">5.</span><span class="q-pts">20 pts</span></div>
+<p>Mostre que existe g de classe C¹ numa vizinhança de 0, com g(0) = e e ln(x + g(x)) = e^{x g(x)}. Calcule g′(0).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Teorema da Função Implícita com F(x,y) = ln(x + y) − e^{xy}, no ponto (0, e):</p>
+<div class="fm">F(0, e) = ln e − e⁰ = 1 − 1 = 0   ✓
+F é C¹ perto de (0,e) (x + y &gt; 0 aí)   ✓
+F_y = 1/(x+y) − x e^{xy}   → F_y(0,e) = 1/e ≠ 0   ✓
+F_x = 1/(x+y) − y e^{xy}   → F_x(0,e) = 1/e − e
+
+g′(0) = −F_x/F_y = −(1/e − e)/(1/e) = −(1 − e²) = e² − 1</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">6.</span><span class="q-pts">30 pts</span></div>
+<p>f(x,y) = −y² + 2xy − 2x³ + 3. (a) Pontos críticos. (b) Natureza.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">f_x = 2y − 6x² = 0
+f_y = −2y + 2x = 0  ⟹  y = x  ⟹  2x − 6x² = 0  ⟹  x = 0 ou x = 1/3
+
+Pontos críticos: (0,0) e (1/3, 1/3)
+
+f_xx = −12x,   f_xy = 2,   f_yy = −2,   det H = 24x − 4
+(0,0):       det H = −4 &lt; 0                 ⟹ ponto de sela
+(1/3,1/3):   det H = 4 &gt; 0, f_xx = −4 &lt; 0     ⟹ maximizante local (f = 82/27)</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">7.</span><span class="q-pts">20 pts</span></div>
+<p>Extremos globais de f(x,y) = 2x − 3y na elipse x² + (3/2)y² = 10.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>A elipse é compacta e f contínua ⟹ existem máx. e mín. (Weierstrass). Lagrange com g = x² + (3/2)y² − 10 (∇g = (2x, 3y) ≠ 0 na elipse):</p>
+<div class="fm">2 = λ·2x  ⟹ x = 1/λ
+−3 = λ·3y ⟹ y = −1/λ        ⟹  y = −x
+x² + (3/2)x² = 10  ⟹  x² = 4  ⟹  x = ±2
+
+f(2, −2) = 4 + 6 = 10       máximo global
+f(−2, 2) = −4 − 6 = −10     mínimo global</div>
+</div></details>
+</div>
+
+</section>
+<section id="t-c2-ef" data-nav="Exame Final — 11/06/2024" data-grp="Testes Resolvidos 2023/24" data-track>
+<h2>Exame Final — 11/06/2024<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<p class="lead">Duração 2h45 · metade das perguntas repete o 2.º teste</p>
+<div class="box ex">
+<span class="t">Repetidas do 2.º teste</span>
+      1(b)–(e) = T2 1(a), (c), (d), (e) · 4(b) = T2 2 (f′(2) = 1/2) · 5 = T2 3 · 7 = T2 5 (g′(0) = e² − 1) · 8 = T2 7 (máx 10, mín −10).
+    </div>
+<div class="q">
+<div class="q-head"><span class="q-num">1.</span><span class="q-pts">alíneas novas: (a) e (f)</span></div>
+<details><summary>Ver respostas e justificação</summary><div class="in"><div class="tw">
+<table>
+<tr><td>(a)</td><td>[−1/2, 1/2]</td><td>Σ2ⁿxⁿ/(3+n²), R = 1/2. Em x = ±1/2 o termo fica (±1)ⁿ/(3+n²), com |·| ≤ 1/n² ⟹ converge absolutamente nos dois extremos.</td></tr>
+<tr><td>(f)</td><td>(0,0) é ponto de sela</td><td>f = x² − 2y³: ∇f = (2x, −6y²) = 0 só em (0,0). det H = 2·0 − 0 = 0 (inconclusivo), mas f(0,y) = −2y³ muda de sinal perto de 0, e f(0,0) = 0 ⟹ sela.</td></tr>
+</table></div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">2.</span><span class="q-pts">20 pts</span></div>
+<p>f(x) = (x²/4)·ln x em ℝ⁺. Com Taylor de ordem 3 em c = 1, aproxime ln 2 e mostre que o erro é &lt; 1/48.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Repara que f(2) = (4/4)·ln 2 = ln 2. Derivadas em 1:</p>
+<div class="fm">f(x)   = (x²/4) ln x                 f(1) = 0
+f′(x)  = (x/2) ln x + x/4            f′(1) = 1/4
+f″(x)  = (1/2) ln x + 3/4            f″(1) = 3/4
+f‴(x)  = 1/(2x)                      f‴(1) = 1/2
+f⁽⁴⁾(x) = −1/(2x²)
+
+T³₁ f(x) = (x−1)/4 + (3/8)(x−1)² + (1/12)(x−1)³
+ln 2 = f(2) ≈ T³₁ f(2) = 1/4 + 3/8 + 1/12 = 17/24</div>
+<p>Erro (resto de Lagrange, ξ ∈ ]1,2[):</p>
+<div class="fm">|R₃(2)| = |f⁽⁴⁾(ξ)|/4! · 1⁴ = 1/(2ξ²·24) = 1/(48ξ²) &lt; 1/48     (porque ξ &gt; 1)</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">3.</span><span class="q-pts">25 pts</span></div>
+<p>Natureza: (a) Σ 1/(n + ln n);  (b) Σ (−1/2)ⁿ (n+2)!/nⁿ⁺¹.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Critério do limite com 1/n:</p>
+<div class="fm">[1/(n + ln n)] / (1/n) = n/(n + ln n) = 1/(1 + ln n/n) → 1 ∈ ]0, +∞[</div>
+<p>Como Σ1/n diverge, <span class="ans">a série diverge</span>.</p>
+<p><b>(b)</b> Quociente em |aₙ| = (n+2)!/(2ⁿnⁿ⁺¹):</p>
+<div class="fm">|aₙ₊₁|/|aₙ| = (1/2)·(n+3)·nⁿ⁺¹/(n+1)ⁿ⁺² = (1/2)·(n+3)/(n+1)·(n/(n+1))ⁿ⁺¹
+             → (1/2)·1·e⁻¹ = 1/(2e) &lt; 1</div>
+<p><span class="ans">Absolutamente convergente</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">4(a).</span><span class="q-pts">15 pts</span></div>
+<p>Intervalo de convergência de Σ (x−1)ⁿ/(n3ⁿ).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">R = lim (n+1)3ⁿ⁺¹/(n3ⁿ) = 3,  centro 1  ⟹  ]−2, 4[
+x = 4:   Σ1/n         divergente (harmónica)
+x = −2:  Σ(−1)ⁿ/n     convergente (Leibniz), só simplesmente</div>
+<p>Intervalo de convergência (aberto): <span class="ans">I_c = ]−2, 4[</span>; domínio de convergência [−2, 4[.</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">6.</span><span class="q-pts">15 pts</span></div>
+<p>A mesma f do T2 4. f é contínua em (0,0)?</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>f(0,0) = sen 0 = 0, mas ao longo de y = 0, f(x,0) = 1/x² → +∞. Logo lim f(x,y) ≠ f(0,0) (nem existe) ⟹ <span class="ans">f não é contínua em (0,0)</span>.</p>
+</div></details>
+</div>
+
+</section>
+<section id="t-c2-rec" data-nav="Exame de Recurso — 27/06/2024" data-grp="Testes Resolvidos 2023/24" data-track>
+<h2>Exame de Recurso — 27/06/2024<span class="done-tag" hidden>estudado ✓</span></h2>
+
+
+<p class="lead">Duração 2h45 · matéria toda</p>
+<div class="q">
+<div class="q-head"><span class="q-num">1.</span><span class="q-pts">60 pts · escolha múltipla</span></div>
+<details><summary>Ver respostas e justificação</summary><div class="in"><div class="tw">
+<table>
+<tr><td>(a)</td><td>Σ1/aₙ diverge</td><td>Σaₙ converge ⟹ aₙ → 0⁺ ⟹ 1/aₙ → +∞ ≠ 0.</td></tr>
+<tr><td>(b)</td><td>converge em x = 2</td><td>Centro 1 e converge em x = −1 (distância 2) ⟹ R ≥ 2 ⟹ converge em |x−1| &lt; 2. Nada se sabe sobre x = −2 ou 4; em x = 1 converge sempre.</td></tr>
+<tr><td>(c)</td><td>Σ(−1)ⁿ2²ⁿ⁺¹x²ⁿ⁺¹/(2n+1), |x| &lt; 1/2</td><td>(arctg 2x)′ = 2/(1+4x²) = 2Σ(−1)ⁿ4ⁿx²ⁿ; primitivando termo a termo (constante 0, pois arctg 0 = 0).</td></tr>
+<tr><td>(d)</td><td>lim = 0</td><td>|cos(·)| ≤ 1 e x³ − y³ → 0 (limitada × infinitésimo). Como f(0,0) = 1, f não é contínua em ℝ².</td></tr>
+<tr><td>(e)</td><td>π√2 + π²√2/2</td><td>f = x²y + cos(xy²): f_x = 2xy − y²sen(xy²) = 2π; f_y = x² − 2xy sen(xy²) = π² em (π,1). D_u f = (√2/2)(2π + π²).</td></tr>
+<tr><td>(f)</td><td>y − z = −1</td><td>f = y e^{x²} − zy + 2z: ∇f = (2xy e^{x²}, e^{x²} − z, −y + 2) = (0, −1, 1) em P. Plano: −(y−1) + (z−2) = 0.</td></tr>
+</table></div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">2.</span><span class="q-pts">25 pts</span></div>
+<p>Natureza: (a) Σ 1/ln(2n+3);  (b) Σ (−2)ⁿ ((n−1)/(n+4))^{n²}.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Como ln(2n+3) &lt; 2n+3, tem-se 1/ln(2n+3) &gt; 1/(2n+3), e Σ1/(2n+3) diverge (critério do limite com 1/n). Por comparação, <span class="ans">diverge</span>.</p>
+<p><b>(b)</b> Critério da raiz em |aₙ|:</p>
+<div class="fm">ⁿ√|aₙ| = 2·((n−1)/(n+4))ⁿ = 2·(1 − 5/(n+4))ⁿ → 2e⁻⁵ ≈ 0,013 &lt; 1</div>
+<p><span class="ans">Absolutamente convergente</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">3.</span><span class="q-pts">15 pts</span></div>
+<p>f tem derivadas de todas as ordens, f(−1) = 3 e f′(x) − f(x) − x = 0. Série de Taylor de f em c = −1.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">f′ = f + x           ⟹ f′(−1) = 3 − 1 = 2
+f″ = f′ + 1          ⟹ f″(−1) = 2 + 1 = 3
+f⁽ⁿ⁾ = f⁽ⁿ⁻¹⁾ (n ≥ 3) ⟹ f⁽ⁿ⁾(−1) = 3
+
+f(x) ~ 3 + 2(x+1) + Σ_{n≥2} 3(x+1)ⁿ/n!</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">4.</span><span class="q-pts">15 pts</span></div>
+<p>Sabendo que T⁴₀ cosh(x) = 1 + x²/2 + x⁴/24, mostre que cosh x ≥ 1 + x²/2 + x⁴/24 para todo o x.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Truque: cosh⁽⁵⁾(0) = senh 0 = 0, logo T⁵₀ = T⁴₀. Usa-se o resto de ordem 5:</p>
+<div class="fm">cosh x = T⁵₀(x) + R₅(x),    R₅(x) = cosh⁽⁶⁾(ξ)/6! · x⁶ = cosh(ξ)·x⁶/720
+cosh ξ &gt; 0  e  x⁶ ≥ 0   ⟹   R₅(x) ≥ 0   ⟹   cosh x ≥ 1 + x²/2 + x⁴/24</div>
+<p>(Alternativa com R₄ = senh(ξ)x⁵/120: ξ está entre 0 e x, logo senh ξ e x⁵ têm o mesmo sinal ⟹ R₄ ≥ 0.)</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">5.</span><span class="q-pts">30 pts</span></div>
+<p>S(x) = Σ<sub>n≥0</sub> (−1/2)ⁿ⁺¹ (x+1)²ⁿ⁺¹. (a) Intervalo de convergência. (b) Mostre que S(x) = −(x+1)/(x² + 2x + 3).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Só há potências ímpares: usar D'Alembert diretamente no termo:</p>
+<div class="fm">|aₙ₊₁/aₙ| = (1/2)|x+1|² &lt; 1  ⟺  |x+1| &lt; √2
+Extremos |x+1| = √2:  |aₙ| = (1/2)ⁿ⁺¹·(√2)²ⁿ⁺¹ = √2/2 ↛ 0  ⟹ divergente
+
+I_c = ]−1−√2, −1+√2[</div>
+<p><b>(b)</b> É geométrica de razão r = −(x+1)²/2 (|r| &lt; 1 em I_c):</p>
+<div class="fm">S(x) = −((x+1)/2)·Σ_{n≥0} (−(x+1)²/2)ⁿ = −((x+1)/2)·1/(1 + (x+1)²/2)
+     = −(x+1)/(2 + (x+1)²) = −(x+1)/(x² + 2x + 3)</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">6.</span><span class="q-pts">25 pts</span></div>
+<p>g 2π-periódica, g(x) = πx em [−π, π[. (a) Série de Fourier. (b) Soma em x = 3π.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> g é ímpar em ]−π,π[ ⟹ aₙ = 0 (n ≥ 0).</p>
+<div class="fm">bₙ = (1/π)∫_{−π}^{π} πx sen(nx) dx = 2∫₀^π x sen(nx) dx
+   = 2[−x cos(nx)/n + sen(nx)/n²]₀^π = −2π cos(nπ)/n = 2π(−1)ⁿ⁺¹/n
+
+g(x) ~ Σ_{n≥1} (−1)ⁿ⁺¹ (2π/n) sen(nx)</div>
+<p><b>(b)</b> 3π ≡ π: ponto de descontinuidade (g(π⁻) = π², g(−π⁺) = −π²). Dirichlet dá a média dos limites laterais:</p>
+<div class="fm">S(3π) = (π² + (−π²))/2 = 0</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">7.</span><span class="q-pts">30 pts</span></div>
+<p>f(x,y) = x + y²/2 em D = {x² + y² ≤ 4}. (a) Pontos críticos no interior. (b) Extremos globais.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> ∇f = (1, y) nunca é (0,0) ⟹ <span class="ans">não há pontos críticos</span>.</p>
+<p><b>(b)</b> f contínua e D compacto ⟹ Weierstrass garante máx. e mín. Sem críticos no interior, estão na fronteira x² + y² = 4. Lagrange:</p>
+<div class="fm">1 = 2λx,   y = 2λy,   x² + y² = 4
+y = 2λy  ⟹  y = 0  ou  λ = 1/2
+  y = 0:     x = ±2           → (2,0), (−2,0)
+  λ = 1/2:   x = 1, y² = 3    → (1, ±√3)
+
+f(2,0) = 2,  f(−2,0) = −2,  f(1, ±√3) = 1 + 3/2 = 5/2
+
+Máximo global 5/2 em (1, ±√3);   mínimo global −2 em (−2, 0)</div>
+</div></details>
+</div>
+
+</section>
+</main>
+</div>
+<script>
+(function(){
+  var KEY='guia-c-ii', state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('.chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var tag=document.querySelector('#'+id+' .done-tag'); if(tag) tag.hidden=!on;
+    });
+    pbar.style.width=(secBoxes.length?100*n/secBoxes.length:0)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){ cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); }); });
+  var rst=document.getElementById('rst'), cf=document.getElementById('cf');
+  rst.addEventListener('click',function(){
+    if(cf.hidden){ cf.hidden=false; rst.textContent='Confirmar limpeza'; return; }
+    state={}; save(); refresh(); cf.hidden=true; rst.textContent='Limpar progresso';
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+        if(links[en.target.id]) links[en.target.id].classList.add('on'); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>

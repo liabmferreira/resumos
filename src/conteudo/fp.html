@@ -1,0 +1,798 @@
+<hero>
+<h1>FP: Python do zero ao teste</h1>
+<p>Todos os temas das aulas (variáveis, condições, funções, ciclos, recursividade, coleções, compreensões, lambda, ordenação, pesquisa e ficheiros), com o teste teórico e os exercícios práticos resolvidos e testados.</p>
+</hero>
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<h3>Como é a avaliação</h3>
+<p>O material dos anos anteriores mostra duas partes. O <strong>teste teórico</strong> é feito no Moodle e quase nunca pede que escrevas um programa inteiro. Pede que <strong>leias código e digas o que acontece</strong>. A <strong>parte prática</strong> pede funções curtas sobre dicionários, conjuntos, lambda e recursividade.</p>
+<div class="tw"><table>
+<thead><tr><th>Tipo de pergunta no teste teórico</th><th>Exemplo real</th><th>Onde estudar</th></tr></thead>
+<tbody>
+<tr><td>Escolha múltipla (resposta errada desconta 20%)</td><td>Caso base do fatorial; fatia que dá <code>[4, 5]</code>; <code>key=</code> do <code>sorted</code></td><td><a href="#rec">Recursividade</a>, <a href="#listas">Listas</a>, <a href="#ordenar">Ordenação</a></td></tr>
+<tr><td>Indicar o que é impresso</td><td>Ler um ficheiro e somar; operações com dicionário e <code>format</code></td><td><a href="#ficheiros">Ficheiros</a>, <a href="#dict">Dicionários</a></td></tr>
+<tr><td>Tabela valor e tipo (ou erro)</td><td><code>[x+2 for x in lst if x&lt;6]</code></td><td><a href="#comp">Compreensões</a></td></tr>
+<tr><td>Arrastar caixas para reescrever código</td><td>Ciclo de soma de quadrados num <code>sum(...)</code></td><td><a href="#comp">Compreensões</a></td></tr>
+<tr><td>Completar uma lambda</td><td><code>def pak(a,b)</code> em versão lambda</td><td><a href="#lambda">Lambda</a></td></tr>
+<tr><td>Completar uma função recursiva</td><td><code>toStr(num)</code> com <code>//</code> e <code>%</code></td><td><a href="#rec">Recursividade</a></td></tr>
+</tbody></table></div>
+
+<div class="box exa"><span class="t">Como estudar para isto</span>
+<p>Para cada exemplo de código deste guia, <strong>tapa a saída e tenta prever o resultado</strong> antes de olhares. É exatamente o que o teste pede. Usa o <a href="https://pythontutor.com" target="_blank" rel="noopener">Python Tutor</a> (recomendado pelo professor nos slides) para ver passo a passo o que acontece às variáveis quando tiveres dúvidas.</p></div>
+
+<div class="box bad"><span class="t">Regras do Moodle</span>
+<p>Nas respostas de "o que é impresso", <strong>não ponhas espaços a mais</strong> (o enunciado avisa). Escreve exatamente o que o Python mostra: <code>[5,6,7]</code> e <code>[5, 6, 7]</code> podem ser corrigidos de forma diferente. Lê sempre o que a pergunta pede: valor, tipo ou erro.</p></div>
+</section>
+
+<section id="bases" data-nav="1 · Tipos, variáveis e operadores" data-grp="Bases" data-track>
+<h2>1 · Tipos, variáveis e operadores</h2>
+<h3>Tipos básicos</h3>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Exemplos</th><th>Mutável?</th></tr></thead>
+<tbody>
+<tr><td><code>int</code></td><td><code>3</code>, <code>-7</code>, <code>0</code></td><td>não</td></tr>
+<tr><td><code>float</code></td><td><code>3.0</code>, <code>2.15</code>, <code>1e-3</code></td><td>não</td></tr>
+<tr><td><code>bool</code></td><td><code>True</code>, <code>False</code></td><td>não</td></tr>
+<tr><td><code>str</code></td><td><code>"ola"</code>, <code>'a'</code>, <code>""</code></td><td>não</td></tr>
+<tr><td><code>tuple</code></td><td><code>(1, 2)</code>, <code>(3,)</code></td><td>não</td></tr>
+<tr><td><code>list</code></td><td><code>[1, "a", 2.0]</code></td><td><strong>sim</strong></td></tr>
+<tr><td><code>dict</code></td><td><code>{"a": 1}</code></td><td><strong>sim</strong></td></tr>
+<tr><td><code>set</code></td><td><code>{1, 2, 3}</code>, <code>set()</code></td><td><strong>sim</strong></td></tr>
+</tbody></table></div>
+<p><code>type(x)</code> diz o tipo. Conversões: <code>int("12")</code>, <code>float("2.5")</code>, <code>str(3)</code>, <code>list("abc")</code> dá <code>['a','b','c']</code>, <code>int(3.9)</code> dá <code>3</code> (trunca, não arredonda).</p>
+
+<h3>Operadores aritméticos</h3>
+<div class="tw"><table>
+<thead><tr><th>Operador</th><th>Significado</th><th>Exemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>/</code></td><td>divisão real (dá sempre <code>float</code>)</td><td><code>7 / 2</code></td><td><code>3.5</code></td></tr>
+<tr><td><code>//</code></td><td>divisão inteira (arredonda para baixo)</td><td><code>7 // 2</code>, <code>-7 // 2</code></td><td><code>3</code>, <code>-4</code></td></tr>
+<tr><td><code>%</code></td><td>resto</td><td><code>7 % 2</code>, <code>2976 % 10</code></td><td><code>1</code>, <code>6</code></td></tr>
+<tr><td><code>**</code></td><td>potência</td><td><code>2 ** 10</code></td><td><code>1024</code></td></tr>
+<tr><td><code>+</code> em strings/listas</td><td>concatenação</td><td><code>[1] + [2]</code></td><td><code>[1, 2]</code></td></tr>
+<tr><td><code>*</code> em strings/listas</td><td>repetição</td><td><code>3 * "ab"</code></td><td><code>'ababab'</code></td></tr>
+</tbody></table></div>
+<div class="box teo"><span class="t">Truque dos dígitos (sai muito)</span>
+<p><code>n % 10</code> dá o <strong>último dígito</strong>; <code>n // 10</code> <strong>tira o último dígito</strong>. Com <code>n = 2976</code>: <code>n % 10 = 6</code>, <code>n // 10 = 297</code>. Paridade: <code>n % 2 == 0</code> é par.</p></div>
+
+<h3>Comparação e lógica</h3>
+<p><code>== != &lt; &gt; &lt;= &gt;=</code> dão <code>bool</code>. <code>and</code>, <code>or</code>, <code>not</code> avaliam em curto-circuito: em <code>a and b</code>, se <code>a</code> é falso, <code>b</code> nem é avaliado. Strings comparam-se por ordem alfabética do código de cada carácter: maiúsculas vêm antes de minúsculas (<code>"Z" &lt; "a"</code> é <code>True</code>), e <code>"bell"[0] &lt; "d"</code> é <code>True</code>.</p>
+<p>São considerados falsos: <code>0</code>, <code>0.0</code>, <code>""</code>, <code>[]</code>, <code>{}</code>, <code>set()</code>, <code>None</code>. Tudo o resto é verdadeiro.</p>
+
+<h3>Entrada, saída e formatação</h3>
+<pre data-lang="py">
+nome = input("Nome? ")              # input devolve SEMPRE str
+idade = int(input("Idade? "))        # converter para número
+print("Olá", nome)                   # separa por espaço
+print("a", "b", sep="-")             # a-b
+print(1, end=",")                    # não muda de linha
+print(f"{nome} tem {idade} anos")    # f-string
+print("{}:{}".format("oil", "NA"))   # oil:NA
+print(f"{3.14159:.2f}")              # 3.14  (2 casas decimais)
+print(f"{7:6.2f}")                   # '  7.00' (6 posições, 2 decimais)
+print(f"{5:02d}")                    # 05  (útil para horas 01:01:06)
+</pre>
+<p>Biblioteca <code>math</code>: <code>math.sqrt</code>, <code>math.pi</code>, <code>math.sin/cos</code> (em <strong>radianos</strong>: converte com <code>math.radians(graus)</code>), <code>math.hypot(dx, dy)</code>, <code>math.fabs</code>, <code>math.floor</code>, <code>math.ceil</code>.</p>
+<div class="box ex"><span class="t">Exemplo das aulas: segundos para hh:mm:ss</span>
+<pre data-lang="py">
+t = int(input("Segundos? "))
+h = t // 3600
+m = (t % 3600) // 60
+s = t % 60
+print(f"{h:02d}:{m:02d}:{s:02d}")    # 3661 -> 01:01:01
+</pre></div>
+</section>
+
+<section id="cond" data-nav="2 · Condições" data-grp="Bases" data-track>
+<h2>2 · Condições</h2>
+<pre data-lang="py">
+if x &gt; 0:
+    print("positivo")
+elif x == 0:
+    print("zero")
+else:
+    print("negativo")
+
+# expressão condicional (numa linha) — usada em lambdas e compreensões
+sinal = "par" if x % 2 == 0 else "ímpar"
+</pre>
+<p>A <strong>indentação</strong> define os blocos: tudo o que está mais à direita depois dos <code>:</code> pertence ao <code>if</code>. Misturar espaços e tabs dá erro.</p>
+<div class="box met"><span class="t">Trocar duas variáveis (swap)</span>
+<pre data-lang="py">
+if a &gt; b:
+    a, b = b, a       # forma Python: sem variável auxiliar
+</pre>
+<p>Usado para "corrigir" um intervalo <code>[4, 2]</code> para <code>[2, 4]</code>.</p></div>
+<div class="box ex"><span class="t">Exemplos clássicos das aulas</span>
+<pre data-lang="py">
+def isleap(y):
+    # bissexto: divisível por 4 e não por 100, ou divisível por 400
+    return (y % 4 == 0 and y % 100 != 0) or y % 400 == 0
+
+def intersect(a1, b1, a2, b2):
+    # intervalos [a1,b1] e [a2,b2] intersetam-se?
+    return not (a1 &gt;= b2 or a2 &gt;= b1)
+
+def daysMonth(m, y):
+    if m in (4, 6, 9, 11):
+        return 30
+    elif m == 2:
+        return 29 if isleap(y) else 28
+    return 31
+</pre></div>
+</section>
+
+<section id="func" data-nav="3 · Funções e parâmetros" data-grp="Bases" data-track>
+<h2>3 · Funções e parâmetros</h2>
+<pre data-lang="py">
+def pol(a, b, c, x):          # parâmetros
+    return a*x**2 + b*x + c   # valor devolvido
+
+pol(1, 2, 3, 1)               # 6
+def f(x, y=10): return x + y  # valor por omissão
+f(1), f(1, 2), f(y=5, x=1)    # 11, 3, 6 (argumentos com nome)
+</pre>
+<ul>
+<li>Uma função sem <code>return</code> (ou com <code>return</code> sozinho) devolve <code>None</code>.</li>
+<li><code>return a, b</code> devolve um <strong>tuplo</strong>; recebe-se com <code>x, y = f()</code>.</li>
+<li>Variáveis criadas dentro da função são <strong>locais</strong>: desaparecem quando a função termina.</li>
+<li><code>return</code> termina logo a função; código depois dele não corre.</li>
+</ul>
+
+<h3>Passagem de argumentos: mutáveis e imutáveis</h3>
+<p>O parâmetro recebe uma <strong>referência</strong> para o mesmo objeto. O que acontece depende do tipo e do que fazes dentro da função.</p>
+<div class="cols">
+<div><h4>Alterar o objeto (mutável)</h4>
+<pre data-lang="py">
+def changeme(l):
+    l.append(4)
+
+m = [1, 2, 3]
+changeme(m)
+print(m)   # [1, 2, 3, 4]
+</pre><p>A lista original <strong>muda</strong>: os dois nomes apontam para o mesmo "papagaio" (como diz o professor).</p></div>
+<div><h4>Reatribuir o nome</h4>
+<pre data-lang="py">
+def changeme(l):
+    l = [1, 2, 3, 4]
+
+m = [10, 20, 30]
+changeme(m)
+print(m)   # [10, 20, 30]
+</pre><p>A lista original <strong>não muda</strong>: <code>l</code> passou a apontar para outra lista.</p></div>
+</div>
+<p>Com <code>int</code>, <code>str</code>, <code>tuple</code> (imutáveis) nunca consegues alterar o original dentro da função; tens de devolver o novo valor (<code>a = increment(a)</code>).</p>
+<div class="box bad"><span class="t">Cuidado</span>
+<p><code>l2 = l</code> <strong>não copia</strong>: é a mesma lista com dois nomes. Para copiar usa <code>l.copy()</code>, <code>l[:]</code> ou <code>list(l)</code>.</p></div>
+</section>
+
+<section id="ciclos" data-nav="4 · Ciclos" data-grp="Bases" data-track>
+<h2>4 · Ciclos</h2>
+<p>Regra prática do professor: <strong>sabes quantas vezes repetir? usa <code>for</code>. Para tudo o resto (por exemplo, "ler até aparecer 0"), usa <code>while</code>.</strong></p>
+<h3><code>range</code></h3>
+<div class="tw"><table>
+<thead><tr><th>Chamada</th><th>Valores</th></tr></thead>
+<tbody>
+<tr><td><code>range(5)</code></td><td>0, 1, 2, 3, 4</td></tr>
+<tr><td><code>range(2, 6)</code></td><td>2, 3, 4, 5 (o fim fica de fora)</td></tr>
+<tr><td><code>range(0, 10, 3)</code></td><td>0, 3, 6, 9</td></tr>
+<tr><td><code>range(5, 0, -1)</code></td><td>5, 4, 3, 2, 1</td></tr>
+</tbody></table></div>
+<h3>Formas de percorrer</h3>
+<pre data-lang="py">
+for x in [3, 4, 2]:           # pelos valores
+    ...
+for i in range(len(l)):       # pelas posições
+    ...
+for i, x in enumerate(l):     # posição e valor ao mesmo tempo
+    ...
+for a, b in zip(l1, l2):      # duas listas em paralelo (pára na mais curta)
+    ...
+for k, v in d.items():        # dicionário: chave e valor
+    ...
+</pre>
+<h3><code>break</code> e <code>continue</code></h3>
+<p><code>break</code> sai do ciclo de imediato. <code>continue</code> salta para a próxima iteração sem executar o resto do corpo.</p>
+
+<h3>Padrões de leitura (aparecem em todos os slides)</h3>
+<div class="box met"><span class="t">Ler até aparecer 0 e calcular máximo, soma e média</span>
+<pre data-lang="py">
+a = int(input("a? "))
+mx = a
+soma = 0
+c = 0
+while a != 0:
+    if a &gt; mx:
+        mx = a
+    soma += a
+    c += 1
+    a = int(input("a? "))        # ler o próximo NO FIM do ciclo
+
+if c &gt; 0:                        # evitar divisão por zero!
+    print(mx, soma, soma / c)
+</pre>
+<p>O professor pergunta nos slides "o que acontece com <code>avg = sum / c</code> em todos os exemplos?". A resposta: se o primeiro valor já for o de paragem, <code>c</code> fica <code>0</code> e dá <code>ZeroDivisionError</code>. Por isso confirma sempre <code>c &gt; 0</code>.</p></div>
+<div class="box ex"><span class="t">Variante com <code>while True</code> e <code>break</code></span>
+<pre data-lang="py">
+valores = []
+while True:
+    s = input("valor? ")
+    if s == "":                  # parar com linha vazia
+        break
+    valores.append(int(s))
+</pre></div>
+
+<h3>Sucessões (padrão "valor antigo → valor novo")</h3>
+<pre data-lang="py">
+a = 1                  # condição inicial a0
+for i in range(n):     # repetir n vezes
+    a = 3 * a          # a regra: a(n+1) = 3 * a(n)
+print(a)               # 3**n
+</pre>
+<h3>Ciclos encaixados</h3>
+<pre data-lang="py">
+for i in range(1, 4):
+    for j in range(1, 4):
+        print(i * j, end=" ")
+    print()            # muda de linha no fim de cada i
+</pre>
+</section>
+
+<section id="rec" data-nav="5 · Recursividade" data-grp="Bases" data-track>
+<h2>5 · Recursividade</h2>
+<p>Uma função recursiva chama-se a si própria com um problema <strong>mais pequeno</strong>, até chegar a um <strong>caso base</strong> que se resolve diretamente.</p>
+<div class="box met"><span class="t">Receita para escrever uma função recursiva</span>
+<ol>
+<li><strong>Caso base</strong>: qual é o caso mais simples, com resposta imediata? (n == 0, lista vazia, string de 1 letra, número com 1 dígito)</li>
+<li><strong>Passo recursivo</strong>: como reduzo o problema? (n-1, n//10, lista sem o primeiro elemento)</li>
+<li><strong>Combinação</strong>: como junto o resultado da chamada ao que falta? (multiplicar por n, somar 1, concatenar)</li>
+<li>Confirma que todas as chamadas chegam ao caso base. Senão: <code>RecursionError</code>.</li>
+</ol></div>
+<pre data-lang="py">
+def fact(n):
+    if n == 0:                 # caso base: 0! = 1
+        return 1
+    return n * fact(n - 1)
+
+def fib(n):
+    if n &lt;= 1:                 # fib(0)=0, fib(1)=1
+        return n
+    return fib(n - 1) + fib(n - 2)
+
+def soma_recursiva(n):         # 1 + 2 + ... + n
+    if n &lt;= 0:
+        return 0
+    return n + soma_recursiva(n - 1)
+
+def contar_digitos(n):
+    n = abs(n)                 # ignorar o sinal
+    if n &lt; 10:                 # caso base: 1 dígito
+        return 1
+    return 1 + contar_digitos(n // 10)
+
+def soma_lista(l):
+    if l == []:
+        return 0
+    return l[0] + soma_lista(l[1:])
+</pre>
+<div class="box exa"><span class="t">Pergunta do teste: caso base do fatorial</span>
+<p>Sabendo que <code>fact(0) = 1</code>, o caso base mais apropriado é <strong><code>n == 0</code></strong>. <code>n == 1</code> falha para <code>fact(0)</code> (nunca pára: 0, -1, -2...); <code>n &gt;= 0</code> seria verdadeiro logo à primeira e nunca recursaria.</p></div>
+<h3>Rastrear uma chamada</h3>
+<pre data-lang="txt">
+fact(3) = 3 * fact(2)
+        = 3 * (2 * fact(1))
+        = 3 * (2 * (1 * fact(0)))
+        = 3 * (2 * (1 * 1)) = 6
+</pre>
+</section>
+
+<section id="strings" data-nav="6 · Strings" data-grp="Coleções" data-track>
+<h2>6 · Strings</h2>
+<p>Uma string é uma sequência de caracteres e comporta-se quase como uma lista, mas é <strong>imutável</strong>: <code>s[0] = "x"</code> dá <code>TypeError</code>. Para "mudar", cria-se uma nova string.</p>
+<h3>Indexação e fatias (vale para strings, listas e tuplos)</h3>
+<pre data-lang="py">
+s = "python"
+s[0]      # 'p'        primeiro
+s[-1]     # 'n'        último
+s[1:4]    # 'yth'      posições 1, 2, 3 (o fim fica de fora)
+s[:2]     # 'py'
+s[2:]     # 'thon'
+s[::2]    # 'pto'      de 2 em 2
+s[::-1]   # 'nohtyp'   invertida
+len(s)    # 6
+s[10]     # IndexError
+s[2:100]  # 'thon'     fatias NÃO dão erro fora dos limites
+</pre>
+<h3>Métodos mais usados</h3>
+<div class="tw"><table>
+<thead><tr><th>Método</th><th>Exemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>upper()</code>, <code>lower()</code>, <code>capitalize()</code></td><td><code>"cat".capitalize()</code></td><td><code>'Cat'</code></td></tr>
+<tr><td><code>strip()</code>, <code>rstrip()</code></td><td><code>" 10\n".strip()</code></td><td><code>'10'</code></td></tr>
+<tr><td><code>split(sep)</code></td><td><code>"a;b;c".split(";")</code></td><td><code>['a', 'b', 'c']</code></td></tr>
+<tr><td><code>sep.join(lista)</code></td><td><code>"-".join(["a","b"])</code></td><td><code>'a-b'</code></td></tr>
+<tr><td><code>replace(a, b)</code></td><td><code>"aba".replace("a","o")</code></td><td><code>'obo'</code></td></tr>
+<tr><td><code>find(x)</code>, <code>index(x)</code></td><td><code>"bell".find("l")</code></td><td><code>2</code> (<code>find</code> dá -1 se não existir; <code>index</code> dá erro)</td></tr>
+<tr><td><code>count(x)</code></td><td><code>"banana".count("a")</code></td><td><code>3</code></td></tr>
+<tr><td><code>startswith</code>, <code>endswith</code></td><td><code>"oliveoil".startswith("olive")</code></td><td><code>True</code></td></tr>
+<tr><td><code>isdigit()</code>, <code>isalpha()</code></td><td><code>"12".isdigit()</code></td><td><code>True</code></td></tr>
+<tr><td><code>in</code></td><td><code>"olive" in "oliveoil"</code></td><td><code>True</code> (procura substring)</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="listas" data-nav="7 · Listas e tuplos" data-grp="Coleções" data-track>
+<h2>7 · Listas e tuplos</h2>
+<h3>Listas</h3>
+<div class="tw"><table>
+<thead><tr><th>Operação</th><th>Efeito</th><th>Devolve</th></tr></thead>
+<tbody>
+<tr><td><code>l.append(x)</code></td><td>acrescenta <code>x</code> no fim</td><td><code>None</code></td></tr>
+<tr><td><code>l.extend(l2)</code></td><td>acrescenta todos os elementos de <code>l2</code></td><td><code>None</code></td></tr>
+<tr><td><code>l.insert(i, x)</code></td><td>insere na posição <code>i</code></td><td><code>None</code></td></tr>
+<tr><td><code>l.remove(x)</code></td><td>apaga a 1.ª ocorrência de <code>x</code> (erro se não existir)</td><td><code>None</code></td></tr>
+<tr><td><code>l.pop()</code>, <code>l.pop(i)</code></td><td>tira o último (ou o da posição <code>i</code>)</td><td>o elemento tirado</td></tr>
+<tr><td><code>del l[i]</code></td><td>apaga a posição <code>i</code></td><td>—</td></tr>
+<tr><td><code>l.index(x)</code>, <code>l.count(x)</code></td><td>posição / número de ocorrências</td><td><code>int</code></td></tr>
+<tr><td><code>l.sort()</code>, <code>l.reverse()</code></td><td>ordena / inverte <strong>a própria lista</strong></td><td><code>None</code></td></tr>
+<tr><td><code>sum</code>, <code>min</code>, <code>max</code>, <code>len</code>, <code>sorted</code></td><td>funções sobre a lista</td><td>valor / nova lista</td></tr>
+</tbody></table></div>
+<div class="box bad"><span class="t">Erro clássico</span>
+<p><code>l = l.append(4)</code> deixa <code>l</code> a <code>None</code>, porque <code>append</code> não devolve nada. O mesmo para <code>sort</code>: <code>l = l.sort()</code> perde a lista.</p></div>
+
+<div class="box exa"><span class="t">Pergunta do teste: <code>A = [2, 8, 4, 5, 2]</code>, como obter <code>[4, 5]</code>?</span>
+<p>Resposta: <strong><code>A[2:4]</code></strong> (posições 2 e 3). <code>A[3:5]</code> dá <code>[5, 2]</code>; <code>A[2]+A[3]</code> dá o número <code>9</code>; <code>A[2:3]</code> dá <code>[4]</code>. Cuidado: as respostas erradas descontam 20%.</p></div>
+
+<h3>Tuplos</h3>
+<p>São "listas fixas": <code>t = (4, "corpo")</code>. Acedes por índice (<code>t[1]</code>) mas não podes alterar. Servem para devolver vários valores e como chaves de dicionário. Desempacotar: <code>n, palavra = t</code>. Um tuplo com um só elemento precisa de vírgula: <code>(3,)</code>.</p>
+<p>Conversões: <code>list(t)</code>, <code>tuple(l)</code>, <code>dict(lista_de_pares)</code>, <code>list(d.items())</code>.</p>
+
+<h3>Matrizes (listas de listas)</h3>
+<pre data-lang="py">
+m = [[1, 2, 3], [4, 5, 6]]
+m[1][2]                                 # 6 (linha 1, coluna 2)
+plano = [v for linha in m for v in linha]   # [1, 2, 3, 4, 5, 6]
+</pre>
+<div class="box bad"><span class="t">Armadilha</span>
+<p><code>[[0]*3]*2</code> cria duas referências para a mesma linha: alterar uma altera a outra. Usa <code>[[0]*3 for _ in range(2)]</code>.</p></div>
+</section>
+
+<section id="dict" data-nav="8 · Dicionários e conjuntos" data-grp="Coleções" data-track>
+<h2>8 · Dicionários e conjuntos</h2>
+<h3>Dicionários</h3>
+<p>Associam <strong>chaves</strong> (imutáveis e únicas) a <strong>valores</strong>.</p>
+<pre data-lang="py">
+d = {"a": "alpha", "o": "omega"}
+d["g"] = "gamma"          # acrescenta (ou substitui se já existir)
+d["a"]                    # 'alpha'
+d["b"]                    # KeyError!
+d.get("b", "NA")          # 'NA' — valor por omissão, sem erro
+"a" in d                  # True  (procura nas CHAVES)
+"alpha" in d              # False
+len(d)                    # 3
+del d["o"]                # apaga a chave
+d.pop("g")                # apaga e devolve 'gamma'
+d.keys(), d.values(), d.items()
+for k in d: ...           # percorrer = percorrer as chaves
+for k, v in d.items(): ...
+sorted(d)                 # lista das chaves ordenadas
+</pre>
+<div class="box met"><span class="t">Padrão "contar ocorrências" (o mais útil de todos)</span>
+<pre data-lang="py">
+cont = {}
+for x in dados:
+    cont[x] = cont.get(x, 0) + 1
+</pre>
+<p>Variante para agrupar: <code>grupos.setdefault(chave, []).append(valor)</code>.</p></div>
+
+<h3>Conjuntos (<code>set</code>)</h3>
+<p>Coleção <strong>sem repetidos e sem ordem</strong>. Não tem índices (<code>s[0]</code> dá erro). <code>{}</code> é um dicionário vazio; o conjunto vazio é <code>set()</code>.</p>
+<pre data-lang="py">
+s = {1, 2, 3}
+s.add(4); s.remove(1); s.discard(9)   # discard não dá erro se não existir
+a | b      # união
+a &amp; b      # interseção
+a - b      # diferença
+a ^ b      # diferença simétrica (está num só)
+set([1, 1, 2])    # {1, 2} — forma rápida de tirar repetidos
+</pre>
+</section>
+
+<section id="comp" data-nav="9 · Compreensões" data-grp="Funcional" data-track>
+<h2>9 · Compreensões (list, set, dict)</h2>
+<p>Forma compacta de construir uma coleção a partir de outra. É dos temas que mais sai no teste.</p>
+<div class="box teo"><span class="t">Equivalência a decorar</span>
+<div class="cols">
+<div><pre data-lang="py">
+res = [expr for x in col if cond]
+</pre></div>
+<div><pre data-lang="py">
+res = []
+for x in col:
+    if cond:
+        res.append(expr)
+</pre></div>
+</div>
+<ul>
+<li><code>[...]</code> lista; <code>{...}</code> conjunto; <code>{k: v ...}</code> dicionário; <code>(...)</code> gerador (só dentro de <code>sum</code>, <code>max</code>, etc.).</li>
+<li><strong><code>if</code> no fim filtra</strong>: <code>[x for x in l if x &gt; 0]</code>.</li>
+<li><strong><code>if ... else</code> no início transforma</strong> e tem de ter <code>else</code>: <code>[x if x &gt; 0 else 0 for x in l]</code>.</li>
+<li>Vários <code>for</code> leem-se da esquerda para a direita, como ciclos encaixados (o primeiro é o de fora).</li>
+</ul></div>
+
+<div class="box exa"><span class="t">Pergunta do teste: valor e tipo (ou erro)</span>
+<p>Com <code>lst = [7, 8, 3, 4, 6, 5]</code> e <code>txt = ["philips", "bell", "dog"]</code>:</p>
+<div class="tw"><table>
+<thead><tr><th>Expressão</th><th>Valor</th><th>Tipo/Erro</th></tr></thead>
+<tbody>
+<tr><td><code>[x+2 for x in lst if x&lt;6]</code></td><td><code>[5,6,7]</code></td><td>list</td></tr>
+<tr><td><code>max(len(s) for s in txt)</code></td><td><code>7</code></td><td>int</td></tr>
+<tr><td><code>{s:len(s) for s in txt if s[0]&lt;'d'}</code></td><td><code>{'bell':4}</code></td><td>dict</td></tr>
+<tr><td><code>[x-5 if x&gt;5 for x in lst]</code></td><td>—</td><td><strong>SyntaxError</strong> (falta o <code>else</code>)</td></tr>
+<tr><td><code>[s[0]+str(x) for x in lst[:2] for s in txt[:2]]</code></td><td><code>['p7','b7','p8','b8']</code></td><td>list</td></tr>
+</tbody></table></div>
+<p>Na terceira linha: <code>'p' &lt; 'd'</code> é falso, <code>'b' &lt; 'd'</code> verdadeiro, <code>'d' &lt; 'd'</code> falso. Na última, o <code>for x</code> é o ciclo de fora: para <code>x=7</code> percorre <code>'philips'</code> e <code>'bell'</code>, depois para <code>x=8</code>.</p></div>
+
+<div class="box exa"><span class="t">Pergunta do teste: reescrever com <code>sum</code></span>
+<pre data-lang="py">
+s = 0
+for x in lst:
+    s += x**2
+# é equivalente a
+s = sum(x**2 for x in lst)
+</pre>
+<p>Arrastas as caixas <code>x**2</code>, <code>for</code>, <code>x</code>, <code>in</code>, <code>lst</code>. As caixas <code>s+=x**2</code>, <code>while</code> e <code>if</code> são distratores.</p></div>
+<h3>Mais exemplos dos slides</h3>
+<pre data-lang="py">
+[x*x for x in range(10) if x % 2 == 0]       # [0, 4, 16, 36, 64]
+[i for i in "the rocket" if i in "aeiou"]    # ['e', 'o', 'e']
+{n**2 for n in [10, 10, -10, 0]}             # {0, 100}
+{k: float(v) for k, v in precos.items()}
+{x: x*x for x in range(5)}                   # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+[x*y for x in [20, 40] for y in [2, 4]]      # [40, 80, 80, 160]
+[[0 for _ in range(3)] for _ in range(2)]    # [[0, 0, 0], [0, 0, 0]]
+</pre>
+</section>
+
+<section id="lambda" data-nav="10 · Lambda, map, filter" data-grp="Funcional" data-track>
+<h2>10 · Lambda, map, filter, reduce</h2>
+<p>Uma <strong>lambda</strong> é uma função sem nome, com <strong>uma só expressão</strong> (sem <code>return</code>, sem <code>if</code> em bloco, só a forma <code>a if c else b</code>).</p>
+<pre data-lang="py">
+soma = lambda x, y: x + y          # igual a def soma(x, y): return x + y
+soma(3, 4)                         # 7
+(lambda x, y, z=3: x + y + z)(1, 2)    # 6
+intervalo = lambda a, b: (b, a) if a &gt; b else (a, b)
+</pre>
+<div class="box exa"><span class="t">Pergunta do teste: lambda equivalente</span>
+<pre data-lang="py">
+def pak(a, b):
+    p = a*b
+    return p, a
+# equivalente:
+pak = lambda a,b: (a*b, a)
+</pre>
+<p>Preenches <code>a,b</code> antes dos dois pontos e <code>a*b</code>, <code>a</code> no tuplo. Não há variável <code>p</code>: numa lambda escreve-se diretamente a expressão.</p></div>
+
+<h3>Funções que recebem funções</h3>
+<div class="tw"><table>
+<thead><tr><th>Função</th><th>O que faz</th><th>Exemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>map(f, l)</code></td><td>aplica <code>f</code> a cada elemento</td><td><code>list(map(lambda x: x*10, [1,2,3]))</code></td><td><code>[10, 20, 30]</code></td></tr>
+<tr><td><code>map(f, l1, l2)</code></td><td>em paralelo</td><td><code>list(map(lambda x,y: x+y, [1,2], [10,20]))</code></td><td><code>[11, 22]</code></td></tr>
+<tr><td><code>filter(f, l)</code></td><td>mantém os que dão <code>True</code></td><td><code>list(filter(lambda x: x%2==0, range(7)))</code></td><td><code>[0, 2, 4, 6]</code></td></tr>
+<tr><td><code>functools.reduce(f, l, ini)</code></td><td>acumula</td><td><code>reduce(lambda acc, x: acc+x, [1,2,3], 0)</code></td><td><code>6</code></td></tr>
+<tr><td><code>max/min(l, key=f)</code></td><td>maior/menor segundo <code>f</code></td><td><code>max(["ab","abc","c"], key=len)</code></td><td><code>'abc'</code></td></tr>
+<tr><td><code>all(l)</code>, <code>any(l)</code></td><td>todos / algum verdadeiro</td><td><code>all([True, False])</code></td><td><code>False</code></td></tr>
+</tbody></table></div>
+<div class="box bad"><span class="t">Cuidado</span>
+<p><code>map</code> e <code>filter</code> devolvem um objeto "preguiçoso": <code>print(map(...))</code> mostra <code>&lt;map object at ...&gt;</code>. Converte com <code>list(...)</code> para ver os valores. E só se pode percorrer uma vez.</p></div>
+<p>Tudo isto também se faz com compreensões: <code>[f(x) for x in l]</code> é o <code>map</code>, <code>[x for x in l if c(x)]</code> é o <code>filter</code>.</p>
+</section>
+
+<section id="ordenar" data-nav="11 · Ordenação" data-grp="Algoritmos" data-track>
+<h2>11 · Ordenação</h2>
+<div class="tw"><table>
+<thead><tr><th></th><th><code>sorted(l)</code></th><th><code>l.sort()</code></th></tr></thead>
+<tbody>
+<tr><td>Altera <code>l</code>?</td><td>não</td><td><strong>sim</strong></td></tr>
+<tr><td>Devolve</td><td>nova lista</td><td><code>None</code></td></tr>
+<tr><td>Funciona em</td><td>qualquer coleção (string, tuplo, dicionário...)</td><td>só listas</td></tr>
+</tbody></table></div>
+<p>Ambos aceitam <code>reverse=True</code> e <code>key=função</code>. A <code>key</code> recebe <strong>um elemento</strong> e devolve o valor pelo qual se ordena.</p>
+<pre data-lang="py">
+sorted(["Harry", "Suzy", "Al"])              # ['Al', 'Harry', 'Suzy']
+sorted(words, key=len)                       # pelo comprimento
+sorted(names, key=str.lower)                 # ignorando maiúsculas
+sorted(alunos, key=lambda t: t[2])           # pelo 3.º campo do tuplo
+sorted(l, key=lambda i: i[0] + i[1])         # por uma conta
+sorted(d.items(), key=lambda kv: kv[1], reverse=True)   # dicionário por valor, decrescente
+sorted(l, key=lambda t: (-t[1], t[0]))      # 2 critérios: valor desc., depois nome asc.
+</pre>
+<p>A ordenação é <strong>estável</strong>: elementos com a mesma chave mantêm a ordem original. Sem <code>key</code>, maiúsculas vêm antes de minúsculas: <code>sorted(["Mario", "anabela"])</code> dá <code>['Mario', 'anabela']</code>.</p>
+<div class="box exa"><span class="t">Pergunta do teste</span>
+<p>Para <code>lst = [(4, "corpo"), (7, "alma"), ...]</code> ordenada pelo comprimento da palavra: <strong><code>key=lambda t: len(t[1])</code></strong>. <code>key=len</code> mediria o tuplo (sempre 2); <code>key=lambda t: t[0]</code> ordena pelo número.</p></div>
+<h3>Algoritmos clássicos</h3>
+<pre data-lang="py">
+def selection_sort(l):
+    l = l.copy()
+    for i in range(len(l)):
+        m = i
+        for j in range(i + 1, len(l)):     # procurar o mínimo do resto
+            if l[j] &lt; l[m]:
+                m = j
+        l[i], l[m] = l[m], l[i]            # pô-lo na posição i
+    return l
+
+def insertion_sort(l):
+    l = l.copy()
+    for i in range(1, len(l)):
+        x, j = l[i], i - 1
+        while j &gt;= 0 and l[j] &gt; x:          # empurrar os maiores para a direita
+            l[j + 1] = l[j]
+            j -= 1
+        l[j + 1] = x                       # inserir no sítio certo
+    return l
+</pre>
+</section>
+
+<section id="pesquisa" data-nav="12 · Pesquisa" data-grp="Algoritmos" data-track>
+<h2>12 · Pesquisa</h2>
+<p>Já existem: <code>x in l</code> (<code>True</code>/<code>False</code>) e <code>l.index(x)</code> (posição, erro se não existir).</p>
+<pre data-lang="py">
+def pesquisa_linear(l, x):          # funciona em qualquer lista
+    for i in range(len(l)):
+        if l[i] == x:
+            return i
+    return -1                      # ou None
+
+def pesquisa_binaria(l, x):         # SÓ em listas ORDENADAS
+    lo, hi = 0, len(l) - 1
+    while lo &lt;= hi:
+        mid = (lo + hi) // 2
+        if l[mid] == x:
+            return mid
+        elif l[mid] &lt; x:
+            lo = mid + 1           # está à direita
+        else:
+            hi = mid - 1           # está à esquerda
+    return -1
+</pre>
+<p>A pesquisa binária corta o problema a meio a cada passo: em 1 milhão de elementos precisa de ~20 comparações em vez de 1 milhão.</p>
+<p>Módulo <code>bisect</code> (lista ordenada <code>li = [1, 3, 4, 4, 4, 6, 7]</code>): <code>bisect.bisect_left(li, 4)</code> dá <code>2</code> (primeira posição onde inserir 4); <code>bisect.bisect(li, 4)</code> (= <code>bisect_right</code>) dá <code>5</code> (última). <code>x</code> existe se <code>k &lt; len(li) and li[k] == x</code> com <code>k = bisect_left(li, x)</code>.</p>
+</section>
+
+<section id="ficheiros" data-nav="13 · Ficheiros" data-grp="Algoritmos" data-track>
+<h2>13 · Ficheiros</h2>
+<div class="tw"><table>
+<thead><tr><th>Modo</th><th>Significado</th></tr></thead>
+<tbody>
+<tr><td><code>"r"</code></td><td>ler (por omissão); erro se não existir</td></tr>
+<tr><td><code>"w"</code></td><td>escrever; <strong>apaga</strong> o conteúdo anterior</td></tr>
+<tr><td><code>"a"</code></td><td>acrescentar no fim</td></tr>
+</tbody></table></div>
+<pre data-lang="py">
+with open("dados.txt", "r", encoding="utf-8") as f:   # fecha sozinho no fim do with
+    for line in f:                  # cada linha INCLUI o "\n" no fim
+        words = line.strip().split()
+
+with open("dados.txt") as f:
+    tudo = f.read()                 # uma string com o ficheiro todo
+    # f.readline()  -&gt; uma linha
+    # f.readlines() -&gt; lista de linhas (com "\n")
+
+with open("saida.txt", "w") as f:
+    f.write("linha 1\n")            # write NÃO acrescenta "\n" sozinho
+    print("linha 2", file=f)        # print acrescenta
+</pre>
+<p>Sem <code>with</code>, tens de fazer <code>f.close()</code>. Formato CSV simples: <code>campos = line.strip().split(";")</code>.</p>
+<div class="box exa"><span class="t">Pergunta do teste (25%): ficheiro <code>f1.txt</code> com 5, 10, 15, 20 (um por linha)</span>
+<pre data-lang="py">
+def f1(lst):
+    fin = open('f1.txt')
+    s1 = 0
+    s2 = 0
+    for x in fin:
+        lst.append(int(x))
+        s1 += int(x)
+        s2 += len(x.rstrip())
+    return s1, s2
+
+L = []
+k1, k2 = f1(L)
+print(k1)
+print(k2)
+print(len(L))
+print(sum(L))
+</pre>
+<pre data-lang="txt" class="out">
+50
+7
+4
+50
+</pre>
+<p><code>s1</code> soma os números (5+10+15+20). <code>s2</code> soma o número de caracteres de cada linha sem o <code>\n</code>: 1+2+2+2 = 7. <code>L</code> foi alterada dentro da função (lista mutável), por isso tem os 4 números.</p></div>
+</section>
+
+<section id="teste" data-nav="Teste teórico resolvido" data-grp="Treino">
+<h2>Teste teórico resolvido</h2>
+<p>As 10 perguntas do teste teórico, com as respostas confirmadas a correr o código. Tenta primeiro sem abrir.</p>
+<details><summary>Q1 (10%): caso base do fatorial</summary><div class="in">
+<p>Opções: <code>n &gt;= 0</code>, <code>n &lt;= 1</code>, <code>n == 0</code>, <code>n == 1</code>. Resposta: <strong><code>n == 0</code></strong>, porque o fatorial de zero é 1 e é o caso mais simples.</p></div></details>
+<details><summary>Q2 (10%): <code>A = [2, 8, 4, 5, 2]</code>, obter <code>[4, 5]</code></summary><div class="in">
+<p><strong><code>A[2:4]</code></strong>. As fatias incluem o início e excluem o fim.</p></div></details>
+<details><summary>Q3 (25%): ler <code>f1.txt</code></summary><div class="in">
+<p>Imprime <code>50</code>, <code>7</code>, <code>4</code>, <code>50</code>. A explicação está na <a href="#ficheiros">secção de ficheiros</a>.</p></div></details>
+<details><summary>Q4 (25%): listas <code>lstA</code> e <code>lstB</code></summary><div class="in">
+<pre data-lang="py">
+lstA = [1, 2, 3, 4, 5]
+lstB = [6, 7, 8, 9, 10]
+print(lstA[-2])                 # 4   (penúltimo)
+print(lstA[2] + lstB[1])        # 10  (3 + 7)
+print(len(3*lstA))              # 15  (lista repetida 3 vezes)
+lstC = 2*lstA[1::3] + lstB[:2]  # lstA[1::3] = [2, 5] -&gt; [2,5,2,5] + [6,7]
+for i in lstC:
+    print(i, end=',')
+print()                         # 2,5,2,5,6,7,
+</pre>
+<p>Respostas: <code>4</code>, <code>10</code>, <code>15</code>, <code>2,5,2,5,6,7,</code> (repara na vírgula final, que vem do <code>end=','</code>).</p></div></details>
+<details><summary>Q5 (30%): dicionário de preços</summary><div class="in">
+<pre data-lang="py">
+price = {"olive": 2.15, "pineapple": 0.85, "pear": 1.49, "orange": 1.25}
+print(len(price))                          # 4
+item = "pear"
+p = str(price[item]) + "EUR" if item in price else "NA"
+print(item + ":" + p)                      # pear:1.49EUR
+price["oliveoil"] = 3.59
+item = "olive"; p = ""
+for f in sorted(price.keys()):             # olive, oliveoil, orange, pear, pineapple
+    if item in f:                          # "olive" é substring de f?
+        p += "&lt;{}:{}EUR&gt;".format(f, price[f])
+print(p)                                   # &lt;olive:2.15EUR&gt;&lt;oliveoil:3.59EUR&gt;
+item = "oil"
+p = price.get(item, "NA")
+print("{}:{}".format(item, p))             # oil:NA
+</pre>
+<p>Ponto chave: <code>in</code> entre strings procura <strong>substring</strong>, por isso <code>"olive" in "oliveoil"</code> é verdadeiro. E <code>"oil" in price</code> procura uma <strong>chave</strong> exatamente igual, que não existe.</p></div></details>
+<details><summary>Q6 (20%): tabela valor/tipo</summary><div class="in">
+<p>Resolvida na <a href="#comp">secção de compreensões</a>: <code>[5,6,7]</code> list; <code>7</code> int; <code>{'bell':4}</code> dict; SyntaxError; <code>['p7','b7','p8','b8']</code> list.</p></div></details>
+<details><summary>Q7 (20%): reescrever com <code>sum</code></summary><div class="in">
+<p><code>s = sum(x**2 for x in lst)</code>.</p></div></details>
+<details><summary>Q8 (20%): lambda equivalente a <code>pak</code></summary><div class="in">
+<p><code>pak = lambda a,b: (a*b, a)</code>.</p></div></details>
+<details><summary>Q9 (10%): <code>key=</code> para ordenar pelo comprimento da palavra</summary><div class="in">
+<p><code>key=lambda t: len(t[1])</code>.</p></div></details>
+<details><summary>Q10 (30%): <code>toStr(num)</code> recursiva</summary><div class="in">
+<pre data-lang="py">
+def toStr(num):
+    assert num &gt;= 0
+    digits = "0123456789"
+    if num &lt; 10:                                # caso base: 1 dígito
+        return digits[num]
+    return toStr(num // 10) + digits[num % 10]  # resto do número + último dígito
+</pre>
+<p>Caixas: <code>0</code>, <code>10</code>, <code>num</code>, <code>num//10</code>, <code>num%10</code>. Teste: <code>toStr(2976)</code> = <code>toStr(297) + "6"</code> = ... = <code>"2976"</code>. Passa os 5 asserts.</p></div></details>
+</section>
+
+<section id="pratica" data-nav="Exercícios práticos resolvidos" data-grp="Treino">
+<h2>Exercícios práticos resolvidos</h2>
+<p>Os 7 exercícios da folha de preparação, com soluções curtas e testadas. A do exercício 1 é mais simples e mais correta do que a resolução que circula: usa o mínimo das divisões inteiras.</p>
+<details><summary>1 · Dicionários: quantos bolos o Peter consegue fazer</summary><div class="in">
+<pre data-lang="py">
+def cakes(recipe, available):
+    # para cada ingrediente: quantas vezes cabe a quantidade da receita no que há
+    # ingrediente em falta conta como 0, por isso usamos get(..., 0)
+    return min(available.get(ing, 0) // qt for ing, qt in recipe.items())
+
+print(cakes({"flour": 500, "sugar": 200, "eggs": 1},
+            {"flour": 1200, "sugar": 1200, "eggs": 5, "milk": 200}))   # 2
+print(cakes({"apples": 3, "flour": 300, "sugar": 150, "milk": 100, "oil": 100},
+            {"sugar": 500, "flour": 2000, "milk": 2000}))              # 0
+</pre></div></details>
+<details><summary>2 · Conjuntos: elementos que aparecem exatamente uma vez</summary><div class="in">
+<pre data-lang="py">
+def elementos_unicos(listas):
+    cont = {}
+    for l in listas:
+        for x in l:
+            cont[x] = cont.get(x, 0) + 1
+    return {x for x, n in cont.items() if n == 1}
+
+print(elementos_unicos([[1, 2, 3], [3, 4, 5], [5, 6, 7]]))   # {1, 2, 4, 6, 7}
+</pre></div></details>
+<details><summary>3 · Lambda: ordenar (nome, idade) pela idade</summary><div class="in">
+<pre data-lang="py">
+sorted([("João", 25), ("Ana", 20), ("Miguel", 30)], key=lambda p: p[1])
+# [('Ana', 20), ('João', 25), ('Miguel', 30)]
+</pre></div></details>
+<details><summary>4 · Lambda: inverter e pôr em maiúsculas as strings de tamanho ímpar</summary><div class="in">
+<pre data-lang="py">
+list(map(lambda s: s[::-1].upper() if len(s) % 2 else s,
+         ["Python", "is", "fun", "cool", "awesome"]))
+# ['Python', 'is', 'NUF', 'cool', 'EMOSEWA']
+</pre></div></details>
+<details><summary>5 · Recursividade: soma de 1 até n</summary><div class="in">
+<pre data-lang="py">
+def soma_recursiva(n):
+    if n &lt;= 0:
+        return 0
+    return n + soma_recursiva(n - 1)    # soma_recursiva(5) = 15
+</pre></div></details>
+<details><summary>6 · Recursividade: contar dígitos</summary><div class="in">
+<pre data-lang="py">
+def contar_digitos_recursivo(n):
+    n = abs(n)
+    if n &lt; 10:
+        return 1
+    return 1 + contar_digitos_recursivo(n // 10)   # 12345 -&gt; 5, -54321 -&gt; 5
+</pre></div></details>
+<details><summary>7 · Recursividade: permutações sem repetidos</summary><div class="in">
+<pre data-lang="py">
+def permutacoes_recursivas(s):
+    if len(s) &lt;= 1:
+        return {s}
+    res = set()                                  # set elimina repetidos ("aab")
+    for i, letra in enumerate(s):
+        resto = s[:i] + s[i+1:]                  # a string sem a letra i
+        for p in permutacoes_recursivas(resto):
+            res.add(letra + p)
+    return res
+
+print(sorted(permutacoes_recursivas("aab")))   # ['aab', 'aba', 'baa']
+</pre></div></details>
+</section>
+
+<section id="erros" data-nav="Erros clássicos" data-grp="Treino">
+<h2>Erros clássicos</h2>
+<div class="tw"><table>
+<thead><tr><th>Erro</th><th>Quando acontece</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td><code>SyntaxError</code></td><td>código mal escrito (falta <code>:</code>, <code>if</code> sem <code>else</code> em expressão, parênteses)</td><td><code>[x for x in l if x&gt;5 else 0]</code></td></tr>
+<tr><td><code>IndentationError</code></td><td>indentação errada</td><td>corpo do <code>if</code> não indentado</td></tr>
+<tr><td><code>NameError</code></td><td>variável não definida</td><td>usar <code>soma</code> antes de <code>soma = 0</code></td></tr>
+<tr><td><code>TypeError</code></td><td>operação com o tipo errado</td><td><code>"3" + 4</code>, <code>s[0] = "x"</code> numa string, <code>len(5)</code></td></tr>
+<tr><td><code>ValueError</code></td><td>tipo certo, valor inválido</td><td><code>int("abc")</code>, <code>l.remove(99)</code></td></tr>
+<tr><td><code>IndexError</code></td><td>índice fora da sequência</td><td><code>[1, 2][5]</code></td></tr>
+<tr><td><code>KeyError</code></td><td>chave inexistente num dicionário</td><td><code>d["x"]</code></td></tr>
+<tr><td><code>ZeroDivisionError</code></td><td>divisão por zero</td><td>média com 0 valores lidos</td></tr>
+<tr><td><code>AttributeError</code></td><td>método que não existe para o tipo</td><td><code>(1, 2).append(3)</code>, <code>None.sort()</code></td></tr>
+<tr><td><code>RecursionError</code></td><td>recursão sem caso base alcançável</td><td><code>fact(-1)</code> com caso base <code>n == 0</code></td></tr>
+</tbody></table></div>
+<div class="cols">
+<div><h4>Armadilhas de leitura de código</h4>
+<ul>
+<li><code>input()</code> devolve sempre uma string.</li>
+<li>Fatias excluem o fim: <code>l[2:4]</code> tem 2 elementos.</li>
+<li><code>append</code>, <code>sort</code>, <code>reverse</code> devolvem <code>None</code>.</li>
+<li><code>/</code> dá float, mesmo em <code>4/2</code> (dá <code>2.0</code>).</li>
+<li><code>print(a, b)</code> põe espaço entre eles; <code>end=","</code> muda o fim.</li>
+</ul></div>
+<div><h4>Armadilhas com coleções</h4>
+<ul>
+<li><code>x in dict</code> procura chaves, não valores.</li>
+<li><code>{}</code> é dicionário vazio, não conjunto.</li>
+<li><code>l2 = l</code> não copia a lista.</li>
+<li>Uma função pode alterar uma lista recebida.</li>
+<li><code>map</code>/<code>filter</code> precisam de <code>list()</code> para mostrar valores.</li>
+</ul></div>
+</div>
+</section>
+
+<section id="checklist" data-nav="Lista de verificação final" data-grp="Treino">
+<h2>Lista de verificação final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="c1"> Prever o resultado de <code>//</code>, <code>%</code>, <code>/</code>, <code>**</code> e conversões</label></li>
+<li><label><input type="checkbox" data-k="c2"> Escrever if/elif/else e a expressão condicional numa linha</label></li>
+<li><label><input type="checkbox" data-k="c3"> Explicar porque uma função altera (ou não) uma lista recebida</label></li>
+<li><label><input type="checkbox" data-k="c4"> Escrever ciclos de leitura com máximo, soma e média sem dividir por zero</label></li>
+<li><label><input type="checkbox" data-k="c5"> Escrever funções recursivas e identificar o caso base</label></li>
+<li><label><input type="checkbox" data-k="c6"> Calcular qualquer fatia <code>l[a:b:c]</code> de cabeça</label></li>
+<li><label><input type="checkbox" data-k="c7"> Usar métodos de listas, strings, dicionários e conjuntos sem consultar</label></li>
+<li><label><input type="checkbox" data-k="c8"> Contar ocorrências com <code>d.get(x, 0) + 1</code></label></li>
+<li><label><input type="checkbox" data-k="c9"> Dar valor e tipo (ou erro) de compreensões com <code>if</code> e com vários <code>for</code></label></li>
+<li><label><input type="checkbox" data-k="c10"> Converter funções simples em lambdas e usar <code>map</code>/<code>filter</code></label></li>
+<li><label><input type="checkbox" data-k="c11"> Ordenar com <code>key=lambda</code> por um campo, por comprimento e por dois critérios</label></li>
+<li><label><input type="checkbox" data-k="c12"> Implementar pesquisa linear e binária</label></li>
+<li><label><input type="checkbox" data-k="c13"> Ler um ficheiro linha a linha com <code>strip</code> e <code>split</code>, e escrever com <code>\n</code></label></li>
+<li><label><input type="checkbox" data-k="c14"> Fazer o teste teórico e os 7 exercícios práticos sem ver as soluções</label></li>
+</ul>
+</section>

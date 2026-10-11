@@ -1,0 +1,728 @@
+<hero>
+<h1>SO: processos, threads, sincronização e memória</h1>
+<p>Resumo das aulas (introdução, estruturas do SO, processos e threads), um resumo do resto do programa que sai sempre no exame (sincronização, escalonamento, FAT32, memória virtual) e os exames de 2022/23 a 2024/25 resolvidos, mais o teste prático de 2024/25. Os programas com <code>fork</code> e threads e os escalonamentos foram corridos e simulados para confirmar as respostas.</p>
+</hero>
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<div class="box exa"><span class="t">O exame teórico tem sempre as mesmas 5 perguntas</span>
+<div class="tw"><table>
+<thead><tr><th>Grupo</th><th>Tema</th><th>O que pedem</th></tr></thead>
+<tbody>
+<tr><td>I</td><td><code>fork</code> + <code>execlp</code> (época normal) ou <code>pthread</code> (recurso)</td><td>Nº de processos/threads, árvore com PIDs, que processo executa cada linha, duas saídas possíveis</td></tr>
+<tr><td>II</td><td>Semáforos</td><td>Leitores-escritores ou barreira: onde bloqueiam, adiamento indefinido, corrigir com turnstile, semáforos vs variáveis de condição</td></tr>
+<tr><td>III</td><td>FAT32</td><td>Seguir cadeias de clusters; posição (cluster, offset) de um byte</td></tr>
+<tr><td>IV</td><td>Escalonamento</td><td>Diagrama temporal (SJF com/sem preempção, RR) e tempo médio de espera</td></tr>
+<tr><td>V</td><td>Memória virtual paginada</td><td>Conteúdo da memória física a partir das tabelas de páginas; TLB; proteção; objetivos da memória virtual</td></tr>
+</tbody></table></div>
+</div>
+<div class="box bad"><span class="t">Justifica tudo</span>O enunciado diz sempre "Respostas não justificadas não serão consideradas". Escreve a árvore, as contas e a cadeia de clusters, não só o resultado.</div>
+<div class="box def"><span class="t">Material deste guia</span>Os slides recebidos cobrem as aulas 1 a 4 (introdução, estruturas, processos, threads). A secção "Resto do programa" resume o que os exames cobram a seguir, com o nível de detalhe que as perguntas pedem.</div>
+</section>
+
+<section id="intro-so" data-nav="1 · O que é um SO" data-grp="Aulas" data-track>
+<h2>1 · O que é um sistema operativo</h2>
+<p>Um SO é o programa que faz de intermediário entre o utilizador e o hardware. Tem dois papéis:</p>
+<div class="cols">
+<div><h4>Gestor de recursos</h4><p>Reparte CPU, memória, ficheiros e dispositivos de E/S entre programas e utilizadores, de forma eficiente e justa.</p></div>
+<div><h4>Programa de controlo</h4><p>Controla a execução dos programas para evitar erros e uso indevido do computador.</p></div>
+</div>
+<p>O <strong>kernel</strong> é a parte que está sempre a correr. O resto são programas de sistema (vêm com o SO) e aplicações.</p>
+
+<h3>Interrupções</h3>
+<ul>
+<li>Os controladores de dispositivos avisam o CPU que terminaram uma operação através de uma <strong>interrupção</strong> (hardware).</li>
+<li>O CPU guarda o estado, consulta o <strong>vetor de interrupções</strong> para saber qual a rotina de serviço (ISR), executa-a e retoma.</li>
+<li>Uma <strong>trap</strong> (ou exceção) é uma interrupção gerada por software: erro (divisão por zero, acesso inválido) ou pedido de serviço ao SO (system call).</li>
+<li>O SO é <strong>orientado a interrupções</strong> (interrupt driven).</li>
+</ul>
+
+<h3>Armazenamento e E/S</h3>
+<ul>
+<li>Hierarquia: registos → cache → memória principal (volátil) → SSD → disco → ótico/fita. Mais acima: mais rápido, mais caro, menor.</li>
+<li><strong>Caching:</strong> copiar dados para um armazenamento mais rápido enquanto são usados.</li>
+<li><strong>DMA:</strong> o controlador transfere blocos inteiros diretamente para a memória e só gera uma interrupção por bloco (não uma por byte).</li>
+</ul>
+
+<h3>Multiprogramação e multitarefa</h3>
+<ul>
+<li><strong>Multiprogramação:</strong> vários jobs em memória; quando um espera por E/S, o CPU passa para outro. Objetivo: CPU sempre ocupado.</li>
+<li><strong>Multitarefa (time sharing):</strong> o CPU troca tão depressa entre processos que cada utilizador interage com o seu programa como se estivesse sozinho (tempo de resposta &lt; 1 s).</li>
+<li><strong>Multiprocessador (SMP):</strong> vários CPUs partilham memória; mais throughput, economia, fiabilidade. Multicore: vários núcleos no mesmo chip.</li>
+</ul>
+
+<h3>Modo dual</h3>
+<div class="box teo"><span class="t">Modo utilizador vs modo kernel</span>Um <strong>bit de modo</strong> no hardware indica se o CPU está em modo utilizador (1) ou kernel (0). As <strong>instruções privilegiadas</strong> (E/S, gestão de interrupções, timer, tabelas de páginas) só correm em modo kernel. Uma system call faz uma trap que muda para modo kernel; o retorno volta a modo utilizador. O <strong>timer</strong> gera interrupções periódicas para o SO recuperar o controlo (evita que um processo fique com o CPU para sempre).</div>
+</section>
+
+<section id="estr" data-nav="2 · Estruturas e system calls" data-grp="Aulas" data-track>
+<h2>2 · Serviços, system calls e estruturas do SO</h2>
+<h3>Serviços</h3>
+<div class="cols">
+<div><h4>Para o utilizador</h4><ul><li>Interface (CLI, GUI, toque, batch)</li><li>Execução de programas</li><li>Operações de E/S</li><li>Sistema de ficheiros</li><li>Comunicação (memória partilhada ou mensagens)</li><li>Deteção de erros</li></ul></div>
+<div><h4>Para o próprio sistema</h4><ul><li>Alocação de recursos</li><li>Contabilização (logging)</li><li>Proteção e segurança</li></ul></div>
+</div>
+
+<h3>System calls</h3>
+<ul>
+<li>Interface de programação para os serviços do SO. Normalmente usadas através de uma <strong>API</strong> (POSIX, Win32, Java API) e não diretamente; a API é portável e esconde os detalhes.</li>
+<li>A <strong>system-call interface</strong> mantém uma tabela indexada pelo número de cada chamada.</li>
+<li>Passagem de parâmetros: em <strong>registos</strong>; num <strong>bloco/tabela em memória</strong> com o endereço num registo (Linux); ou na <strong>pilha</strong>.</li>
+<li>Tipos: controlo de processos, gestão de ficheiros, gestão de dispositivos, informação, comunicação, proteção.</li>
+</ul>
+<div class="tw"><table><thead><tr><th>Tipo</th><th>UNIX</th><th>Windows</th></tr></thead><tbody>
+<tr><td>Processos</td><td><code>fork()</code>, <code>exit()</code>, <code>wait()</code></td><td><code>CreateProcess()</code>, <code>ExitProcess()</code>, <code>WaitForSingleObject()</code></td></tr>
+<tr><td>Ficheiros</td><td><code>open()</code>, <code>read()</code>, <code>write()</code>, <code>close()</code></td><td><code>CreateFile()</code>, <code>ReadFile()</code>, <code>WriteFile()</code>, <code>CloseHandle()</code></td></tr>
+<tr><td>Comunicação</td><td><code>pipe()</code>, <code>shm_open()</code>, <code>mmap()</code></td><td><code>CreatePipe()</code>, <code>CreateFileMapping()</code></td></tr>
+<tr><td>Proteção</td><td><code>chmod()</code>, <code>umask()</code>, <code>chown()</code></td><td><code>SetFileSecurity()</code></td></tr>
+</tbody></table></div>
+
+<h3>Linkers e loaders</h3>
+<p>Código-fonte → compilador → ficheiro objeto relocável → <strong>linker</strong> (junta objetos e bibliotecas) → executável → <strong>loader</strong> (coloca-o em memória). Bibliotecas dinâmicas (DLL, .so) só são ligadas quando o programa é carregado ou executado. Formatos: ELF (Linux), PE (Windows), Mach-O (macOS). As aplicações são específicas do SO porque cada um tem system calls, formatos e ABI diferentes.</p>
+
+<h3>Estruturas</h3>
+<div class="tw"><table><thead><tr><th>Estrutura</th><th>Ideia</th><th>+</th><th>−</th></tr></thead><tbody>
+<tr><td>Monolítica (UNIX original, Linux)</td><td>Todo o kernel num só espaço de endereços</td><td>Rápida (pouco overhead)</td><td>Difícil de implementar e de estender</td></tr>
+<tr><td>Em camadas</td><td>Camada 0 = hardware, N = interface; cada camada usa só as de baixo</td><td>Fácil de construir e depurar</td><td>Difícil definir camadas; lenta</td></tr>
+<tr><td>Microkernel (Mach)</td><td>Kernel mínimo; serviços em modo utilizador, comunicam por mensagens</td><td>Extensível, portável, fiável e seguro</td><td>Overhead da comunicação utilizador–kernel</td></tr>
+<tr><td>Módulos (LKM do Linux)</td><td>Núcleo + módulos carregados quando precisos</td><td>Flexível sem perder desempenho</td><td>—</td></tr>
+<tr><td>Híbrida (Linux, Windows, macOS)</td><td>Mistura das anteriores</td><td>Desempenho, segurança, usabilidade</td><td>—</td></tr>
+</tbody></table></div>
+<p>Arranque: o <strong>bootstrap loader</strong> (BIOS/UEFI, GRUB) carrega o kernel e inicia-o.</p>
+</section>
+
+<section id="proc" data-nav="3 · Processos" data-grp="Aulas" data-track>
+<h2>3 · Processos</h2>
+<div class="box def"><span class="t">Processo</span>Um <strong>programa em execução</strong>. O programa é passivo (ficheiro executável); o processo é ativo. Em memória tem: <strong>text</strong> (código), <strong>data</strong> (variáveis globais), <strong>heap</strong> (memória dinâmica, cresce para cima) e <strong>stack</strong> (variáveis locais, parâmetros, endereços de retorno; cresce para baixo). Tem ainda o program counter e os registos.</div>
+
+<h3>Estados</h3>
+<div class="tw"><table><thead><tr><th>Estado</th><th>Significado</th></tr></thead><tbody>
+<tr><td>new</td><td>a ser criado</td></tr>
+<tr><td>ready</td><td>à espera de ser atribuído a um CPU</td></tr>
+<tr><td>running</td><td>as instruções estão a ser executadas</td></tr>
+<tr><td>waiting</td><td>à espera de um evento (E/S, sinal)</td></tr>
+<tr><td>terminated</td><td>terminou a execução</td></tr>
+</tbody></table></div>
+<pre data-lang="txt">new --admitted--&gt; ready --scheduler dispatch--&gt; running --exit--&gt; terminated
+                    ^  &lt;------- interrupt --------    |
+                    |                                  | I/O ou espera de evento
+                    +---- I/O ou evento concluído ---- waiting</pre>
+<div class="box exa"><span class="t">Saiu em 2022/23 (I d)</span>"Desenhe o diagrama de estados de um processo e descreva sucintamente cada estado": o diagrama acima com as 5 caixas e as 6 transições etiquetadas.</div>
+
+<h3>PCB (Process Control Block)</h3>
+<p>Estrutura do kernel com tudo sobre o processo: estado, <strong>PID</strong>, program counter, registos, informação de escalonamento (prioridade, filas), de memória (tabela de páginas, limites), de contabilização (tempo de CPU) e de E/S (ficheiros abertos). No Linux é a <code>task_struct</code>.</p>
+
+<h3>Escalonamento de processos</h3>
+<ul>
+<li>Filas: <strong>ready queue</strong> e <strong>wait queues</strong> (uma por evento/dispositivo).</li>
+<li><strong>Troca de contexto:</strong> guardar o estado do processo atual no seu PCB e carregar o do próximo. É <strong>overhead puro</strong> (nada de útil é feito) e depende do hardware.</li>
+<li>Processos <strong>I/O-bound</strong> (muitos bursts curtos de CPU) vs <strong>CPU-bound</strong> (poucos bursts longos).</li>
+</ul>
+
+<h3>Criação e terminação</h3>
+<div class="tw"><table><thead><tr><th>Chamada</th><th>O que faz</th></tr></thead><tbody>
+<tr><td><code>fork()</code></td><td>Cria um filho que é uma <strong>cópia</strong> do pai (mesmo código, cópia dos dados). Devolve <strong>0 no filho</strong> e o <strong>PID do filho no pai</strong> (−1 em erro). Os dois continuam na instrução seguinte.</td></tr>
+<tr><td><code>exec*()</code></td><td><strong>Substitui</strong> a imagem do processo por outro programa. Mantém o PID. Se tiver sucesso, <strong>nunca retorna</strong>: o código a seguir não é executado.</td></tr>
+<tr><td><code>wait()</code></td><td>O pai espera que um filho termine e recolhe o estado de saída.</td></tr>
+<tr><td><code>exit()</code></td><td>Termina o processo e liberta os recursos.</td></tr>
+</tbody></table></div>
+<div class="cols">
+<div><div class="box bad"><span class="t">Zombie</span>Filho que terminou mas o pai ainda não fez <code>wait()</code>; a sua entrada na tabela de processos fica ocupada.</div></div>
+<div><div class="box bad"><span class="t">Órfão</span>Filho cujo pai terminou sem fazer <code>wait()</code>; é adotado pelo <code>init</code>/<code>systemd</code>, que faz o <code>wait()</code>.</div></div>
+</div>
+<p>Terminação em cascata: alguns sistemas não deixam um filho existir se o pai terminar.</p>
+
+<h3>Comunicação entre processos (IPC)</h3>
+<ul>
+<li>Processos <strong>independentes</strong> ou <strong>cooperantes</strong> (partilha de informação, velocidade, modularidade).</li>
+<li><strong>Memória partilhada:</strong> rápida, mas os processos têm de se sincronizar (produtor-consumidor com buffer limitado).</li>
+<li><strong>Troca de mensagens:</strong> <code>send</code>/<code>receive</code>; direta ou por mailboxes; bloqueante (síncrona) ou não bloqueante.</li>
+<li><strong>Pipes</strong> (ordinários: pai-filho, unidirecionais; com nome/FIFO: entre processos quaisquer), <strong>sockets</strong>, <strong>RPC</strong>.</li>
+</ul>
+</section>
+
+<section id="fork" data-nav="4 · Como resolver um fork" data-grp="Aulas" data-track>
+<h2>4 · Método para as perguntas de <code>fork</code></h2>
+<div class="box met"><span class="t">Passos</span>
+<ol>
+<li>Dá ao processo inicial o PID 111. Percorre o código linha a linha.</li>
+<li>Em cada <code>fork()</code>, o processo divide-se num ramo <strong>pai</strong> (valor de retorno = PID do filho, diferente de 0) e num ramo <strong>filho</strong> (valor 0) com um PID novo (222, 333...).</li>
+<li>Num <code>if (fork() == 0)</code> o filho entra no <code>if</code>; o pai vai para o <code>else</code>. Com <code>!= 0</code> é ao contrário.</li>
+<li>Depois de um <code>execlp</code> bem sucedido, <strong>esse processo não executa mais nenhuma linha do programa</strong>: só imprime o que o novo programa (ex.: <code>echo</code>) imprimir.</li>
+<li>Conta os processos (nós da árvore) e as impressões de cada um. A ordem entre processos diferentes não está definida; dentro de um processo, a ordem é a do código, e um filho só imprime depois do <code>fork</code> que o criou.</li>
+</ol></div>
+<div class="box teo"><span class="t">Regras da ordem das saídas</span>Tudo o que um processo imprime antes de um <code>fork</code> aparece uma vez só (com <code>\n</code> e saída para terminal). O que vem depois de <code>k</code> forks não condicionados aparece 2<sup>k</sup> vezes. Para dar "duas saídas possíveis", troca a ordem entre o pai e o filho num ponto onde correm em paralelo.</div>
+<p>Exemplos completos nos exames resolvidos (secções 9, 10, 11).</p>
+</section>
+
+<section id="thr" data-nav="5 · Threads" data-grp="Aulas" data-track>
+<h2>5 · Threads</h2>
+<div class="box def"><span class="t">Thread</span>Unidade básica de utilização do CPU: tem o seu <strong>ID</strong>, <strong>program counter</strong>, <strong>registos</strong> e <strong>stack</strong>. Partilha com as outras threads do mesmo processo o <strong>código, os dados (globais), o heap e os ficheiros abertos</strong>.</div>
+<div class="box exa"><span class="t">Processo vs thread (saiu em 2023/24, I d)</span>Um processo é um programa em execução com o seu próprio espaço de endereços e recursos; os processos estão isolados entre si. Uma thread é um fluxo de execução dentro de um processo; as threads do mesmo processo partilham memória e recursos, por isso criar uma thread e trocar entre threads é muito mais barato, mas o acesso a dados partilhados tem de ser sincronizado.</div>
+
+<h3>Benefícios</h3>
+<ul><li><strong>Responsividade:</strong> a aplicação continua a responder enquanto uma thread bloqueia.</li><li><strong>Partilha de recursos:</strong> mais fácil do que memória partilhada ou mensagens.</li><li><strong>Economia:</strong> criar uma thread é mais barato do que criar um processo.</li><li><strong>Escalabilidade:</strong> aproveita arquiteturas multicore.</li></ul>
+
+<h3>Concorrência vs paralelismo</h3>
+<p><strong>Concorrência:</strong> várias tarefas fazem progresso (mesmo num só núcleo, intercaladas). <strong>Paralelismo:</strong> várias tarefas executam ao mesmo tempo (precisa de vários núcleos). Paralelismo de <strong>dados</strong> (o mesmo cálculo sobre partes dos dados) vs de <strong>tarefas</strong> (operações diferentes em threads diferentes).</p>
+<div class="box teo"><span class="t">Lei de Amdahl</span>Com uma fração série S e N núcleos: speedup ≤ 1 / (S + (1 − S)/N). Quando N → ∞, o limite é 1/S. Ex.: 75 % paralelo (S = 0,25), 2 núcleos → 1/(0,25 + 0,375) = 1,6; 4 núcleos → 1/(0,25 + 0,1875) ≈ 2,29; máximo 4.</div>
+
+<h3>Modelos de multithreading</h3>
+<div class="tw"><table><thead><tr><th>Modelo</th><th>Mapeamento</th><th>Nota</th></tr></thead><tbody>
+<tr><td>Many-to-one</td><td>várias threads de utilizador → 1 thread de kernel</td><td>Uma chamada bloqueante bloqueia todas; sem paralelismo (Solaris green threads)</td></tr>
+<tr><td>One-to-one</td><td>cada thread de utilizador → 1 thread de kernel</td><td>Mais concorrência; o número de threads pode ser limitado (Linux, Windows)</td></tr>
+<tr><td>Many-to-many</td><td>M threads de utilizador → N ≤ M de kernel</td><td>Flexível mas difícil de implementar</td></tr>
+<tr><td>Two-level</td><td>many-to-many que também permite ligar uma thread a uma de kernel</td><td>—</td></tr>
+</tbody></table></div>
+<p>Threads de <strong>utilizador</strong> são geridas por uma biblioteca (POSIX Pthreads, Windows, Java); threads de <strong>kernel</strong> são geridas pelo SO.</p>
+
+<h3>Pthreads</h3>
+<pre data-lang="c">#include &lt;pthread.h&gt;
+void *runner(void *param);              /* função da thread */
+
+pthread_t tid;                          /* identificador */
+pthread_attr_t attr;
+pthread_attr_init(&amp;attr);               /* atributos por omissão */
+pthread_create(&amp;tid, &amp;attr, runner, argumento);
+pthread_join(tid, NULL);                /* espera que a thread termine */
+pthread_exit(NULL);                     /* termina só a thread que a chama */</pre>
+<div class="box bad"><span class="t"><code>exit()</code> vs <code>pthread_exit()</code></span><code>exit()</code> (ou <code>return</code> do <code>main</code>) termina o <strong>processo inteiro</strong>, e com ele todas as threads. <code>pthread_exit()</code> no <code>main</code> termina só a thread principal; o processo continua até a última thread acabar. Esta diferença saiu no recurso de 2022/23.</div>
+
+<h3>Threading implícito</h3>
+<p>A criação e gestão das threads passa para compiladores e bibliotecas: <strong>thread pools</strong> (threads criadas de antemão à espera de trabalho: mais rápido e limita o número de threads), <strong>fork-join</strong>, <strong>OpenMP</strong> (<code>#pragma omp parallel</code>), Grand Central Dispatch, Intel TBB.</p>
+
+<h3>Questões</h3>
+<ul>
+<li><strong><code>fork()</code> numa thread:</strong> duplica todas as threads ou só a que chamou? (UNIX tem as duas versões.) Se a seguir vem <code>exec()</code>, basta duplicar a que chamou, porque o <code>exec</code> substitui o processo todo.</li>
+<li><strong>Sinais:</strong> entregues à thread a que se aplicam, a todas, a algumas, ou a uma thread designada.</li>
+<li><strong>Cancelamento:</strong> <em>assíncrono</em> (termina já) ou <em>diferido</em> (a thread verifica periodicamente se deve terminar, em pontos de cancelamento). O diferido é o habitual.</li>
+<li><strong>Thread-local storage (TLS):</strong> dados próprios de cada thread que persistem entre chamadas de funções (como <code>static</code>, mas por thread).</li>
+<li><strong>Ativações de escalonador:</strong> LWP (lightweight process) entre threads de utilizador e de kernel; <em>upcalls</em> do kernel para a biblioteca.</li>
+</ul>
+</section>
+
+<section id="sync" data-nav="6 · Sincronização e semáforos" data-grp="Resto do programa" data-track>
+<h2>6 · Sincronização e semáforos</h2>
+<div class="box def"><span class="t">Condição de corrida e secção crítica</span>Há uma <strong>condição de corrida</strong> quando o resultado depende da ordem em que threads acedem a dados partilhados. A <strong>secção crítica</strong> é o troço de código que acede a esses dados. Uma solução tem de garantir: <strong>exclusão mútua</strong>, <strong>progresso</strong> e <strong>espera limitada</strong> (sem adiamento indefinido).</div>
+<h3>Semáforo</h3>
+<p>Inteiro com duas operações atómicas:</p>
+<ul>
+<li><code>down()</code> (wait, P): decrementa; se ficar negativo (ou se já era 0), a thread <strong>bloqueia</strong>.</li>
+<li><code>up()</code> (signal, V): incrementa; se há threads bloqueadas, <strong>acorda uma</strong>.</li>
+</ul>
+<p>Um semáforo iniciado a 1 é um <strong>mutex</strong>; iniciado a 0 serve para <strong>sinalizar</strong> ("espera até alguém fazer up").</p>
+
+<h3>Padrões que saem</h3>
+<div class="tw"><table><thead><tr><th>Padrão</th><th>Ideia</th></tr></thead><tbody>
+<tr><td>Mutex</td><td><code>mutex.down(); secção crítica; mutex.up();</code></td></tr>
+<tr><td>Turnstile (torniquete)</td><td><code>t.down(); t.up();</code> Deixa passar uma thread de cada vez; fechado por alguém que faça <code>t.down()</code> e não devolva.</td></tr>
+<tr><td>Barreira</td><td>Ninguém passa do ponto X até as N threads lá chegarem (contador protegido por mutex + semáforo a 0).</td></tr>
+<tr><td>Barreira reutilizável</td><td>Duas fases: <code>count++</code> abre a 1.ª porta quando chega a N; <code>count--</code> abre a 2.ª quando chega a 0.</td></tr>
+<tr><td>Leitores-escritores</td><td>Vários leitores ao mesmo tempo, escritores sozinhos. O primeiro leitor fecha <code>nobody</code>, o último abre.</td></tr>
+</tbody></table></div>
+
+<h3>Variáveis de condição</h3>
+<div class="box teo"><span class="t">Semáforos vs variáveis de condição (sai quase todos os anos)</span>
+<ul>
+<li>O semáforo tem <strong>memória</strong> (contador): um <code>up()</code> sem ninguém à espera não se perde, fica guardado para o próximo <code>down()</code>.</li>
+<li>Num semáforo, <code>down()</code> só bloqueia se o valor for 0.</li>
+<li>A variável de condição <strong>não tem estado</strong>: <code>signal()</code> sem threads à espera <strong>perde-se</strong>.</li>
+<li><code>wait()</code> <strong>bloqueia sempre</strong> e é usado com um mutex: liberta-o atomicamente ao bloquear e volta a adquiri-lo ao acordar.</li>
+<li>Por isso a condição testa-se num <code>while</code> (<code>while (!cond) wait(c, m);</code>) e não num <code>if</code>.</li>
+<li>Os semáforos servem para exclusão mútua e para sinalizar; as variáveis de condição esperam por uma condição arbitrária sobre dados protegidos por um mutex (monitores).</li>
+</ul></div>
+
+<h3>Deadlock</h3>
+<div class="box teo"><span class="t">As 4 condições necessárias (Coffman)</span>Só há deadlock se se verificarem as quatro ao mesmo tempo:
+<ol>
+<li><strong>Exclusão mútua:</strong> pelo menos um recurso só pode ser usado por um processo de cada vez.</li>
+<li><strong>Posse e espera (hold and wait):</strong> um processo tem um recurso e espera por outro.</li>
+<li><strong>Sem preempção:</strong> um recurso só é libertado voluntariamente por quem o tem.</li>
+<li><strong>Espera circular:</strong> P0 espera por P1, P1 por P2, …, Pn por P0.</li>
+</ol>
+Para evitar: quebrar uma delas (ex.: ordem global na aquisição dos recursos elimina a espera circular). Outras abordagens: evitar (algoritmo do banqueiro, estado seguro), detetar e recuperar, ignorar (a maioria dos SOs).</div>
+</section>
+
+<section id="esc" data-nav="7 · Escalonamento do CPU" data-grp="Resto do programa" data-track>
+<h2>7 · Escalonamento do CPU</h2>
+<ul>
+<li><strong>Tempo de espera</strong> = tempo de fim − chegada − duração (tempo passado na ready queue).</li>
+<li><strong>Turnaround</strong> = fim − chegada. <strong>Resposta</strong> = primeira vez que corre − chegada.</li>
+<li>Critérios: utilização do CPU e throughput (maximizar); turnaround, espera e resposta (minimizar).</li>
+</ul>
+<div class="tw"><table><thead><tr><th>Algoritmo</th><th>Regra</th><th>Características</th></tr></thead><tbody>
+<tr><td>FCFS</td><td>Por ordem de chegada; não preemptivo</td><td>Simples; <strong>efeito comboio</strong> (curtos esperam atrás de um longo); bom para jobs de cálculo</td></tr>
+<tr><td>SJF</td><td>Escolhe o menor burst; não preemptivo</td><td><strong>Ótimo</strong> no tempo médio de espera; precisa de estimar o burst (média exponencial τ<sub>n+1</sub> = α t<sub>n</sub> + (1 − α) τ<sub>n</sub>); <strong>starvation</strong> dos longos</td></tr>
+<tr><td>SRTF (SJF preemptivo)</td><td>Quando chega um processo com burst menor do que o <strong>restante</strong> do atual, este é interrompido</td><td>Ainda menor espera média; mais trocas de contexto; starvation</td></tr>
+<tr><td>Prioridades</td><td>Corre o de maior prioridade (pode ser preemptivo)</td><td>Starvation; resolve-se com <strong>aging</strong></td></tr>
+<tr><td>Round Robin</td><td>FCFS com quantum q; ao fim de q vai para o fim da fila</td><td>Bom tempo de resposta (interativos); q grande → FCFS, q pequeno → muito overhead; turnaround pior que SJF</td></tr>
+<tr><td>Multinível (com feedback)</td><td>Várias filas com algoritmos e prioridades próprios; com feedback os processos mudam de fila</td><td>Mais geral e mais complexo</td></tr>
+</tbody></table></div>
+<div class="box met"><span class="t">Fazer o diagrama sem errar</span>
+<ol><li>Escreve uma tabela com o tempo restante de cada processo.</li><li>Avança só até ao próximo evento: <strong>chegada</strong>, <strong>fim</strong> ou <strong>fim de quantum</strong>.</li><li>Em cada evento decide quem corre (no SRTF compara restantes; no RR, quem chega no mesmo instante em que acaba um quantum entra na fila <strong>antes</strong> do que é preemptado — convenção usual).</li><li>No fim calcula a espera de cada um com fim − chegada − duração e faz a média.</li></ol></div>
+</section>
+
+<section id="fat" data-nav="8 · FAT32 e memória virtual" data-grp="Resto do programa" data-track>
+<h2>8 · FAT32 e memória virtual</h2>
+<h3>FAT</h3>
+<p>A <strong>File Allocation Table</strong> tem uma entrada por cluster. A entrada <em>i</em> diz qual é o <strong>próximo</strong> cluster do ficheiro que usa o cluster <em>i</em>: <code>FFFFFFFF</code> = último cluster (fim da cadeia), <code>00000000</code> = livre. Os clusters 0 e 1 estão reservados. A entrada de diretório guarda o <strong>primeiro</strong> cluster de cada ficheiro.</p>
+<div class="box met"><span class="t">Método</span>
+<ol><li>Parte do primeiro cluster e salta: <em>c → FAT[c] → …</em> até <code>FFFFFFFF</code>. Os valores estão em hexadecimal (<code>000A</code> = 10, <code>000D</code> = 13).</li><li>Byte <em>b</em> de um ficheiro com clusters de <em>T</em> bytes: índice = ⌊b / T⌋ (a contar do 0) na cadeia; offset = b mod T.</li></ol></div>
+<p>Vantagem: acesso aleatório só lendo a FAT (que pode ficar em memória). Desvantagem: a FAT ocupa muito espaço em discos grandes e um acesso longe no ficheiro obriga a seguir a cadeia.</p>
+
+<h3>Paginação</h3>
+<ul>
+<li>A memória lógica de cada processo é dividida em <strong>páginas</strong>; a física em <strong>frames</strong> do mesmo tamanho. A <strong>tabela de páginas</strong> do processo diz em que frame está cada página.</li>
+<li>Endereço lógico = (página p, deslocamento d); endereço físico = frame[p] × tamanho + d. Nos exames cada página tem 1 byte, por isso o endereço físico é simplesmente o número da frame.</li>
+<li><strong>TLB</strong> (Translation Lookaside Buffer): cache associativa, em hardware, das traduções página → frame mais recentes. Num <strong>TLB hit</strong> evita-se o acesso à tabela de páginas em memória (que custaria um acesso extra por cada acesso); num <strong>miss</strong> consulta-se a tabela e guarda-se a tradução na TLB.</li>
+</ul>
+<h3>Memória virtual</h3>
+<ul>
+<li>Só as páginas necessárias estão em memória (<strong>paginação a pedido</strong>); as outras ficam no disco (swap). Bit de validade na tabela de páginas.</li>
+<li><strong>Page fault:</strong> acesso a uma página que não está em memória → trap ao SO → verifica se o acesso é válido (senão termina o processo) → encontra uma frame livre (ou escolhe uma vítima com um algoritmo de substituição: FIFO, ótimo, LRU) → lê a página do disco → atualiza a tabela (bit válido) → <strong>repete a instrução</strong>.</li>
+<li><strong>Objetivos:</strong> <em>transparência</em> (cada processo vê um espaço de endereços contínuo e grande, maior do que a memória física, sem saber onde estão as páginas); <em>proteção/segurança</em> (cada processo só acede às suas páginas); <em>eficiência</em> (mais processos em memória, menos E/S ao carregar); <em>partilha</em> (bibliotecas e memória partilhada mapeadas em vários processos).</li>
+<li><strong>Proteção:</strong> cada processo tem a sua tabela de páginas e só consegue gerar endereços lógicos que a MMU traduz pela sua tabela; não há forma de nomear uma frame de outro processo. As tabelas só podem ser alteradas em modo kernel (instruções privilegiadas), o registo base da tabela muda na troca de contexto, e há bits de proteção (leitura/escrita/execução, válido) verificados pelo hardware em cada acesso.</li>
+<li><strong>Thrashing:</strong> o processo passa mais tempo a tratar page faults do que a executar (não tem frames suficientes para o seu conjunto de trabalho).</li>
+</ul>
+</section>
+
+<section id="ex25" data-nav="9 · Exame 2024/25" data-grp="Exames resolvidos" data-track>
+<h2>9 · Exame normal 2024/25 (9 de janeiro de 2025)</h2>
+<h3>I · fork</h3>
+<pre data-lang="c">6.  printf("A\n");
+7.  fork();
+8.  printf("B\n");
+9.  if (fork() == 0) {
+10.     printf("C\n");
+11.     execlp("echo", "echo", "sop", NULL);
+12.     printf("E\n");
+13. } else {
+14.     printf("D\n");
+15. }
+16. printf("F\n");</pre>
+<details><summary>a) e b) Processos e linhas</summary><div class="in">
+<p><strong>4 processos.</strong> 111 imprime A; na linha 7 cria 222. Os dois imprimem B. Na linha 9, cada um cria um filho: 111 → 333 e 222 → 444.</p>
+<pre data-lang="txt">111 (A) --fork l.7--&gt; 111 pai: B --fork l.9--&gt; 111 pai: D F
+                 |                       \-&gt; 333 filho: C, exec "echo sop"
+                 \-&gt; 222 filho: B --fork l.9--&gt; 222 pai: D F
+                                         \-&gt; 444 filho: C, exec "echo sop"</pre>
+<div class="tw"><table><thead><tr><th>Linha</th><th>Processos</th></tr></thead><tbody>
+<tr><td>6, 7</td><td>111</td></tr>
+<tr><td>8, 9</td><td>111, 222</td></tr>
+<tr><td>10, 11</td><td>333, 444 (imprimem C e passam a ser o <code>echo</code>, que imprime "sop")</td></tr>
+<tr><td>12</td><td>nenhum (o exec teve sucesso, "E" nunca aparece)</td></tr>
+<tr><td>14, 16</td><td>111, 222</td></tr>
+</tbody></table></div>
+<p>A linha 16 não é executada por 333 e 444, porque o <code>exec</code> substituiu o programa.</p>
+</div></details>
+<details><summary>c) Duas saídas possíveis</summary><div class="in">
+<p>Saídas obtidas a correr o programa:</p>
+<pre data-lang="txt">A B B D F C C D F sop sop
+A B B D F D F C C sop sop</pre>
+<p>Sempre: um A, dois B, dois C, dois D, dois F, dois "sop". Cada C aparece antes do seu "sop"; cada D antes do seu F.</p>
+</div></details>
+
+<h3>II · Barreira com contador</h3>
+<pre data-lang="c">1.  codeBefore();
+3.  mutex.down();
+4.  count++;
+5.  if (count == 4) {
+6.      for (i = 0; i &lt; 4; i++) barrier.up();
+7.      count = 0;
+8.  }
+9.  mutex.up();
+10. barrier.down();
+12. codeAfter();</pre>
+<details><summary>a) Onde bloqueiam as 3 primeiras</summary><div class="in">
+<p>As três primeiras fazem <code>count++</code> (1, 2, 3), não entram no <code>if</code>, libertam o mutex e <strong>bloqueiam na linha 10</strong> (<code>barrier.down()</code>, valor 0). A quarta põe count = 4, faz <strong>4 ups</strong>: os três primeiros acordam uma thread bloqueada cada um, o quarto deixa barrier = 1. Põe count = 0, liberta o mutex e na linha 10 consome esse último up (barrier = 0) e passa. Valores finais: count = 0, mutex = 1, barrier = 0.</p>
+</div></details>
+<details><summary>b) Porque falha se as threads voltarem ao início</summary><div class="in">
+<p>Uma thread que é a 4.ª a chegar pode ser interrompida entre a linha 9 e a 10. As outras três acordam, fazem <code>codeAfter()</code>, voltam ao início e chegam outra vez à barreira (count = 1, 2, 3). Entretanto pode haver ups "sobrantes": por exemplo, se a 4.ª ainda não fez o seu <code>down</code>, há 1 up guardado; uma thread rápida da ronda seguinte consome-o e <strong>passa a barreira sozinha</strong>, antes de as outras chegarem. Também uma thread rápida pode apanhar um up destinado a uma thread da ronda anterior que ainda não acordou. A barreira só funciona uma vez.</p>
+</div></details>
+<details><summary>c) Barreira reutilizável (duas fases)</summary><div class="in">
+<pre data-lang="c">/* count = 0, mutex = 1, barrier1 = 0, barrier2 = 0 */
+codeBefore();
+mutex.down();
+count++;
+if (count == 4)
+    for (i = 0; i &lt; 4; i++) barrier1.up();   /* abre a 1.ª porta */
+mutex.up();
+barrier1.down();
+
+codeAfter();
+
+mutex.down();
+count--;
+if (count == 0)
+    for (i = 0; i &lt; 4; i++) barrier2.up();   /* abre a 2.ª porta */
+mutex.up();
+barrier2.down();
+/* volta ao início */</pre>
+<p>Uma thread rápida não pode entrar na ronda seguinte antes de todas terem passado a 1.ª porta, porque fica presa em <code>barrier2</code> até as 4 terem feito <code>count--</code>. E não pode voltar à 1.ª porta antes de todas passarem a 2.ª, porque precisa de count = 4 outra vez. Cada porta tem exatamente 4 ups para 4 downs.</p>
+</div></details>
+<details><summary>d) up/down vs signal/wait</summary><div class="in"><p>Ver a caixa "Semáforos vs variáveis de condição" na secção 6: o semáforo guarda os ups (contador), <code>down</code> só bloqueia a 0; a variável de condição não guarda nada, <code>signal</code> sem ninguém à espera perde-se, e <code>wait</code> bloqueia sempre e liberta o mutex associado.</p></div></details>
+
+<h3>III · FAT32</h3>
+<div class="tw"><table><thead><tr><th>Entrada</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead><tbody>
+<tr><td>Valor</td><td>XXXX</td><td>XXXX</td><td>3</td><td>FFFF</td><td>8</td><td>B (11)</td><td>7</td><td>FFFF</td></tr>
+</tbody><thead><tr><th>Entrada</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr></thead><tbody>
+<tr><td>Valor</td><td>9</td><td>A (10)</td><td>FFFF</td><td>6</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody></table></div>
+<details><summary>a) e b) Respostas</summary><div class="in">
+<ul>
+<li>Raiz: 2 → 3 → fim: <strong>{2, 3}</strong></li>
+<li>Ficheiro em 4: 4 → 8 → 9 → 10 → fim: <strong>{4, 8, 9, 10}</strong></li>
+<li>Ficheiro em 5: 5 → 11 → 6 → 7 → fim: <strong>{5, 11, 6, 7}</strong></li>
+<li>Byte 1200 com clusters de 512 B: 1200 = 2 × 512 + 176 → 3.º cluster da cadeia (índice 2) = <strong>cluster 6, offset 176</strong>.</li>
+</ul></div></details>
+
+<h3>IV · SJF</h3>
+<div class="tw"><table><thead><tr><th>Processo</th><th>Duração</th><th>Chegada</th></tr></thead><tbody>
+<tr><td>P1</td><td>40</td><td>0</td></tr><tr><td>P2</td><td>25</td><td>0</td></tr><tr><td>P3</td><td>4</td><td>10</td></tr><tr><td>P4</td><td>10</td><td>35</td></tr>
+</tbody></table></div>
+<details><summary>a) Diagramas e esperas</summary><div class="in">
+<p><strong>i) Sem preempção:</strong> P2 0–25 | P3 25–29 | P1 29–69 | P4 69–79.</p>
+<p>Esperas: P1 = 29, P2 = 0, P3 = 25 − 10 = 15, P4 = 69 − 35 = 34 → média <strong>78/4 = 19,5 ms</strong>.</p>
+<p><strong>ii) Com preempção (SRTF):</strong> P2 0–10 | P3 10–14 (4 &lt; 15 restantes de P2) | P2 14–29 | P1 29–35 | P4 35–45 (10 &lt; 34 restantes de P1) | P1 45–79.</p>
+<p>Esperas: P1 = 79 − 40 = 39, P2 = 29 − 25 = 4, P3 = 0, P4 = 0 → média <strong>43/4 = 10,75 ms</strong>.</p>
+</div></details>
+<details><summary>b) Características e garantias</summary><div class="in"><p>O SJF dá o <strong>menor tempo médio de espera possível</strong> (é ótimo) para um conjunto de processos, e a versão preemptiva ainda melhora isso. Mas não garante ausência de <strong>starvation</strong>: processos longos podem nunca correr se continuarem a chegar curtos. Precisa de saber (estimar) a duração do próximo burst, o que na prática se faz com uma média exponencial.</p></div></details>
+
+<h3>V · Memória virtual</h3>
+<p>P1: A→4, B→15, C→8, D→2. P2: E→11, F→3, G→7, H→9.</p>
+<details><summary>a) Memória física 0–15</summary><div class="in">
+<div class="tw"><table><thead><tr><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr></thead><tbody>
+<tr><td>—</td><td>—</td><td>D</td><td>F</td><td>A</td><td>—</td><td>—</td><td>G</td><td>C</td><td>H</td><td>—</td><td>E</td><td>—</td><td>—</td><td>—</td><td>B</td></tr>
+</tbody></table></div>
+</div></details>
+<details><summary>b) e c) Proteção e objetivos</summary><div class="in"><p>Ver secção 8: tabela de páginas por processo traduzida pela MMU, alterável só em modo kernel, bits de proteção. Objetivos: transparência, proteção, eficiência no uso da memória, partilha.</p></div></details>
+</section>
+
+<section id="ex24" data-nav="10 · Exame 2023/24" data-grp="Exames resolvidos" data-track>
+<h2>10 · Exame normal 2023/24 (18 de janeiro de 2024)</h2>
+<h3>I · fork</h3>
+<pre data-lang="c">6.  printf("A\n");
+7.  if (fork() != 0) {
+8.      printf("B\n");
+9.      execlp("echo", "echo", "C", NULL);
+10.     printf("D\n");
+11. } else {
+12.     fork();
+13.     printf("E\n");
+14.     fork();
+15. }
+16. printf("G\n");</pre>
+<details><summary>Resolução</summary><div class="in">
+<p><strong>5 processos.</strong> 111 imprime A e cria 222. O pai (111) entra no <code>if</code>, imprime B e faz exec do <code>echo</code>, que imprime C (D e G nunca aparecem para ele). O filho 222 vai para o <code>else</code>: cria 333 (linha 12); 222 e 333 imprimem E; cada um cria outro (222 → 444, 333 → 555, linha 14); os 4 imprimem G.</p>
+<pre data-lang="txt">111: A, B, exec echo -&gt; "C"
+ \-&gt; 222: fork l.12 -&gt; E, fork l.14 -&gt; G
+      |                 \-&gt; 444: G
+      \-&gt; 333: E, fork l.14 -&gt; G
+                \-&gt; 555: G</pre>
+<div class="tw"><table><thead><tr><th>Linhas</th><th>Processos</th></tr></thead><tbody>
+<tr><td>6, 7</td><td>111</td></tr><tr><td>8, 9</td><td>111</td></tr><tr><td>10</td><td>nenhum</td></tr><tr><td>12</td><td>222</td></tr><tr><td>13, 14</td><td>222, 333</td></tr><tr><td>16</td><td>222, 333, 444, 555</td></tr>
+</tbody></table></div>
+<p>Saídas possíveis: <code>A B C E E G G G G</code> ou <code>A E B E G C G G G</code> (sempre 1 A, 1 B, 1 C, 2 E, 4 G; B antes de C; A primeiro).</p>
+<p><strong>d)</strong> Processo vs thread: ver secção 5. <strong>e)</strong> <code>fork()</code> cria um processo filho cópia do pai, devolvendo 0 ao filho e o PID do filho ao pai; <code>execlp(ficheiro, arg0, …, NULL)</code> procura o programa no PATH e substitui a imagem do processo por ele (mesmo PID); só retorna em caso de erro.</p>
+</div></details>
+
+<h3>II · Leitores-escritores</h3>
+<pre data-lang="c">/* leitores */                     /* escritores */
+mutex.down();                      nobody.down();
+if (readers == 0) nobody.down();   WRITE_access();
+readers++;                         nobody.up();
+mutex.up();
+READ_access();
+mutex.down();
+readers--;
+if (readers == 0) nobody.up();
+mutex.up();
+/* mutex = 1, nobody = 1, readers = 0 */</pre>
+<details><summary>a) T1 a ler; T2 leitor; T3 e T4 escritores</summary><div class="in">
+<p>T1 é o 1.º leitor: readers = 1 e nobody = 0. T2 (leitor) faz <code>mutex.down</code>, vê readers ≠ 0, passa a readers = 2, liberta o mutex e <strong>lê ao mesmo tempo que T1</strong>. T3 e T4 bloqueiam em <code>nobody.down()</code> (linha 2 dos escritores). Quando T1 termina, readers = 1 (nada acontece). Quando T2 termina, readers = 0 e faz <code>nobody.up()</code>, que acorda T3; T3 escreve e faz <code>nobody.up()</code>, que acorda T4; T4 escreve e deixa nobody = 1.</p>
+</div></details>
+<details><summary>b) Adiamento indefinido dos escritores e correção</summary><div class="in">
+<p>Enquanto houver sempre pelo menos um leitor a ler, readers nunca chega a 0 e nobody nunca é libertado: novos leitores entram sempre e o escritor espera para sempre. Correção com um <strong>turnstile</strong> (iniciado a 1): o escritor fecha-o enquanto espera, e novos leitores ficam presos nele.</p>
+<pre data-lang="c">/* leitores */                     /* escritores */
+turnstile.down();                  turnstile.down();
+turnstile.up();                    nobody.down();
+mutex.down();                      WRITE_access();
+if (readers == 0) nobody.down();   turnstile.up();
+readers++;                         nobody.up();
+mutex.up();
+READ_access();
+mutex.down();
+readers--;
+if (readers == 0) nobody.up();
+mutex.up();</pre>
+<p>Os leitores que já estavam a ler acabam, o último liberta nobody e o escritor entra. Os leitores novos só passam o turnstile quando o escritor o reabre.</p>
+</div></details>
+
+<h3>III · FAT32</h3>
+<p>FAT: 2→3, 3 fim, 4→8, 5 fim, 6 livre, 7 fim, 8→7, 9→D (13), 10 livre, 11 fim, 12 livre, 13 fim. Ficheiros a começar em 4, 9 e "13".</p>
+<details><summary>Resolução</summary><div class="in">
+<ul>
+<li>Raiz: <strong>{2, 3}</strong>; ficheiro 4: <strong>{4, 8, 7}</strong>; ficheiro 9: <strong>{9, 13}</strong>.</li>
+<li>O enunciado diz que o 3.º ficheiro começa no 13, mas o 13 já é o fim da cadeia do 9. É uma gralha: os clusters de fim sem ninguém a apontar para eles são o 5 e o 11, e a anotação na folha resolvida usa o <strong>11</strong> ({11}, ficheiro de 1 cluster). Escreve a observação no exame.</li>
+<li>Byte 2200 com clusters de 1024 B: 2200 = 2 × 1024 + 152 → índice 2 na cadeia {4, 8, 7} = <strong>cluster 7, offset 152</strong>.</li>
+</ul></div></details>
+
+<h3>IV · SJF com preempção</h3>
+<p>P1 20 @0, P2 40 @0, P3 4 @10, P4 10 @20, P5 15 @20.</p>
+<details><summary>Resolução</summary><div class="in">
+<p>P1 0–10 | P3 10–14 | P1 14–24 | P4 24–34 | P5 34–49 | P2 49–89.</p>
+<p>Esperas: P1 = 24 − 20 = 4, P2 = 89 − 40 = 49, P3 = 0, P4 = 34 − 10 − 20 = 4, P5 = 49 − 15 − 20 = 14 → média <strong>71/5 = 14,2 ms</strong>.</p>
+</div></details>
+
+<h3>V · Memória</h3>
+<p>P1: A→1, B→3, C→5, D→8. P2: E→11, F→4, G→0, H→9.</p>
+<details><summary>Resolução</summary><div class="in">
+<div class="tw"><table><thead><tr><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th></tr></thead><tbody>
+<tr><td>G</td><td>A</td><td>—</td><td>B</td><td>F</td><td>C</td><td>—</td><td>—</td><td>D</td><td>H</td><td>—</td><td>E</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+</tbody></table></div>
+<p><strong>b)</strong> Proteção: secção 8. <strong>c)</strong> A TLB guarda em cache as traduções página → frame mais recentes; num hit evita-se ir à tabela de páginas em memória.</p>
+</div></details>
+</section>
+
+<section id="ex23" data-nav="11 · Exame 2022/23" data-grp="Exames resolvidos" data-track>
+<h2>11 · Exame normal 2022/23 (16 de janeiro de 2023)</h2>
+<h3>I · fork</h3>
+<pre data-lang="c">printf("1\n");
+fork();
+if (fork() != 0) {
+    printf("2\n");
+    execlp("echo", "echo", "3", NULL);
+    printf("4\n");
+}
+printf("5\n");</pre>
+<details><summary>Resolução</summary><div class="in">
+<p><strong>4 processos.</strong> 111 imprime 1 e cria 222. Cada um faz o 2.º fork: 111 → 333, 222 → 444. Os pais (111, 222) entram no <code>if</code>, imprimem 2 e fazem exec do <code>echo 3</code>. Os filhos (333, 444) saltam o <code>if</code> e imprimem 5. O "4" nunca aparece.</p>
+<p>Saídas possíveis: <code>1 2 2 3 3 5 5</code> e <code>1 5 2 5 2 3 3</code>.</p>
+<p><strong>d)</strong> Diagrama de estados: secção 3.</p>
+</div></details>
+
+<h3>II · Leitores-escritores (o mesmo código de 2023/24)</h3>
+<details><summary>a) Uma thread a escrever, todas as outras tentam ler</summary><div class="in"><p>O escritor tem nobody = 0. O 1.º leitor faz <code>mutex.down</code> (passa), vê readers == 0 e bloqueia em <code>nobody.down()</code> <strong>com o mutex na mão</strong>. Todos os outros leitores bloqueiam em <code>mutex.down()</code>. Quando o escritor faz <code>nobody.up()</code>, o 1.º leitor acorda, readers = 1, liberta o mutex; os outros entram um a um pelo mutex, incrementam readers e leem em paralelo.</p></div></details>
+<details><summary>b) e c)</summary><div class="in"><p><strong>b)</strong> Adiamento indefinido dos escritores e turnstile: igual a 2023/24 b). <strong>c)</strong> As 4 condições do deadlock: secção 6.</p></div></details>
+
+<h3>III · FAT32 (clusters de 1024 B)</h3>
+<details><summary>Resolução</summary><div class="in"><ul><li>Raiz {2, 5}; ficheiro 3: {3, 4, 8, 7}; ficheiro 9: {9, 11}; ficheiro 13: {13}.</li><li>Byte 1200 = 1 × 1024 + 176 → índice 1 de {3, 4, 8, 7} = <strong>cluster 4, offset 176</strong>.</li></ul></div></details>
+
+<h3>IV · Round Robin, q = 20</h3>
+<p>P1 100, P2 50, P3 10, P4 45; todos chegam em 0.</p>
+<details><summary>Resolução</summary><div class="in">
+<p>P1 0–20 | P2 20–40 | P3 40–50 | P4 50–70 | P1 70–90 | P2 90–110 | P4 110–130 | P1 130–150 | P2 150–160 | P4 160–165 | P1 165–205.</p>
+<p>Esperas: P1 = 205 − 100 = 105, P2 = 160 − 50 = 110, P3 = 50 − 10 = 40, P4 = 165 − 45 = 120 → média <strong>375/4 = 93,75 ms</strong>.</p>
+<div class="box bad"><span class="t">Atenção à resolução que circula</span>Dá 66,25 ms, que está errado. A soma correta das esperas é 375 (confirmado por simulação).</div>
+<p><strong>c)</strong> RR vs FCFS. Vantagens do RR: melhor tempo de resposta, partilha justa do CPU, nenhum processo monopoliza. Desvantagens: mais trocas de contexto (overhead) e maior turnaround médio quando os bursts são longos. RR para <strong>aplicações interativas</strong> (resposta rápida); FCFS para <strong>cálculo intensivo</strong> (sem overhead de trocas, só interessa o tempo total).</p>
+</div></details>
+
+<h3>V · Memória</h3>
+<details><summary>Resolução</summary><div class="in">
+<p>Memória física: 0 F, 1 C, 2 A, 3 D, 7 B, 9 E, 12 G, 15 H (resto vazio).</p>
+<p><strong>b)</strong> Page fault e os passos da sua resolução; <strong>c)</strong> objetivos da memória virtual: secção 8.</p>
+</div></details>
+</section>
+
+<section id="rec23" data-nav="12 · Recurso 2022/23 (threads)" data-grp="Exames resolvidos" data-track>
+<h2>12 · Recurso 2022/23 (31 de janeiro de 2023)</h2>
+<h3>I · Threads</h3>
+<pre data-lang="c">4.  void *func1(void *d) {
+6.      char *pc = (char *) d;
+8.      printf("A\n");
+9.      printf("B\n");
+10.     printf(pc);
+11. }
+12. int main(int argc, char *argv[]) {
+14.     pthread_t tid;
+15.     printf("C\n");
+16.     pthread_create(&amp;tid, NULL, func1, "Z\n");
+17.     printf("D\n");
+18.     pthread_join(tid, NULL);
+19.     printf("E\n");
+20.     pthread_create(&amp;tid, NULL, func1, "Y\n");
+21.     printf("F\n");
+23.     pthread_exit(NULL);
+24. }</pre>
+<details><summary>Resolução</summary><div class="in">
+<p><strong>3 threads:</strong> a principal (T0) e duas criadas por ela (T1 na linha 16, T2 na linha 20). T1 só existe antes do <code>join</code>; T2 é criada depois de T1 terminar.</p>
+<ul><li>T0: linhas 14–21 e 23 (imprime C, D, E, F).</li><li>T1: linhas 6–10 com pc = "Z" (imprime A, B, Z).</li><li>T2: linhas 6–10 com pc = "Y" (imprime A, B, Y).</li></ul>
+<p>Saídas obtidas a correr 200 vezes:</p>
+<pre data-lang="txt">C D A B Z E F A B Y     (191 vezes)
+C A B Z D E F A B Y     (8 vezes)
+C D A B Z E A B Y F     (1 vez)</pre>
+<p>C é sempre o primeiro; E vem sempre depois de Z (por causa do join); D pode intercalar com A B Z; F pode intercalar com A B Y.</p>
+<p><strong>d)</strong> Com <code>exit(0)</code> na linha 22, o <strong>processo inteiro</strong> termina logo depois de imprimir F, e T2 é morta: pode não imprimir nada (ou só parte de A B Y). Com <code>pthread_exit</code> só termina a thread principal e T2 completa sempre.</p>
+</div></details>
+
+<h3>II · Barreira com turnstile</h3>
+<pre data-lang="c">/* count = 0, turnstile = 0, mutex = 1 */
+codeBefore();
+mutex.down();
+count++;
+if (count == 4) turnstile.up();
+mutex.up();
+turnstile.down();
+turnstile.up();
+codeAfter();</pre>
+<details><summary>Resolução</summary><div class="in">
+<p><strong>a)</strong> As três primeiras incrementam count (1, 2, 3) e bloqueiam em <code>turnstile.down()</code>. A 4.ª põe count = 4 e faz <code>turnstile.up()</code> (turnstile = 1). Faz o seu <code>down</code> (0) e <code>up</code>, que acorda uma das bloqueadas; essa faz <code>up</code> e acorda a seguinte, e assim por diante. Valores finais: <strong>count = 4, mutex = 1, turnstile = 1</strong>.</p>
+<p><strong>b)</strong> Se as threads voltarem ao início, count passa a 5, 6, … e o turnstile ficou a 1: as threads passam direto, <strong>sem esperar pelas outras</strong>. A barreira deixa de existir.</p>
+<p><strong>c)</strong> Barreira reutilizável com turnstile2 (iniciado a 1):</p>
+<pre data-lang="c">/* count = 0, mutex = 1, turnstile = 0, turnstile2 = 1 */
+codeBefore();
+mutex.down();
+count++;
+if (count == 4) { turnstile2.down(); turnstile.up(); }   /* fecha a 2.ª, abre a 1.ª */
+mutex.up();
+turnstile.down(); turnstile.up();
+
+codeAfter();
+
+mutex.down();
+count--;
+if (count == 0) { turnstile.down(); turnstile2.up(); }   /* fecha a 1.ª, abre a 2.ª */
+mutex.up();
+turnstile2.down(); turnstile2.up();</pre>
+</div></details>
+
+<h3>III · FAT32 (clusters de 512 B)</h3>
+<p>FAT: 2→F (15), 3 livre, 4→5, 5→A (10), 6→7, 7→D (13), 8 fim, 9 livre, 10 fim, 11 livre, 12 fim, 13→C (12), 14 livre, 15→8.</p>
+<details><summary>Resolução</summary><div class="in">
+<ul>
+<li>Raiz: 2 → 15 → 8: <strong>{2, 15, 8}</strong>; ficheiro 4: <strong>{4, 5, 10}</strong>; ficheiro 6: 6 → 7 → 13 → 12: <strong>{6, 7, 13, 12}</strong>. Na digitalização a entrada 7 lê-se mal; tem de ser <code>000D</code>, porque o 13 → 12 não pertence a mais nenhuma cadeia.</li>
+<li><strong>b)</strong> 1500 B com clusters de 512 B precisa de ⌈1500/512⌉ = <strong>3 clusters</strong>: o 11 e mais dois livres. Escolhendo os primeiros livres: FAT[11] = 3, FAT[3] = 9, FAT[9] = FFFFFFFF. Livre fica só o cluster 14 → <strong>512 bytes</strong> disponíveis (nas 16 entradas mostradas).</li>
+</ul></div></details>
+
+<h3>IV · SJF preemptivo</h3>
+<p>P1 100 @0, P2 50 @10, P3 40 @30, P4 10 @120.</p>
+<details><summary>Resolução</summary><div class="in">
+<p>P1 0–10 | P2 10–60 | P3 60–100 | P1 100–120 | P4 120–130 | P1 130–200.</p>
+<p>Esperas: P1 = 200 − 100 = 100, P2 = 0, P3 = 100 − 40 − 30 = 30, P4 = 0 → média <strong>130/4 = 32,5 ms</strong> (sem preempção daria 57,5 ms).</p>
+<p><strong>c)</strong> Preemptivo vs não preemptivo. Vantagens: menor espera média; processos curtos que chegam respondem logo. Desvantagens: mais trocas de contexto; starvation de longos mais provável; precisa de estimar o tempo restante. Para <strong>tempo real</strong> é o preemptivo, porque uma tarefa urgente não pode esperar que a atual termine.</p>
+</div></details>
+<p><strong>V</strong> é igual ao V de 2023/24 (memória: 0 G, 1 A, 3 B, 4 F, 5 C, 8 D, 9 H, 11 E).</p>
+</section>
+
+<section id="prat" data-nav="13 · Teste prático 2024/25" data-grp="Exames resolvidos" data-track>
+<h2>13 · Teste prático 2024/25 (19 de novembro de 2024)</h2>
+<p>Completar um programa em C que lê artigos de uma conferência (3 linhas por artigo: "id título", autor, notas), calcula a média das notas, ordena, decide aceite/rejeitado com <code>-l limiar</code> e/ou <code>-p percentagem</code> (empates tratados por igual) e grava os aceites num ficheiro binário <code>nome_ACCEPTED</code>.</p>
+<div class="box met"><span class="t">Funções que tens de dominar para este teste</span>
+<div class="tw"><table><thead><tr><th>Função</th><th>Uso</th></tr></thead><tbody>
+<tr><td><code>getopt(argc, argv, "l:p:")</code></td><td>Opções com argumento (<code>optarg</code>); <code>optind</code> = índice do 1.º argumento não-opção</td></tr>
+<tr><td><code>fgets(buf, MAX, fp)</code></td><td>Lê uma linha incluindo o <code>'\n'</code>; se a linha não couber, o último carácter não é <code>'\n'</code></td></tr>
+<tr><td><code>fscanf(fp, " %d", &amp;x)</code></td><td>O espaço salta whitespace (incluindo <code>'\n'</code>); devolve o nº de campos lidos</td></tr>
+<tr><td><code>fscanf(fp, " %[^\n]", s)</code></td><td>Lê o resto da linha (até ao <code>'\n'</code>)</td></tr>
+<tr><td><code>strtod(p, &amp;fim)</code></td><td>Converte um número e põe <code>fim</code> a seguir a ele; se <code>fim == p</code>, não converteu nada</td></tr>
+<tr><td><code>qsort(v, n, sizeof(T), cmp)</code></td><td><code>cmp</code> devolve &lt;0, 0, &gt;0; para ordem decrescente, troca o sinal</td></tr>
+<tr><td><code>fopen(nome, "wb")</code> + <code>fwrite(v, sizeof(T), n, fp)</code></td><td>Escrita binária de <code>n</code> estruturas</td></tr>
+<tr><td><code>rewind(fp)</code></td><td>Volta ao início do ficheiro para o ler segunda vez</td></tr>
+</tbody></table></div></div>
+<details><summary>Solução completa das tarefas 1 a 5 (compilada e testada)</summary><div class="in">
+<pre data-lang="c">/* TAREFA 3b: protótipo */
+int compare_papers(const void *, const void *);
+
+/* TAREFA 1 */
+FILE *fp = fopen(argv[optind], "r");
+if (fp == NULL) { printf("Erro a abrir %s\n", argv[optind]); return EXIT_FAILURE; }
+char line[MAXLEN]; int N = 0;
+while (fgets(line, MAXLEN, fp) != NULL) {
+    N++;
+    if (line[0] == '\n') { printf("Erro: linha %d vazia\n", N); fclose(fp); return EXIT_FAILURE; }
+    if (line[strlen(line) - 1] != '\n') {
+        printf("Erro: linha %d demasiado longa\n", N); fclose(fp); return EXIT_FAILURE;
+    }
+}
+if (N == 0 || N % 3 != 0) { printf("Erro: %d linhas não é múltiplo de 3\n", N); fclose(fp); return EXIT_FAILURE; }
+
+/* TAREFA 2a */
+int P = N / 3;
+paper *art = malloc(P * sizeof(paper));
+if (art == NULL) { fclose(fp); return EXIT_FAILURE; }
+rewind(fp);
+for (int i = 0; i &lt; P; i++) {
+    if (fscanf(fp, " %d", &amp;art[i].paper_id) != 1) {
+        art[i].paper_id = -1;
+        printf("Aviso: artigo %d (linha %d) sem número\n", i + 1, 3 * i + 1);
+    }
+    fscanf(fp, " %[^\n]", art[i].title);
+    fscanf(fp, " %[^\n]", art[i].author);
+    fscanf(fp, " %[^\n]", line);
+    art[i].eval = av_score(line);
+}
+fclose(fp);
+
+/* TAREFA 3a */
+qsort(art, P, sizeof(paper), compare_papers);
+int k = (int) ceil(percen * P - 1e-9);     /* nº mínimo de aceites por -p (precisa de math.h, -lm) */
+if (k &lt; 1) k = 1;
+if (k &gt; P) k = P;
+double corte = art[k - 1].eval;            /* empatados com o k-ésimo também entram */
+int nA = 0;
+for (int i = 0; i &lt; P; i++) {
+    art[i].status = (art[i].eval &gt;= limiar &amp;&amp; art[i].eval &gt;= corte) ? 'A' : 'R';
+    if (art[i].status == 'A') nA++;
+}
+
+/* TAREFA 4a */
+for (int i = 0; i &lt; P; i++) print_paper(&amp;art[i]);
+
+/* TAREFA 5 */
+char nome[strlen(argv[optind]) + strlen("_ACCEPTED") + 1];
+strcpy(nome, argv[optind]);
+strcat(nome, "_ACCEPTED");
+fp = fopen(nome, "wb");
+if (fp == NULL) { printf("Erro a criar %s\n", nome); free(art); return EXIT_FAILURE; }
+fwrite(art, sizeof(paper), nA, fp);        /* os aceites estão no início: o array está ordenado */
+fclose(fp);
+free(art);
+
+/* TAREFA 2b */
+double av_score(char *ptr) {
+    char *fim; double soma = 0; int n = 0;
+    while (1) {
+        double v = strtod(ptr, &amp;fim);
+        if (fim == ptr) break;             /* fim da string ou parte inválida */
+        soma += v; n++; ptr = fim;
+    }
+    return n &gt; 0 ? soma / n : 0.0;
+}
+
+/* TAREFA 3b: ordem decrescente de eval */
+int compare_papers(const void *a, const void *b) {
+    double ea = ((const paper *) a)-&gt;eval, eb = ((const paper *) b)-&gt;eval;
+    return (ea &lt; eb) - (ea &gt; eb);
+}
+
+/* TAREFA 4b */
+void print_paper(paper *p) {
+    printf("%d - \"%s\" by %s\n", p-&gt;paper_id, p-&gt;title, p-&gt;author);
+    printf("Score: %.2f - %s\n", p-&gt;eval, p-&gt;status == 'A' ? "ACCEPTED" : "REJECTED");
+}</pre>
+<p>Teste com o exemplo do enunciado (evals 4,5 / 4 / 3,6 / 3 / 3 / 3 / 2 / 1,5): <code>-p 0.5 -l 2.5</code> aceita <strong>6</strong>; <code>-p 0.3</code> aceita 3; <code>-l 4</code> aceita 2. O ficheiro binário tem 6 × 224 bytes no primeiro caso.</p>
+</div></details>
+<details><summary>Diferenças em relação à resolução do professor</summary><div class="in">
+<ul>
+<li>O professor usa <code>eval &gt; limiar</code>; o enunciado diz "igual ou superior", por isso deve ser <code>&gt;=</code>.</li>
+<li>O professor usa <code>pivot = (int)(percen*P - 1)</code>, que <strong>trunca</strong>: com 8 artigos e <code>-p 0.3</code> aceita só 2 (25 %). Arredondar para cima garante pelo menos a percentagem pedida. Ambas as leituras são defensáveis; diz qual usaste.</li>
+<li>O ciclo final do professor, <code>while (artigos[i].status == 'A')</code>, lê fora do array se todos forem aceites. Contar os aceites e fazer um só <code>fwrite</code> evita isso.</li>
+</ul></div></details>
+<h3>Perguntas de escolha múltipla (mesmo teste)</h3>
+<p>1 → <strong>C</strong> (<code>11-0</code>) · 2 → <strong>D</strong> (5 linhas) · 3 → <strong>B</strong> (ler um <code>float</code> com <code>scanf("%f", &amp;x)</code>: formato <code>%f</code> e o endereço da variável).</p>
+</section>
+
+<section id="rev" data-nav="Revisão final" data-grp="Exames resolvidos">
+<h2>Revisão final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="s1"> Desenhar a árvore de processos de um programa com fork/exec, com PIDs e linhas, e dar duas saídas</label></li>
+<li><label><input type="checkbox" data-k="s2"> Fazer o mesmo para pthread_create/join e explicar exit vs pthread_exit</label></li>
+<li><label><input type="checkbox" data-k="s3"> Simular leitores-escritores e barreiras: onde bloqueia cada thread e valores finais dos semáforos</label></li>
+<li><label><input type="checkbox" data-k="s4"> Corrigir starvation de escritores com turnstile e escrever uma barreira reutilizável</label></li>
+<li><label><input type="checkbox" data-k="s5"> Explicar semáforos vs variáveis de condição e as 4 condições de deadlock</label></li>
+<li><label><input type="checkbox" data-k="s6"> Seguir cadeias FAT em hexadecimal e calcular (cluster, offset) de um byte</label></li>
+<li><label><input type="checkbox" data-k="s7"> Diagramas de FCFS, SJF, SRTF e RR e tempo médio de espera (fim − chegada − duração)</label></li>
+<li><label><input type="checkbox" data-k="s8"> Construir a memória física a partir das tabelas de páginas; explicar TLB, page fault, proteção e objetivos da memória virtual</label></li>
+<li><label><input type="checkbox" data-k="s9"> Diagrama de estados de um processo, PCB, zombie e órfão, processo vs thread</label></li>
+<li><label><input type="checkbox" data-k="s10"> Prático: getopt, fgets, fscanf com " %[^\n]", strtod, qsort, fwrite binário</label></li>
+</ul>
+</section>

@@ -1,0 +1,493 @@
+<hero>
+<h1>PDS: princípios, padrões e desenho de software</h1>
+<p>As aulas 1 a 4 de 2026/27 (clean code, SOLID, desenho, GRASP e classificação dos padrões), o catálogo de padrões GoF que os testes pedem com UML e código Java, as arquiteturas que saem nas perguntas abertas, os testes teóricos de 2022/23 e 2024/25 resolvidos e o exame prático de 2024/25 resolvido, compilado e testado.</p>
+</hero>
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<div class="tw"><table>
+<thead><tr><th>Componente</th><th>Peso</th><th>Regime de IA</th></tr></thead>
+<tbody>
+<tr><td>TP: quizzes e atividades nas aulas</td><td>20 %</td><td>IA integrada</td></tr>
+<tr><td>TP: teste escrito individual (última aula TP)</td><td>20 %</td><td><strong>Sem IA</strong></td></tr>
+<tr><td>P: trabalho prático, repositórios, code review</td><td>20 %</td><td>IA integrada</td></tr>
+<tr><td>P: exame prático final (janeiro 2027)</td><td>40 %</td><td><strong>Sem IA</strong></td></tr>
+</tbody></table></div>
+<p>Mínimo de 7 valores em cada componente (TP e P). O que se valoriza: perceber (não só saber nomes de padrões), justificar decisões, qualidade de código, pensamento crítico e comunicação.</p>
+<div class="box exa"><span class="t">Como são os testes teóricos (50 min, 4 a 6 perguntas)</span>
+<ul>
+<li>Descrever princípios (GRASP: Low Coupling, High Cohesion, Information Expert).</li>
+<li>Reescrever código para depender de abstrações (DIP / "program to an interface").</li>
+<li>Reconhecer um padrão a partir de <strong>código</strong> ou de um <strong>diagrama UML</strong> (Singleton, Adapter, Strategy, Chain of Responsibility, Template Method, Iterator).</li>
+<li>Desenhar o UML e um exemplo de uso de um padrão (Decorator, Mediator, Observer, Proxy vs Decorator).</li>
+<li>Explicar uma arquitetura (microkernel, camadas): modelo, vantagens, desvantagens, exemplo.</li>
+</ul></div>
+</section>
+
+<section id="clean" data-nav="1 · Clean code" data-grp="Princípios" data-track>
+<h2>1 · Clean code</h2>
+<div class="box def"><span class="t">Definição de trabalho</span>Código fácil de <strong>perceber, alterar e verificar</strong> por outro programador. Não quer dizer "esperto", curto ou perfeito. Código que funciona não é necessariamente bom código, seja escrito por pessoas ou por IA.</div>
+<div class="tw"><table><thead><tr><th>Elemento</th><th>Regras</th></tr></thead><tbody>
+<tr><td>Nomes</td><td>Revelam a intenção, pesquisáveis, pronunciáveis; sem letras soltas (mapeamento mental). Métodos com verbos (<code>postPayment</code>, <code>getX</code>, <code>isY</code>); classes com substantivos (<code>Customer</code>, <code>AddressParser</code>), sem ruído (<code>Manager</code>, <code>Data</code>, <code>Info</code>)</td></tr>
+<tr><td>Funções</td><td>Pequenas (raramente &gt; 20 linhas), fazem <strong>uma coisa</strong>, um nível de abstração por função; poucos argumentos (0 é ideal, depois 1, 2); evitar argumentos de saída (<code>report.appendFooter()</code> em vez de <code>appendFooter(report)</code>); o chamador fica acima do chamado</td></tr>
+<tr><td>Comentários</td><td>Explicar o <em>porquê</em> quando o código não chega. Aceitáveis: legais, informativos, intenção, avisos, TODO, Javadoc. Inaceitáveis: redundantes, enganadores, histórico de versões, ruído, código comentado</td></tr>
+<tr><td>Classes</td><td>Pequenas, medidas em <strong>responsabilidades</strong>; nome descreve a responsabilidade (nome vago ⇒ demasiadas responsabilidades)</td></tr>
+<tr><td>Outras</td><td>Substituir números mágicos por constantes; encapsular condições (<code>if (shouldBeDeleted(timer))</code>); evitar condições negativas; preferir <code>enum</code> a constantes <code>static final int</code></td></tr>
+</tbody></table></div>
+<pre data-lang="java">// Pior: o leitor tem de decifrar
+List&lt;int[]&gt; getThem() {
+    List&lt;int[]&gt; list1 = new ArrayList&lt;&gt;();
+    for (int[] x : theList) if (x[0] == 4) list1.add(x);
+    return list1;
+}
+// Melhor: a mesma computação, intenção visível
+List&lt;Cell&gt; getFlaggedCells() {
+    List&lt;Cell&gt; flagged = new ArrayList&lt;&gt;();
+    for (Cell cell : gameBoard) if (cell.isFlagged()) flagged.add(cell);
+    return flagged;
+}</pre>
+<h3>Lente de code review</h3>
+<ol><li>Percebo a intenção?</li><li>As responsabilidades são coerentes?</li><li>Há conhecimento duplicado?</li><li>As dependências são necessárias?</li><li>Até onde se propaga uma alteração provável?</li></ol>
+<p>Não contar "violações": explicar as consequências. Mais classes e mais abstração não é automaticamente melhor.</p>
+</section>
+
+<section id="solid" data-nav="2 · SOLID, DRY, refactoring" data-grp="Princípios" data-track>
+<h2>2 · SOLID, DRY, Boy Scout e refactoring</h2>
+<div class="tw"><table><thead><tr><th>Princípio</th><th>Enunciado</th><th>Sintoma de violação</th></tr></thead><tbody>
+<tr><td><strong>S</strong>RP Single Responsibility</td><td>Um módulo deve ter <strong>uma razão para mudar</strong></td><td><code>Report</code> que calcula, gera PDF, guarda e envia email</td></tr>
+<tr><td><strong>O</strong>CP Open/Closed</td><td>Aberto a extensão, fechado a modificação: novas variantes sem editar lógica estável</td><td><code>if (type.equals("CARD")) … else if ("PAYPAL") …</code> a crescer</td></tr>
+<tr><td><strong>L</strong>SP Liskov Substitution</td><td>Um subtipo tem de poder substituir o tipo base sem quebrar o comportamento esperado</td><td><code>Penguin extends Bird</code> com <code>fly()</code> a lançar exceção</td></tr>
+<tr><td><strong>I</strong>SP Interface Segregation</td><td>Clientes não dependem de operações de que não precisam</td><td><code>Shape</code> com <code>volume()</code> obriga <code>Square</code> a implementá-lo</td></tr>
+<tr><td><strong>D</strong>IP Dependency Inversion</td><td>Módulos de alto nível dependem de <strong>abstrações</strong>, não de detalhes concretos</td><td><code>Checkout</code> que cria <code>new CardPayment()</code> em vez de receber <code>PaymentMethod</code></td></tr>
+<tr><td>DRY</td><td>Não duplicar o mesmo <em>conhecimento</em> (regra)</td><td>Fórmula de conversão copiada em vários sítios. Cuidado com abstrações prematuras</td></tr>
+<tr><td>Boy Scout</td><td>Deixar o código um pouco melhor do que o encontraste</td><td></td></tr>
+<tr><td>Refactoring</td><td>Melhorar a estrutura interna <strong>sem alterar o comportamento</strong> observável</td><td></td></tr>
+</tbody></table></div>
+<pre data-lang="java">// OCP + DIP: nova forma de pagamento = nova classe, Checkout não muda
+interface PaymentMethod { double fee(double amount); }
+class CardPayment implements PaymentMethod { public double fee(double a) { return a * 0.02; } }
+class MbWayPayment implements PaymentMethod { public double fee(double a) { return 0.10; } }
+class Checkout {
+    private final PaymentMethod payment;                  // depende da abstração
+    Checkout(PaymentMethod payment) { this.payment = payment; }   // injeção de dependência
+    double total(double amount) { return amount + payment.fee(amount); }
+}</pre>
+<p>Um mesmo objeto, dois tipos: em <code>Animal a = new Dog();</code> o tipo <strong>declarado</strong> (estático) decide que métodos se podem chamar (<code>a.fetch()</code> não compila) e o tipo <strong>dinâmico</strong> decide que implementação corre (<code>a.sound()</code> executa a de Dog).</p>
+</section>
+
+<section id="design" data-nav="3 · O que é desenho de software" data-grp="Princípios" data-track>
+<h2>3 · Desenho de software</h2>
+<p>O desenho liga os requisitos (o quê) à construção (o código). É <strong>heurístico, não determinístico</strong> (dois designers produzem soluções diferentes), <strong>emergente</strong> (iterativo e incremental) e um <em>wicked problem</em> (só fica bem definido ao resolvê-lo).</p>
+<div class="cols">
+<div><h4>Complexidade</h4><p><strong>Essencial:</strong> inerente ao problema. <strong>Acidental:</strong> criada pela solução. Objetivo: gerir a essencial sem acrescentar acidental.</p></div>
+<div><h4>Ferramentas</h4><p>Modularidade, abstração, ocultação de informação, herança, composição.</p></div>
+</div>
+<h3>Processo genérico</h3>
+<p>Perceber o problema → modelo "caixa preta" (casos de uso) → procurar soluções existentes (arquiteturas e padrões) → protótipos → documentar e rever → iterar (refactor).</p>
+<div class="tw"><table><thead><tr><th>Boas características</th><th>Sintomas de mau desenho</th></tr></thead><tbody>
+<tr><td>Complexidade mínima; <strong>baixo acoplamento</strong>; fácil manutenção; extensibilidade (pode chocar com simplicidade); reutilização; portabilidade; <strong>fan-in alto</strong> em utilitários e fan-out baixo a médio; leanness ("na dúvida, deixa de fora"); estratificação em camadas; técnicas padrão</td><td><strong>Rigidez</strong> (cada mudança afeta muitas partes); <strong>fragilidade</strong> (partes inesperadas partem); <strong>imobilidade</strong> (difícil reutilizar); <strong>viscosidade</strong> (o "hack" é mais fácil que manter o desenho, ou o ambiente é lento)</td></tr>
+</tbody></table></div>
+<p>Níveis de abstração: estilos/padrões de <strong>arquitetura</strong> → padrões de <strong>desenho</strong> → <strong>idiomas</strong> de programação, tudo apoiado em <strong>princípios</strong> (SOLID, DRY…).</p>
+</section>
+
+<section id="grasp" data-nav="4 · GRASP" data-grp="Princípios" data-track>
+<h2>4 · GRASP: onde pôr cada responsabilidade</h2>
+<p>General Responsibility Assignment Software Patterns: orientações (não regras rígidas) para atribuir responsabilidades a classes, com vista a <strong>alta coesão e baixo acoplamento</strong>.</p>
+<div class="tw"><table><thead><tr><th>Princípio</th><th>Regra</th><th>Exemplo (loja online)</th></tr></thead><tbody>
+<tr><td><strong>Information Expert</strong></td><td>Dar a responsabilidade à classe que tem a informação necessária para a cumprir</td><td><code>Product</code> sabe o seu preço e disponibilidade; <code>Order</code> calcula o total das suas linhas. Risco: classes demasiado complexas (quem guarda na BD?)</td></tr>
+<tr><td><strong>Creator</strong></td><td>B cria A se B contém/agrega A, usa A de perto ou tem os dados para o inicializar</td><td><code>Order</code> cria as suas <code>OrderLine</code></td></tr>
+<tr><td><strong>Controller</strong></td><td>Uma classe intermediária recebe os eventos da interface e coordena os objetos de domínio</td><td><code>ShoppingCartController</code></td></tr>
+<tr><td><strong>Low Coupling</strong></td><td>Minimizar dependências entre classes; comunicar por interfaces bem definidas</td><td><code>ShoppingCart</code> não mexe nos internos de <code>Product</code></td></tr>
+<tr><td><strong>High Cohesion</strong></td><td>As responsabilidades de uma classe estão relacionadas e focadas num propósito</td><td><code>ShoppingCart</code> não trata de pagamentos nem de autenticação</td></tr>
+<tr><td><strong>Polymorphism</strong></td><td>Variações de comportamento por tipo ⇒ métodos polimórficos, não <code>if</code>/<code>switch</code></td><td>Interface <code>PaymentProcessor</code> com várias implementações</td></tr>
+<tr><td><strong>Pure Fabrication</strong></td><td>Inventar uma classe sem correspondência no domínio para manter coesão/acoplamento</td><td><code>ShoppingCartValidator</code></td></tr>
+<tr><td>Indirection / Protected Variations</td><td>Intermediário para desacoplar; proteger contra variações atrás de interfaces estáveis</td><td>Adapter, Facade</td></tr>
+</tbody></table></div>
+<h3>Tipos de acoplamento (do pior para o melhor)</h3>
+<p><strong>Conteúdo</strong> (acede aos internos de outra) &gt; <strong>comum</strong> (variáveis globais partilhadas) &gt; <strong>externo</strong> (bibliotecas, APIs) &gt; <strong>controlo</strong> (passa flags que controlam o fluxo da outra) &gt; <strong>dados</strong> (só passa dados por parâmetros: o desejável). Há ainda o <strong>temporal</strong> (ordem de chamadas importa).</p>
+</section>
+
+<section id="gof" data-nav="5 · Padrões GoF: visão geral" data-grp="Padrões" data-track>
+<h2>5 · Padrões de desenho: classificação</h2>
+<p>Um padrão é uma solução reutilizável para um problema recorrente: descreve problema, contexto, estrutura e consequências, <strong>não é código para copiar</strong>. Dá vocabulário comum. Usar um padrão tem sempre custos (trade-offs). O livro do <strong>Gang of Four</strong> (Gamma, Helm, Johnson, Vlissides) cataloga <strong>23</strong> padrões em 3 categorias:</p>
+<div class="tw"><table><thead><tr><th>Categoria</th><th>Preocupação</th><th>Padrões</th></tr></thead><tbody>
+<tr><td><strong>Criacionais</strong></td><td>Como criar objetos, escondendo a lógica de criação</td><td>Singleton, Builder, Factory Method, Abstract Factory, Prototype</td></tr>
+<tr><td><strong>Estruturais</strong></td><td>Como compor classes e objetos em estruturas maiores</td><td>Adapter, Decorator, Proxy, Composite, Facade, Bridge, Flyweight</td></tr>
+<tr><td><strong>Comportamentais</strong></td><td>Como os objetos comunicam e distribuem responsabilidades</td><td>Strategy, Observer, Chain of Responsibility, Mediator, Template Method, Iterator, Command, State, Visitor, Memento, Interpreter</td></tr>
+</tbody></table></div>
+<div class="box met"><span class="t">Reconhecer o padrão pelo código</span>
+<ul>
+<li>Construtor <code>private</code> + <code>static getInstance()</code> → <strong>Singleton</strong>.</li>
+<li><code>X.instance().a(…).b(…).build()</code> → <strong>Builder</strong>.</li>
+<li>Classe que chama métodos de outra com interface diferente (<code>doThis()</code> chama <code>doThat()</code>) → <strong>Adapter</strong>.</li>
+<li><code>new A(new B(new C(obj)))</code> com a mesma interface e comportamento acumulado → <strong>Decorator</strong> (ou cadeia de responsabilidade se cada um decide se trata ou passa).</li>
+<li>Objeto que se passa ao sucessor quando não consegue tratar o pedido → <strong>Chain of Responsibility</strong>.</li>
+<li>Algoritmo escolhido em execução através de uma interface (Comparator) → <strong>Strategy</strong>.</li>
+<li>Método concreto na classe abstrata que só usa métodos abstratos → <strong>Template Method</strong>.</li>
+<li><code>hasNext()/next()</code> sem expor a estrutura interna → <strong>Iterator</strong>.</li>
+<li>Objetos que não se conhecem e falam através de um central → <strong>Mediator</strong>.</li>
+<li>Lista de "listeners" notificados quando o estado muda → <strong>Observer</strong>.</li>
+</ul></div>
+</section>
+
+<section id="criacionais" data-nav="6 · Criacionais" data-grp="Padrões" data-track>
+<h2>6 · Padrões criacionais</h2>
+<h3>Singleton</h3>
+<p>Garante <strong>uma única instância</strong> e um ponto de acesso global. A instância só é criada quando é pedida pela primeira vez (<strong>lazy initialization</strong>: atrasar a criação até ser precisa, poupando recursos). Em multithreading: <code>synchronized</code> ou instância criada logo na declaração (eager).</p>
+<pre data-lang="java">public final class Logger {
+    private static Logger instance;                 // null até ser precisa
+    private Logger() { }                            // ninguém faz new de fora
+    public static synchronized Logger getInstance() {
+        if (instance == null) instance = new Logger();   // lazy initialization
+        return instance;
+    }
+}</pre>
+<h3>Builder</h3>
+<p>Constrói objetos complexos passo a passo com uma interface fluente, evitando construtores com muitos parâmetros.</p>
+<pre data-lang="java">public class Employee {
+    private final String name;
+    private final int department;
+    private Employee(Builder b) { name = b.name; department = b.department; }
+    public static Builder instance() { return new Builder(); }
+    public static class Builder {
+        private String name; private int department;
+        public Builder name(String n)    { name = n; return this; }   // devolve this: encadear
+        public Builder department(int d) { department = d; return this; }
+        public Employee build()          { return new Employee(this); }   // objeto novo e imutável
+    }
+}
+Employee e = Employee.instance().name("Henrique").department(3).build();</pre>
+<h3>Factory Method e Abstract Factory</h3>
+<ul>
+<li><strong>Factory Method:</strong> um método (muitas vezes abstrato) decide que subclasse instanciar; o cliente pede um <code>Product</code> sem saber a classe concreta.</li>
+<li><strong>Abstract Factory:</strong> interface para criar <strong>famílias</strong> de objetos relacionados (ex.: <code>GUIFactory</code> com <code>createButton()</code> e <code>createCheckbox()</code> para Windows e Mac).</li>
+<li><strong>Prototype:</strong> criar cópias de um objeto existente (<code>clone()</code>).</li>
+</ul>
+</section>
+
+<section id="estruturais" data-nav="7 · Estruturais" data-grp="Padrões" data-track>
+<h2>7 · Padrões estruturais</h2>
+<h3>Adapter</h3>
+<pre data-lang="txt">NewApplication ──► «Wrapper / Adapter»  +doThis()  ──► LegacyComponent  +doThat()
+                        doThis() { theWrappedOne.doThat(); }</pre>
+<p>Converte a interface de uma classe noutra que o cliente espera, permitindo usar componentes incompatíveis (legados, bibliotecas externas). <strong>Dois tipos de implementação:</strong></p>
+<ul>
+<li><strong>Object adapter</strong> (composição): o adapter <em>tem</em> uma referência para o adaptado e delega. Mais flexível; funciona com subclasses do adaptado.</li>
+<li><strong>Class adapter</strong> (herança): o adapter <em>estende</em> o adaptado e implementa a interface alvo. Em Java só com herança simples (estende a classe e implementa a interface).</li>
+</ul>
+<h3>Decorator</h3>
+<pre data-lang="txt">        «interface» Component  +operation()
+           ▲                     ▲
+ ConcreteComponent      «abstract» Decorator ◇── component : Component
+                           ▲              ▲
+                    DecoratorA       DecoratorB      operation(){ component.operation(); + extra }</pre>
+<pre data-lang="java">interface IJogador { String joga(); }
+class Jogador implements IJogador {
+    private final String nome; Jogador(String n) { nome = n; }
+    public String joga() { return nome + " joga"; }
+}
+abstract class JogadorDecorator implements IJogador {
+    protected final IJogador j;
+    JogadorDecorator(IJogador j) { this.j = j; }
+}
+class Tenista extends JogadorDecorator {
+    Tenista(IJogador j) { super(j); }
+    public String joga() { return j.joga() + " tenis"; }
+}
+class Xadrezista extends JogadorDecorator {
+    Xadrezista(IJogador j) { super(j); }
+    public String joga() { return j.joga() + " xadrez"; }
+}
+// new Xadrezista(new Tenista(new Jogador("Maria"))).joga()  →  "Maria joga tenis xadrez"</pre>
+<p><strong>Vantagens:</strong> acrescenta comportamento <strong>em tempo de execução</strong> sem alterar a classe; evita a explosão de subclasses (Tenista, Xadrezista, TenistaXadrezista…); combinações livres; respeita OCP e SRP. <strong>Desvantagens:</strong> muitos objetos pequenos; a ordem dos decoradores pode importar; difícil remover um decorador do meio.</p>
+<h3>Proxy</h3>
+<p>Substituto com a <strong>mesma interface</strong> do objeto real que <strong>controla o acesso</strong> a ele: proteção (permissões), virtual (criação preguiçosa de objeto caro), remoto, cache, logging.</p>
+<div class="box teo"><span class="t">Proxy vs Decorator (exame especial 2021/22)</span>Estrutura quase igual (ambos implementam a interface e guardam uma referência). <strong>Intenção diferente:</strong> o Decorator <strong>acrescenta</strong> responsabilidades e é composto pelo cliente, muitas vezes em camadas; o Proxy <strong>controla o acesso</strong> e normalmente gere o ciclo de vida do objeto real, de forma transparente para o cliente. Ex.: <code>BufferedReader(new FileReader(f))</code> é decorator; um <code>GestorReduzido</code> que impede eliminar é proxy.</div>
+<h3>Composite, Facade, Bridge, Flyweight</h3>
+<ul>
+<li><strong>Composite:</strong> trata objetos individuais e composições da mesma forma (árvore parte-todo). Ex.: um <code>Pacote</code> que é um <code>Servico</code> feito de <code>Servicos</code>; pastas e ficheiros.</li>
+<li><strong>Facade:</strong> interface simplificada para um subsistema complexo.</li>
+<li><strong>Bridge:</strong> separa abstração e implementação para variarem de forma independente.</li>
+<li><strong>Flyweight:</strong> partilha estado comum entre muitos objetos para poupar memória.</li>
+</ul>
+</section>
+
+<section id="comport" data-nav="8 · Comportamentais" data-grp="Padrões" data-track>
+<h2>8 · Padrões comportamentais</h2>
+<h3>Strategy</h3>
+<pre data-lang="txt">Client ──► Context ◇── strategy : «interface» Strategy  +algorithm()
+                                          ▲          ▲          ▲
+                              ConcreteStrategyA     B          C</pre>
+<p>Família de algoritmos intermutáveis encapsulados atrás de uma interface; o contexto escolhe em execução. Ex.: algoritmos de ordenação para a lista de telemóveis (escolher o mais rápido ou o que gasta menos memória); <code>Comparator</code> em <code>Collections.sort</code>. <strong>Vantagens:</strong> trocar o algoritmo sem alterar o contexto (OCP), elimina <code>if/switch</code>, cada algoritmo testável isoladamente.</p>
+<pre data-lang="java">Context ctx = new Context(new QuickSortStrategy());
+ctx.sort(phones);
+ctx.setStrategy(new MergeSortStrategy());   // troca em execução
+ctx.sort(phones);</pre>
+<h3>Chain of Responsibility</h3>
+<p>O pedido percorre uma cadeia de handlers; cada um trata-o ou passa-o ao seguinte. O emissor não sabe quem vai tratar.</p>
+<pre data-lang="java">abstract class Handler {
+    private Handler next;
+    public Handler setNext(Handler n) { next = n; return n; }
+    public void handle(String food) {
+        if (canHandle(food)) cook(food);
+        else if (next != null) next.handle(food);
+        else System.out.println("No chef can prepare this food.");
+    }
+    protected abstract boolean canHandle(String food);
+    protected abstract void cook(String food);
+}
+class PastaChef extends Handler {
+    protected boolean canHandle(String f) { return f.contains("pasta"); }
+    protected void cook(String f) { System.out.println("Cooking a pasta."); }
+}
+// h0 = Sushi → Pasta → Burger → Pizza;  order("I'd like a pizza", h0) → "Cooking a pizza."</pre>
+<h3>Mediator</h3>
+<p>Um objeto central encapsula a forma como vários objetos ("colegas") interagem; eles não se referem diretamente uns aos outros (de N×N ligações para N). Ex.: torre de controlo e aeronaves; chat room; formulário que coordena os seus componentes.</p>
+<pre data-lang="txt">«interface» Mediator ◄───── «abstract» Colleague (tem referência ao mediator)
+       ▲                         ▲              ▲
+   ATCTower ──conhece──►      Airplane      Helicopter</pre>
+<pre data-lang="java">TorreControlo torre = new ATCTower();
+Aviao a = new Aviao("TP101", torre);
+Helicoptero h = new Helicoptero("INEM1", torre);
+a.aterrar();   // TP101: autorizado a aterrar
+h.aterrar();   // INEM1: aguarde, pista ocupada por TP101
+a.sair();      // TP101: pista livre
+h.aterrar();   // INEM1: autorizado a aterrar</pre>
+<h3>Observer</h3>
+<pre data-lang="txt">«interface» Subject  +attach(o) +detach(o) +notify()  ◇──*  «interface» Observer +update()
+        ▲                                                         ▲
+  ConcreteSubject (estado)                                 ConcreteObserver</pre>
+<p>Dependência um-para-muitos: quando o sujeito muda, todos os observadores são notificados. <strong>Vantagens:</strong> baixo acoplamento entre sujeito e observadores, registo dinâmico, broadcast. <strong>Desvantagens:</strong> ordem de notificação imprevisível, atualizações em cascata, fugas de memória se não se fizer detach. Exemplos: listeners de GUI, subscrições de notícias, MVC (modelo notifica vistas).</p>
+<h3>Template Method</h3>
+<p>Uma classe abstrata define o <strong>esqueleto</strong> de um algoritmo num método concreto que chama passos abstratos ("hooks"); as subclasses implementam os passos sem mudar a estrutura. É o caso de <code>AbstractList.lastIndexOf</code>, que só usa <code>listIterator()</code> e <code>size()</code>, implementados pelas subclasses.</p>
+<h3>Iterator</h3>
+<p>Percorre os elementos de uma coleção sequencialmente <strong>sem expor a representação interna</strong> (<code>hasNext/next</code>, e <code>hasPrevious/previous</code> no <code>ListIterator</code>).</p>
+<h3>Outros que convém reconhecer</h3>
+<ul>
+<li><strong>Command:</strong> encapsula um pedido num objeto (undo/redo, filas de tarefas).</li>
+<li><strong>State:</strong> o objeto muda de comportamento quando muda o estado interno (uma classe por estado).</li>
+<li><strong>Visitor:</strong> acrescenta operações a uma estrutura de objetos sem alterar as classes.</li>
+<li><strong>Memento:</strong> guarda e restaura o estado de um objeto sem violar o encapsulamento.</li>
+</ul>
+</section>
+
+<section id="arq" data-nav="9 · Arquiteturas" data-grp="Padrões" data-track>
+<h2>9 · Arquiteturas de software</h2>
+<div class="tw"><table><thead><tr><th>Arquitetura</th><th>Modelo</th><th>Vantagens</th><th>Desvantagens</th><th>Exemplo</th></tr></thead><tbody>
+<tr><td><strong>Microkernel</strong> (plug-in)</td><td>Núcleo mínimo (registo de plug-ins, ciclo de vida, comunicação) + plug-ins independentes que acrescentam funcionalidades através de contratos</td><td>Extensibilidade e personalização, agilidade, plug-ins testáveis isoladamente, núcleo estável</td><td>Escalabilidade limitada pelo núcleo, contratos difíceis de mudar, gestão de versões e dependências entre plug-ins</td><td>VS Code e Eclipse (extensões), browsers, Jenkins</td></tr>
+<tr><td><strong>Camadas</strong> (n-tier)</td><td>Apresentação → processos → negócio → dados; cada camada só usa a de baixo</td><td>Separação de responsabilidades, testabilidade, substituir uma camada</td><td>Desempenho (atravessar camadas), mudanças transversais, risco de monólito</td><td>Aplicação empresarial: portais → processos de utilizador → modelos de negócio → ERP/BD (exame especial 2021/22)</td></tr>
+<tr><td>MVC</td><td>Modelo (dados), Vista (apresentação), Controlador (entrada)</td><td>Várias vistas do mesmo modelo</td><td>Mais classes</td><td>Frameworks web e GUI</td></tr>
+<tr><td>Microserviços</td><td>Serviços pequenos, independentes, comunicam por rede</td><td>Escalar e implantar separadamente</td><td>Complexidade distribuída, consistência</td><td>Plataformas de streaming</td></tr>
+<tr><td>Event-driven</td><td>Produtores e consumidores de eventos via broker</td><td>Desacoplamento, assíncrono</td><td>Difícil depurar e garantir ordem</td><td>Sistemas IoT</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="t1" data-nav="ATP1 2024/25 resolvido" data-grp="Testes resolvidos" data-track>
+<h2>ATP1 2024/25 (2 de abril de 2025)</h2>
+<details><summary>1. Low Coupling e Information Expert</summary><div class="in"><p><strong>Low Coupling:</strong> distribuir responsabilidades de forma a minimizar as dependências entre classes, para que uma mudança numa não obrigue a mudar as outras; facilita manutenção, reutilização e testes. <strong>Information Expert:</strong> atribuir uma responsabilidade à classe que tem a informação necessária para a cumprir (ex.: <code>Order.getTotal()</code> soma as suas linhas); melhora o encapsulamento e a coesão.</p></div></details>
+<details><summary>2. Copiar ficheiros entre dispositivos (program to an interface / DIP)</summary><div class="in">
+<pre data-lang="java">public interface Storage {
+    byte[] read(File file);
+    boolean write(File file, byte[] data);
+}
+public class UsbStorage implements Storage {
+    public byte[] read(File fn) { /* ... */ }
+    public boolean write(File fn, byte[] data) { /* ... */ }
+}
+public class CloudStorage implements Storage {
+    public byte[] read(File fn) { /* ... */ }
+    public boolean write(File fn, byte[] data) { /* ... */ }
+}
+public class TransferUtils {
+    public static void copyFile(Storage from, File orig, Storage to, File dest) {   // abstrações!
+        byte[] data = from.read(orig);
+        // transformar, comprimir, cifrar...
+        to.write(dest, data);
+    }
+}</pre>
+<div class="box bad"><span class="t">A resolução que circula fica a meio</span>Cria a interface e a classe abstrata mas mantém <code>copyFile(UsbStorage usb, …, CloudStorage ssd, …)</code>. O módulo de alto nível continua a depender das classes concretas: é precisamente o que o exercício pede para mudar. Com <code>Storage</code> nos parâmetros, copia-se entre quaisquer dois dispositivos, incluindo novos, sem alterar <code>TransferUtils</code>.</div></div></details>
+<details><summary>3. SomeClass com getInstance()</summary><div class="in"><p>a) <strong>Singleton</strong>. b) <strong>Lazy initialization:</strong> a instância só é criada na primeira chamada a <code>getInstance()</code> (enquanto não é precisa, <code>instance</code> fica a <code>null</code>), poupando recursos se nunca for usada. Nota: esta versão não é thread-safe; usar <code>synchronized</code> ou inicialização na declaração.</p></div></details>
+<details><summary>4. Employee.instance()<wbr>.name(…)<wbr>.department(…)<wbr>.build()</summary><div class="in"><p><strong>Builder</strong>: código na secção 6. A resolução que circula guarda um único <code>Employee</code> dentro do builder e devolve-o em <code>build()</code>; funciona neste main, mas o objeto continua alterável através do builder depois de construído. A versão da secção 6 cria um objeto novo e imutável em cada <code>build()</code>.</p></div></details>
+<details><summary>5. NewApplication → Wrapper → LegacyComponent</summary><div class="in"><p>a) <strong>Adapter</strong> (wrapper). b) Os dois tipos de implementação são o <strong>object adapter</strong> (composição: o adapter tem uma referência ao <code>LegacyComponent</code> e delega, como no diagrama) e o <strong>class adapter</strong> (herança: o adapter estende <code>LegacyComponent</code> e implementa a interface que a aplicação espera). A resolução que circula dá exemplos de uso em vez de tipos de implementação.</p></div></details>
+<details><summary>6. Decorator: UML, exemplo e vantagens</summary><div class="in"><p>UML, código (Jogador/Tenista/Xadrezista) e vantagens na secção 7. Saída testada: <code>Maria joga tenis xadrez</code>.</p></div></details>
+</section>
+
+<section id="t2" data-nav="ATP2 2024/25 e 2022/23 resolvidos" data-grp="Testes resolvidos" data-track>
+<h2>ATP2 2024/25 (4 de junho de 2025) e 2022/23</h2>
+<details><summary>1. Chefs (SushiChef, PastaChef, …) — 2022/23: tradutores</summary><div class="in"><p>a) <strong>Chain of Responsibility.</strong> O pedido (os últimos 7 caracteres) entra no 1.º handler; cada chef verifica se sabe preparar a comida; se sim prepara, senão passa ao sucessor; se nenhum souber, o último responde "No chef can prepare this food.". b) UML: <code>Handler</code> abstrato com <code>-next: Handler</code> (auto-associação) e <code>handle()</code>; subclasses <code>SushiChef</code>, <code>PastaChef</code>, <code>BurgerChef</code>, <code>PizzaChef</code>; o cliente conhece só o 1.º handler. Código na secção 8; a execução produz exatamente as 5 linhas do enunciado.</p>
+<p>Em 2022/23 a mesma pergunta usava <code>new TranslatorEN(new TranslatorES(new TranslatorPT(new TranslatorUK())))</code>: também é <strong>Chain of Responsibility</strong> (cada tradutor trata a sua língua ou passa ao seguinte; FR não tem ninguém). Não é Strategy.</p></div></details>
+<details><summary>2. Mediator: problema, diagrama e main</summary><div class="in"><p>Problema: num aeroporto, aviões e helicópteros querem aterrar mas não se conhecem; pedem à torre de controlo, que decide quem usa a pista. Diagrama e main na secção 8 (testado).</p></div></details>
+<details><summary>3. Collections.sort(list) → list.sort(null)</summary><div class="in"><p>a) <strong>Strategy</strong>: o critério de comparação é uma estratégia injetável (<code>Comparator</code>; com <code>null</code> usa a ordem natural, <code>Comparable</code>), e o algoritmo de ordenação pode variar sem mudar o código cliente. <code>Collections.sort</code> também delega no método da própria lista (cada <code>List</code> pode ter a sua implementação). Vantagens: trocar o critério/algoritmo sem modificar o contexto, reutilização, OCP. b) UML: <code>List</code> (contexto) ── <code>Comparator&lt;T&gt;</code> «interface» com <code>compare()</code>, implementado por comparadores concretos.</p></div></details>
+<details><summary>4. AbstractList.lastIndexOf</summary><div class="in"><p>a) <strong>Template Method</strong> e <strong>Iterator</strong>. b) <code>lastIndexOf</code> é um método concreto (esqueleto) que só usa operações abstratas: <code>listIterator(size())</code> e <code>size()</code> são implementadas por cada subclasse (ArrayList, LinkedList…). O <code>ListIterator</code> percorre a lista do fim para o início com <code>hasPrevious()/previous()</code> sem expor a estrutura interna; quando encontra o elemento devolve <code>nextIndex()</code>, que é o índice do elemento acabado de visitar.</p></div></details>
+<details><summary>5. Arquitetura microkernel</summary><div class="in"><p>Ver a tabela da secção 9. Resposta-tipo: núcleo com a funcionalidade mínima e um registo de plug-ins; cada plug-in é independente e liga-se ao núcleo por um contrato. Vantagens: extensibilidade, personalização, isolamento e testabilidade dos plug-ins. Desvantagens: escalabilidade e desempenho limitados pelo núcleo, contratos difíceis de evoluir. Exemplo: VS Code ou Eclipse (o editor é o núcleo; Java e Python são extensões).</p></div></details>
+<details><summary>2022/23 — 3. Revista de telemóveis com vários algoritmos de ordenação</summary><div class="in"><p><strong>Strategy</strong>: interface <code>SortStrategy</code> com <code>sort(List&lt;Phone&gt;, Comparator)</code>, implementada por <code>QuickSort</code>, <code>MergeSort</code>, <code>InsertionSort</code>…; o contexto (<code>PhoneCatalog</code>) recebe a estratégia e pode trocá-la conforme o desempenho pretendido (tempo ou memória). O atributo de ordenação pode ser outra estratégia (<code>Comparator</code> por preço, memória…).</p></div></details>
+</section>
+
+<section id="pratico" data-nav="Exame prático 2024/25" data-grp="Testes resolvidos" data-track>
+<h2>Exame prático 2024/25 (4 de junho de 2025, 1h45)</h2>
+<p class="lead">Gestor de serviços de uma empresa online. O enunciado tinha ficheiros base no desktop que não estão no material; esta solução escreve tudo de raiz e reproduz exatamente a saída esperada (preços 34.0 e 100.0 dos pacotes, linhas indentadas, ordem das chaves). Compilada e executada com Java 21.</p>
+<div class="tw"><table><thead><tr><th>Alínea</th><th>Pedido</th><th>Padrão</th></tr></thead><tbody>
+<tr><td>a)</td><td>Completar <code>GestorServicosStandard</code> (registar substitui, existe, obter, eliminar)</td><td>Interface + <code>TreeMap</code> (chaves ordenadas)</td></tr>
+<tr><td>b)</td><td>Pacotes de serviços com 20 % de desconto e meses de fidelização</td><td><strong>Composite</strong></td></tr>
+<tr><td>c)</td><td>Gestor onde não se pode registar nem eliminar</td><td><strong>Proxy</strong> (de proteção)</td></tr>
+<tr><td>d)</td><td>Registo único de ações + gestor que regista no histórico</td><td><strong>Singleton</strong> (Logger) + <strong>Decorator</strong> (GestorServicosHistorico)</td></tr>
+</tbody></table></div>
+<pre data-lang="java">interface Servico { String getNome(); String getDescricao(); double getPreco(); }
+
+abstract class ServicoBase implements Servico {
+    private final String nome, descricao;
+    private final double preco;
+    protected ServicoBase(String nome, String descricao, double preco) {
+        this.nome = nome; this.descricao = descricao; this.preco = preco;
+    }
+    public String getNome() { return nome; }
+    public String getDescricao() { return descricao; }
+    public double getPreco() { return preco; }
+    protected abstract String tipo();
+    @Override public String toString() {
+        return tipo() + " com nome=" + nome + ", descricao=" + descricao + ", preco=" + getPreco();
+    }
+}
+class Internet extends ServicoBase {
+    Internet(String n, String d, double p) { super(n, d, p); }
+    protected String tipo() { return "Internet"; }
+}
+class Telefone extends ServicoBase {
+    Telefone(String n, String d, double p) { super(n, d, p); }
+    protected String tipo() { return "Telefone"; }
+}
+class Televisao extends ServicoBase {
+    private final int canais;
+    Televisao(String n, String d, double p, int canais) { super(n, d, p); this.canais = canais; }
+    protected String tipo() { return "Televisao"; }
+    @Override public String toString() { return super.toString() + ", canais=" + canais; }
+}
+
+/* b) Composite: um pacote É um Servico feito de Servicos */
+class Pacote implements Servico {
+    private static final double DESCONTO = 0.20;
+    private final String nome, descricao;
+    private final int mesesFidelizacao;
+    private final List&lt;Servico&gt; servicos = new ArrayList&lt;&gt;();
+    Pacote(String nome, String descricao, int meses) {
+        this.nome = nome; this.descricao = descricao; this.mesesFidelizacao = meses;
+    }
+    public Pacote adicionar(Servico s) { servicos.add(s); return this; }
+    public String getNome() { return nome; }
+    public String getDescricao() { return descricao; }
+    public double getPreco() {
+        double total = 0;
+        for (Servico s : servicos) total += s.getPreco();
+        return total * (1 - DESCONTO);
+    }
+    @Override public String toString() {
+        StringBuilder sb = new StringBuilder("Pacote com nome=" + nome + ", descricao=" + descricao
+                + ", preco=" + getPreco() + " com fidelizacao de " + mesesFidelizacao + " meses");
+        for (Servico s : servicos) sb.append("\n\t").append(s);
+        return sb.toString();
+    }
+}
+
+interface GestorServicos {
+    void registarServico(String chave, Servico servico);
+    boolean existeServico(String chave);
+    Servico obterServico(String chave);
+    Servico eliminarServico(String chave);
+    Map&lt;String, Servico&gt; listar();
+}
+
+/* a) */
+class GestorServicosStandard implements GestorServicos {
+    private final Map&lt;String, Servico&gt; servicos = new TreeMap&lt;&gt;();
+    public void registarServico(String chave, Servico s) { servicos.put(chave, s); }  // put substitui
+    public boolean existeServico(String chave) { return servicos.containsKey(chave); }
+    public Servico obterServico(String chave) { return servicos.get(chave); }
+    public Servico eliminarServico(String chave) { return servicos.remove(chave); }
+    public Map&lt;String, Servico&gt; listar() { return Collections.unmodifiableMap(servicos); }
+}
+
+/* c) Proxy de proteção */
+class GestorServicosReduzidos implements GestorServicos {
+    private final GestorServicos real;
+    GestorServicosReduzidos(GestorServicos real) { this.real = real; }
+    public void registarServico(String c, Servico s) {
+        throw new UnsupportedOperationException("Registar nao permitido neste gestor");
+    }
+    public Servico eliminarServico(String c) {
+        throw new UnsupportedOperationException("Eliminar nao permitido neste gestor");
+    }
+    public boolean existeServico(String c) { return real.existeServico(c); }
+    public Servico obterServico(String c) { return real.obterServico(c); }
+    public Map&lt;String, Servico&gt; listar() { return real.listar(); }
+}
+
+/* d) Singleton */
+final class Logger {
+    private static Logger instancia;
+    private final List&lt;String&gt; historico = new ArrayList&lt;&gt;();
+    private Logger() { }
+    public static synchronized Logger getInstance() {
+        if (instancia == null) instancia = new Logger();
+        return instancia;
+    }
+    public void registar(String mensagem) { historico.add(mensagem); }
+    public List&lt;String&gt; getHistorico() { return Collections.unmodifiableList(historico); }
+}
+
+/* d) Decorator: acrescenta histórico a QUALQUER gestor */
+class GestorServicosHistorico implements GestorServicos {
+    private final GestorServicos gestor;
+    GestorServicosHistorico(GestorServicos gestor) { this.gestor = gestor; }
+    public void registarServico(String c, Servico s) {
+        gestor.registarServico(c, s);
+        Logger.getInstance().registar("registarServico(" + c + ") -&gt; " + s.getNome());
+    }
+    public Servico eliminarServico(String c) {
+        Servico s = gestor.eliminarServico(c);
+        Logger.getInstance().registar("eliminarServico(" + c + ") -&gt; " + (s == null ? "inexistente" : s.getNome()));
+        return s;
+    }
+    public boolean existeServico(String c) { return gestor.existeServico(c); }
+    public Servico obterServico(String c) { return gestor.obterServico(c); }
+    public Map&lt;String, Servico&gt; listar() { return gestor.listar(); }
+}</pre>
+<details><summary>Saída obtida (alínea b)</summary><div class="in">
+<pre data-lang="txt">Ref: S_I1 - Internet com nome=100Mbps, descricao=Para uso domestico, preco=19.0
+Ref: S_I2 - Internet com nome=500Mbps, descricao=Para uso empresarial, preco=39.0
+Ref: S_I3 - Internet com nome=1Gbps, descricao=Para uso itensivo, preco=55.0
+Ref: S_P1 - Pacote com nome=FullBasic, descricao=Pacote standard, preco=34.0 com fidelizacao de 12 meses
+	Televisao com nome=Base, descricao=Canais essenciais, preco=15.5, canais=20
+	Internet com nome=100Mbps, descricao=Para uso domestico, preco=19.0
+	Telefone com nome=Nacional, descricao=Chamadas gratis para todas as redes nacionais, preco=8.0
+Ref: S_P2 - Pacote com nome=FullPlus, descricao=Pacote economico, preco=100.0 com fidelizacao de 12 meses
+	...
+Alinea c)  Bloqueado: Eliminar nao permitido neste gestor
+Alinea d)  LOG registarServico(X1) -&gt; 1Gbps
+           LOG eliminarServico(S_T2) -&gt; Gold</pre>
+<p>FullBasic: (15,5 + 19 + 8) × 0,8 = 34,0. FullPlus: (45 + 55 + 25) × 0,8 = 100,0.</p></div></details>
+</section>
+
+<section id="esp" data-nav="Exame especial 2021/22" data-grp="Testes resolvidos" data-track>
+<h2>Exame de época especial 2021/22</h2>
+<ol>
+<li><strong>Low Coupling e High Cohesion</strong>: ver secção 4.</li>
+<li><strong>PenDrive/NetDrive</strong>: igual ao ATP1 2024/25, pergunta 2 (interface <code>Storage</code> e <code>copyFile(Storage, File, Storage, File)</code>).</li>
+<li><strong>Diagrama Client → Context → interface algorithm() ← ImplementationOne/Two</strong>: <strong>Strategy</strong>. Vantagens: algoritmos intermutáveis em execução, sem condicionais, OCP. Código do ponto de vista do cliente: <code>Context c = new Context(new ImplementationOne()); c.execute(); c.setStrategy(new ImplementationTwo()); c.execute();</code></li>
+<li><strong>Proxy vs Decorator</strong>: ver a caixa da secção 7.</li>
+<li><strong>Observer</strong>: modelo, vantagens e exemplo na secção 8.</li>
+<li><strong>Figura com Orchestration Portals / User Processes / Business Models / Utilities and Storage</strong>: arquitetura <strong>em camadas</strong> (layered). Vantagens: separação de responsabilidades, cada camada substituível e testável. Desvantagens: desempenho, alterações que atravessam todas as camadas.</li>
+</ol>
+</section>
+
+<section id="rev" data-nav="Revisão final" data-grp="Testes resolvidos">
+<h2>Revisão final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="p1"> Explicar SRP, OCP, LSP, ISP, DIP e DRY com um exemplo de cada</label></li>
+<li><label><input type="checkbox" data-k="p2"> Descrever os princípios GRASP e os tipos de acoplamento</label></li>
+<li><label><input type="checkbox" data-k="p3"> Reescrever código para depender de interfaces</label></li>
+<li><label><input type="checkbox" data-k="p4"> Reconhecer Singleton, Builder, Adapter, Decorator, Proxy, Composite, Strategy, Chain, Mediator, Observer, Template Method e Iterator pelo código ou pelo UML</label></li>
+<li><label><input type="checkbox" data-k="p5"> Desenhar o UML e escrever o main de Decorator, Mediator, Observer e Strategy</label></li>
+<li><label><input type="checkbox" data-k="p6"> Explicar microkernel e camadas (modelo, vantagens, desvantagens, exemplo)</label></li>
+<li><label><input type="checkbox" data-k="p7"> Fazer o exame prático 2024/25 sem olhar para a solução</label></li>
+</ul>
+</section>

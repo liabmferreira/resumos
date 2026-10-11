@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MAS — guia de estudo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB; --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC; --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8; --ex:#475569; --ex-bg:#EEF1F5;
+  --code-bg:#F0F2F7; --kw:#7A2BB0; --str:#1C7A3A; --cm:#7A8494; --num:#9A5700;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.confirm{font-size:12.5px;color:var(--muted);margin-top:8px}
+.mnav{display:none}
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:940px;width:100%;min-width:0}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em;text-wrap:balance}
+.hero p{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;text-wrap:balance}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);margin-left:10px}
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0;min-width:0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:12px 0;max-width:100%}
+pre code{background:none;padding:0;font-size:inherit}
+.box pre{background:var(--card)}
+pre .k{color:var(--kw);font-weight:500} pre .s{color:var(--str)} pre .c{color:var(--cm);font-style:italic} pre .n{color:var(--num)}
+.out{border-left:3px solid var(--teo)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+td code,th code{white-space:nowrap}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px;min-width:0}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px;min-width:0}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+.ov{text-decoration:overline;text-decoration-thickness:1px}
+.bits td{font-family:var(--mono);text-align:center;font-size:13px}
+.fig{margin:16px 0;overflow-x:auto}
+.fig svg{display:block;max-width:100%;height:auto}
+.fig figcaption{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:6px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details>summary{display:none}
+  .box,pre{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>MAS — guia de estudo</h1>
+  <p class="sub">Modelação e Análise de Sistemas · UML · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 12 capítulos estudados</div>
+  <nav id="nav">
+<a href="#intro">Antes de começar</a>
+<div class="grp">O analista e o processo</div>
+<a href="#as"><input type="checkbox" data-sec="as" aria-label="Marcar 1 · Análise de sistemas e SDLC como estudado"><span>1 · Análise de sistemas e SDLC</span></a>
+<a href="#uml"><input type="checkbox" data-sec="uml" aria-label="Marcar 2 · Modelação visual e UML como estudado"><span>2 · Modelação visual e UML</span></a>
+<div class="grp">Compreender o negócio</div>
+<a href="#processos"><input type="checkbox" data-sec="processos" aria-label="Marcar 3 · Processos de negócio como estudado"><span>3 · Processos de negócio</span></a>
+<a href="#requisitos"><input type="checkbox" data-sec="requisitos" aria-label="Marcar 4 · Requisitos como estudado"><span>4 · Requisitos</span></a>
+<a href="#cau"><input type="checkbox" data-sec="cau" aria-label="Marcar 5 · Casos de utilização e histórias como estudado"><span>5 · Casos de utilização e histórias</span></a>
+<a href="#dominio"><input type="checkbox" data-sec="dominio" aria-label="Marcar 6 · Modelo do domínio como estudado"><span>6 · Modelo do domínio</span></a>
+<div class="grp">Processos e gestão</div>
+<a href="#swproc"><input type="checkbox" data-sec="swproc" aria-label="Marcar 7 · Processos de software como estudado"><span>7 · Processos de software</span></a>
+<a href="#agil"><input type="checkbox" data-sec="agil" aria-label="Marcar 8 · Gestão ágil de projetos como estudado"><span>8 · Gestão ágil de projetos</span></a>
+<div class="grp">Desenho e construção</div>
+<a href="#comport"><input type="checkbox" data-sec="comport" aria-label="Marcar 9 · Sequência e desenho por objetos como estudado"><span>9 · Sequência e desenho por objetos</span></a>
+<a href="#arq"><input type="checkbox" data-sec="arq" aria-label="Marcar 10 · Arquitetura como estudado"><span>10 · Arquitetura</span></a>
+<a href="#qa"><input type="checkbox" data-sec="qa" aria-label="Marcar 11 · Qualidade e testes como estudado"><span>11 · Qualidade e testes</span></a>
+<a href="#comuns"><input type="checkbox" data-sec="comuns" aria-label="Marcar 12 · Elementos comuns da UML como estudado"><span>12 · Elementos comuns da UML</span></a>
+<div class="grp">Exame</div>
+<a href="#cosmic">Ten Cosmic Truths (desenvolvimento)</a>
+<a href="#exame">Exame 2023-24 resolvido</a>
+<a href="#ex1819">Exame 2018-19 (chave)</a>
+<a href="#erros">Erros clássicos</a>
+<a href="#checklist">Lista de verificação final</a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+  <div class="confirm" id="cf" hidden>Carrega outra vez para apagar o progresso guardado neste navegador.</div>
+</aside>
+<main>
+<div class="hero" id="top">
+<h1>MAS: análise de sistemas, UML e processos de software</h1>
+<p>Organizado pelos tópicos oficiais de estudo de 2026 (I. Oliveira). Inclui o exame final de 2023-24 com as respostas oficiais explicadas, perguntas do exame de 2018-19 com a chave de correção e a preparação para a pergunta de desenvolvimento sobre as "Ten Cosmic Truths".</p>
+</div>
+
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<h3>Estrutura do exame (2023-24)</h3>
+<div class="tw"><table>
+<thead><tr><th>Parte</th><th>Perguntas</th><th>Cotação</th><th>Conteúdo</th></tr></thead>
+<tbody>
+<tr><td>Análise de sistemas e SDLC</td><td>1 a 16</td><td>0,65 cada, escolha múltipla</td><td>requisitos, casos de utilização, histórias, ágil, OpenUP, testes, modelos</td></tr>
+<tr><td>Diagramas</td><td>17 a 23</td><td>0,65 cada, escolha múltipla</td><td>ler diagramas de classes, atividades e sequência da "Folha de diagramas"</td></tr>
+<tr><td>Desenvolvimento</td><td>24 e 25</td><td>2,5 cada, texto</td><td>uma pergunta sobre processos de software; uma sobre um tópico das "Ten Cosmic Truths"</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">O que o professor disse sobre o exame</span>
+<p>Segundo as notas da última aula (README do material): <strong>uma pergunta de desenvolvimento comenta um tópico do texto "Ten Cosmic Truths About Software Requirements"</strong> (Wiegers) e <strong>as perguntas de diagramas são feitas com base na "Folha de diagramas"</strong> distribuída antes do exame. Estuda a folha com antecedência: modelo hospitalar (cirurgias), encomendas de restaurante, helpdesk, pedido de refeições.</p></div>
+<div class="box bad"><span class="t">Escolha múltipla com desconto</span>
+<p>No exame de 2018-19 as respostas erradas descontavam ¼ da cotação. Muitas opções são "quase certas": a resposta certa é a mais precisa e alinhada com o que foi dado nas aulas. Desconfia de opções absolutas ("sempre", "nunca", "não há necessidade de", "elimina a documentação").</p></div>
+</section>
+
+<section id="as" data-nav="1 · Análise de sistemas e SDLC" data-grp="O analista e o processo" data-track>
+<h2>1 · Análise de sistemas, SDLC e o analista<span class="done-tag" hidden>estudado ✓</span></h2>
+<p><strong>Análise de Sistemas</strong>: estudar um problema ou oportunidade para definir melhorias e especificar os requisitos da solução. Inclui compreender o contexto do negócio, identificar problemas, oportunidades e riscos <strong>com os stakeholders</strong>, e definir os requisitos do sistema.</p>
+<div class="tw"><table>
+<thead><tr><th>Fase do SDLC</th><th>Atividades e resultados típicos</th></tr></thead>
+<tbody>
+<tr><td>Planeamento</td><td>Identificar a oportunidade, estudar a viabilidade, plano inicial do projeto</td></tr>
+<tr><td><strong>Análise</strong> (foco de MAS)</td><td>Analisar o sistema atual, recolher requisitos com os promotores, desenvolver o conceito da solução (o <strong>quê</strong>)</td></tr>
+<tr><td>Desenho</td><td>Arquitetura, tecnologias, desenho detalhado (o <strong>como</strong>)</td></tr>
+<tr><td>Implementação</td><td>Construção, testes, instalação</td></tr>
+<tr><td>Manutenção</td><td>Suporte, correções, evolução</td></tr>
+</tbody></table></div>
+<p>O SDLC é um <strong>modelo genérico</strong>: descreve as fases que qualquer projeto atravessa, sem impor como se organizam (em sequência ou em iterações). A distinção central: <strong>domínio do problema</strong> (Análise, o quê) vs <strong>domínio da solução</strong> (Desenho/Implementação, o como).</p>
+<p><strong>O analista</strong> é a ponte entre stakeholders (promotor, utilizadores, gestores) e equipa técnica. Responsabilidades: determinar requisitos, analisar e especificar, validar, facilitar a comunicação, gerir alterações. Competências: técnicas, de negócio, analíticas, interpessoais e de gestão, e ética.</p>
+<p><strong>Transformação digital</strong>: usar as TIC para melhorar processos, criar novas propostas de valor ou melhorar a experiência do utilizador.</p>
+</section>
+
+<section id="uml" data-nav="2 · Modelação visual e UML" data-grp="O analista e o processo" data-track>
+<h2>2 · Modelação visual e UML<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Um <strong>modelo</strong> é uma representação parcial e abstrata de um sistema. Segundo Booch, modela-se para <strong>Visualizar, Especificar, Construir e Documentar</strong>; os modelos ajudam a gerir a complexidade (dividir, abstrair, comunicar com precisão).</p>
+<div class="box teo"><span class="t">Benefícios dos modelos (e o que NÃO são)</span>
+<ul>
+<li>Comunicação mais clara dentro da equipa; visão partilhada da estrutura do produto.</li>
+<li>Desenho e implementação mais coerentes: o modelo orienta a construção.</li>
+<li>Antecipar problemas de integração e ambiguidades nos requisitos antes de implementar.</li>
+<li>Melhor documentação com representações visuais.</li>
+<li><strong>Não</strong> eliminam a documentação (resposta falsa no exame 2023-24) e <strong>não</strong> servem para mostrar o progresso e as prioridades de cada sprint (resposta falsa em 2018-19).</li>
+</ul></div>
+<p><strong>UML</strong>: linguagem padrão de modelação visual, normalizada pela <strong>OMG</strong>, que junta as abordagens de Jacobson (casos de utilização), Booch (objetos/arquitetura) e Rumbaugh (classes/dados). <strong>A UML é uma linguagem, não um processo</strong> (não confundir com o UP/OpenUP).</p>
+<div class="tw"><table>
+<thead><tr><th>Tipo de modelo</th><th>Pergunta</th><th>Diagramas UML</th></tr></thead>
+<tbody>
+<tr><td>Funcional</td><td>O que o sistema faz para os atores?</td><td>Casos de utilização</td></tr>
+<tr><td>Estrutural</td><td>Que coisas existem e como se relacionam?</td><td>Classes, objetos, pacotes, componentes, instalação</td></tr>
+<tr><td>Comportamental</td><td>Como colaboram as partes ao longo do tempo?</td><td>Atividades, sequência, comunicação, estados</td></tr>
+</tbody></table></div>
+<p>Um elemento do modelo (ex.: um Ator) pode aparecer em <strong>vários diagramas, de tipos distintos</strong> (é o mesmo elemento em todos). Coerência entre diagramas: ao passar um diagrama de objetos para classes, todos os atributos de um objeto têm de existir como atributos da sua classe. Java e UML partilham, no essencial, as mesmas abstrações (classe, atributo, método, associação), por isso a UML é adequada para visualizar código Java.</p>
+</section>
+
+<section id="processos" data-nav="3 · Processos de negócio" data-grp="Compreender o negócio" data-track>
+<h2>3 · Processos de negócio e diagramas de atividades<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>O <strong>diagrama de atividades</strong> serve para (a) descrever processos de negócio (workflows), mostrando a sequência de atividades, decisões e quem faz o quê; (b) descrever algoritmos. No SDLC usa-se sobretudo <strong>na Análise, para caracterizar os processos de trabalho existentes (AS-IS) ou os pretendidos (TO-BE)</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Elemento</th><th>Notação</th><th>Significado</th></tr></thead>
+<tbody>
+<tr><td>Nó inicial / final</td><td>círculo cheio / círculo com anel</td><td>início e fim do fluxo (final de fluxo: círculo com X)</td></tr>
+<tr><td>Ação</td><td>retângulo de cantos arredondados</td><td>um passo de trabalho</td></tr>
+<tr><td>Fluxo de controlo</td><td>seta</td><td>ordem das ações</td></tr>
+<tr><td>Decisão / junção</td><td>losango</td><td>alternativas com guardas <code>[condição]</code></td></tr>
+<tr><td>Fork / join</td><td>barra grossa</td><td>ações em <strong>paralelo</strong></td></tr>
+<tr><td>Nó de objeto</td><td>retângulo <code>Ticket [Aberto]</code></td><td>fluxo de objetos; o <code>[estado]</code> mostra que o objeto muda de estado</td></tr>
+<tr><td><code>«datastore»</code></td><td>nó de objeto com estereótipo</td><td>repositório persistente</td></tr>
+<tr><td>Partição (swimlane)</td><td>colunas</td><td>quem é responsável (papel, departamento)</td></tr>
+</tbody></table></div>
+<p><strong>Reengenharia de processos (BPR)</strong>: reestruturação profunda de processos essenciais para melhorias substanciais. Difere da melhoria incremental por <strong>questionar os pressupostos</strong> do processo. Caso de estudo: Prescrição Eletrónica de Medicamentos (AS-IS vs TO-BE). Na UML, o diagrama adequado para comunicar a reengenharia de fluxos de trabalho com colaboração entre papéis é o <strong>diagrama de atividades</strong> (com partições).</p>
+<div class="box ex"><span class="t">Exame 2023-24, Diagrama 12 (helpdesk)</span>
+<p>Três partições (Atendimento, Suporte avançado, Equipa de engenharia). O <code>Ticket [Aberto]</code> passa a <code>Ticket [Resolvido]</code>: <strong>mesmo num diagrama de atividades se vê que um ticket evolui por vários estados</strong> (resposta certa). Falsas: a engenharia não avalia <em>todos</em> os problemas (só os sem alternativa); o atendimento não encaminha <em>todas</em> as situações (os conhecidos resolve-os).</p></div>
+</section>
+
+<section id="requisitos" data-nav="4 · Requisitos" data-grp="Compreender o negócio" data-track>
+<h2>4 · Engenharia de requisitos<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="box def"><span class="t">Definições</span>
+<ul>
+<li><strong>Requisito</strong>: uma capacidade ou condição que o sistema tem de ter para satisfazer uma necessidade do stakeholder.</li>
+<li><strong>Regra de negócio</strong>: política, norma ou regulamento do negócio (ex.: "um cliente com dívidas não pode encomendar"). Não é um requisito em si, mas <strong>dá origem a requisitos</strong> e restringe-os.</li>
+<li><strong>Requisito funcional</strong>: comportamento observável do sistema ("o sistema deve permitir...").</li>
+<li><strong>Requisito não funcional / atributo de qualidade</strong>: restrição ou qualidade que afeta o desenho (desempenho, segurança, usabilidade, fiabilidade).</li>
+</ul></div>
+<h3>FURPS+</h3>
+<div class="tw"><table>
+<thead><tr><th>Letra</th><th>Categoria</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td>F</td><td>Functionality (funcionalidade)</td><td>emitir faturas</td></tr>
+<tr><td>U</td><td>Usability (usabilidade)</td><td>utilizador novo conclui a encomenda em menos de 2 minutos</td></tr>
+<tr><td>R</td><td>Reliability (fiabilidade)</td><td>continuar a recolha mesmo com falhas pontuais de ligação (exame 2018-19, P10)</td></tr>
+<tr><td>P</td><td>Performance (desempenho)</td><td>página carrega em menos de 2 s para 95% dos pedidos</td></tr>
+<tr><td>S</td><td>Supportability (manutenção/suporte)</td><td>adaptável a novos idiomas</td></tr>
+<tr><td>+</td><td>restrições de desenho, implementação, interface, físicas, legais</td><td>usar a base de dados da empresa; RGPD</td></tr>
+</tbody></table></div>
+<h3>S.M.A.R.T.</h3>
+<p>Um bom requisito é <strong>Specific</strong> (específico), <strong>Measurable</strong> (mensurável), <strong>Attainable</strong> (alcançável), <strong>Relevant</strong> (relevante), <strong>Time-sensitive</strong> (com prazo). O essencial: tem de ser possível dizer mais tarde, <strong>objetivamente</strong>, se o requisito está ou não no produto.</p>
+<div class="box ex"><span class="t">Exame 2023-24, P9</span>
+<p>"O sistema deve ter um tempo de carregamento rápido para garantir uma experiência fluída." Resposta certa: <strong>a capacidade é relevante, mas o requisito está mal formulado: não é específico nem mensurável</strong>. Melhor: "o vídeo começa a reproduzir em menos de 2 s após o clique, em 95% dos casos, com ligação ≥ 10 Mbit/s".</p></div>
+<h3>Determinação de requisitos</h3>
+<p>"<strong>A determinação de requisitos é mais do que a recolha</strong>": inclui <strong>elicitação</strong> (descobrir e inventar com os stakeholders), <strong>análise</strong> (organizar, priorizar, resolver conflitos), <strong>especificação</strong> e <strong>validação</strong>. É iterativa.</p>
+<div class="tw"><table>
+<thead><tr><th>Técnica de elicitação</th><th>Vantagens</th><th>Limitações</th></tr></thead>
+<tbody>
+<tr><td>Entrevistas</td><td>profundidade, esclarecer dúvidas</td><td>demoram; dependem do entrevistado</td></tr>
+<tr><td>Workshops (JAD)</td><td>vários stakeholders juntos, resolver conflitos</td><td>difícil de organizar</td></tr>
+<tr><td>Questionários</td><td>muitas pessoas, barato</td><td>pouca profundidade</td></tr>
+<tr><td>Observação</td><td>vê o trabalho real (não o declarado)</td><td>as pessoas mudam quando observadas</td></tr>
+<tr><td>Análise documental</td><td>formulários, relatórios, sistemas existentes</td><td>pode estar desatualizada</td></tr>
+<tr><td>Prototipagem</td><td>tangível; valida e descobre requisitos; expõe mal-entendidos</td><td>cria expectativas de que "está quase feito"; foco excessivo na interface; não substitui a documentação</td></tr>
+</tbody></table></div>
+<p>Duas abordagens: <strong>centrada no produto</strong> (listas de capacidades) e <strong>centrada no utilizador / em cenários</strong> (situações de uso: casos de utilização, histórias). Os casos de utilização mostram os <strong>requisitos em contexto</strong>: os requisitos aparecem dentro de narrativas de uso, não como uma lista solta.</p>
+</section>
+
+<section id="cau" data-nav="5 · Casos de utilização e histórias" data-grp="Compreender o negócio" data-track>
+<h2>5 · Casos de utilização, personas e histórias<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="box def"><span class="t">Definições</span>
+<ul>
+<li><strong>Ator</strong>: um <strong>papel</strong> desempenhado por alguém ou algo externo ao sistema que interage com ele (pessoa, outro sistema, tempo). Não é uma pessoa concreta.</li>
+<li><strong>Caso de utilização (CaU)</strong>: iniciado por um ator com um <strong>objetivo</strong>; termina com sucesso quando o objetivo é atingido. Descreve a sequência de interação entre atores e sistema.</li>
+<li><strong>Persona</strong>: utilizador fictício mas realista (nome, contexto, objetivos, frustrações) que representa um grupo. Ao contrário do ator, tem características humanas; serve para desenho centrado no utilizador.</li>
+<li><strong>Customer Journey Map (CJM)</strong>: a jornada de uma persona ao longo do tempo: fases, ações, <em>touchpoints</em>, pensamentos/emoções, <em>pain points</em>. Revela oportunidades de melhoria e alimenta CaU e histórias.</li>
+</ul></div>
+<h3>Diagrama de casos de utilização</h3>
+<div class="tw"><table>
+<thead><tr><th>Relação</th><th>Significado</th><th>Direção da seta</th></tr></thead>
+<tbody>
+<tr><td>Associação ator–CaU</td><td>o ator participa no CaU</td><td>linha simples</td></tr>
+<tr><td><code>«include»</code></td><td>o CaU base <strong>inclui sempre</strong> o comportamento do outro (reutilização)</td><td>do base para o incluído</td></tr>
+<tr><td><code>«extend»</code></td><td>comportamento <strong>opcional/condicional</strong> inserido no base em <strong>pontos de extensão</strong></td><td>do que estende para o base</td></tr>
+<tr><td>Generalização</td><td>entre atores ou entre CaU (especialização)</td><td>seta de triângulo vazio para o geral</td></tr>
+</tbody></table></div>
+<p>Os atores ficam <strong>fora</strong> da fronteira do sistema. Erros comuns a detetar: CaU que são passos (não objetivos); fluxos entre CaU como se fosse um fluxograma; atores dentro do sistema; extend/include trocados.</p>
+<h3>Especificação de um CaU</h3>
+<p>Nome (verbo + objeto), atores, pré-condições, <strong>fluxo principal</strong> (cenário de sucesso), <strong>fluxos alternativos</strong> (exceções e variações), pós-condições. Diagramas de CaU, diagramas de atividades e narrativas complementam-se: o diagrama dá a visão geral, a narrativa o detalhe, a atividade os fluxos complexos.</p>
+<p><strong>Desenvolvimento orientado por casos de utilização</strong>: os CaU guiam todo o processo (análise, desenho, testes, planeamento das iterações).</p>
+<h3>Histórias de utilizador</h3>
+<p>"<strong>Enquanto</strong> [papel], <strong>quero</strong> [ação] <strong>para que</strong> [benefício]." Os <strong>critérios de aceitação</strong> usam <strong>DADO</strong> (contexto) <strong>QUANDO</strong> (ação) <strong>ENTÃO</strong> (resultado) e devem explorar cenários representativos <strong>com exemplos concretos</strong> (valores de pesquisa e resultados esperados).</p>
+<div class="box teo"><span class="t">CaU vs histórias (pergunta quase certa)</span>
+<ul>
+<li>São <strong>complementares</strong>, não redundantes: os CaU dão a visão de alto nível (<em>big picture</em>) e documentam os cenários de forma estruturada; as histórias são decomposições funcionais mais finas, focadas em incrementos de valor, adequadas à gestão diária do backlog.</li>
+<li><strong>Um CaU desdobra-se em várias histórias</strong>, refletindo diferentes formas de percorrer o CaU (exame 2023-24, P4). No "Use Cases 2.0/3.0" de Jacobson, essas partes chamam-se <em>use-case slices</em>.</li>
+</ul></div>
+</section>
+
+<section id="dominio" data-nav="6 · Modelo do domínio" data-grp="Compreender o negócio" data-track>
+<h2>6 · Modelo do domínio (diagrama de classes da análise)<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>O <strong>modelo do domínio</strong> é um mapa dos conceitos de uma área, desenhado como diagrama de classes. <strong>Não é software</strong>: é um resultado da análise. Os conceitos e relações tendem a ser estáveis e ajudam a identificar a informação a guardar e as regras do domínio (multiplicidades). Mas <strong>as classes do código não são as mesmas</strong> do modelo do domínio (falso no exame 2023-24, P11).</p>
+<h3>Encontrar classes candidatas</h3>
+<ol>
+<li>Consenso de especialistas na área.</li>
+<li>Análise documental (formulários, relatórios, sistemas existentes).</li>
+<li>Listas de categorias comuns (transações, papéis, lugares, catálogos, registos...).</li>
+<li>Análise dos <strong>nomes</strong> (substantivos) numa descrição do problema.</li>
+</ol>
+<p>Boas práticas: nome no singular; atributos simples (um atributo que é um conceito deve ser uma classe); <strong>não</strong> incluir métodos, tipos de programação, chaves estrangeiras nem classes de interface/controlo.</p>
+<h3>Relações</h3>
+<div class="tw"><table>
+<thead><tr><th>Relação</th><th>Notação</th><th>Quando usar</th></tr></thead>
+<tbody>
+<tr><td>Associação</td><td>linha com nome e multiplicidades</td><td>ligação estrutural entre conceitos (Cirurgião responsável Cirurgia)</td></tr>
+<tr><td>Agregação</td><td>losango <strong>vazio</strong> no todo</td><td>todo-parte <strong>não exclusivo</strong>: a parte pode pertencer a vários todos ou existir sozinha (Campanha agrega Pratos)</td></tr>
+<tr><td>Composição</td><td>losango <strong>cheio</strong> no todo</td><td>todo-parte <strong>exclusivo</strong>: a parte pertence a um só todo e desaparece com ele (Hospital compõe Blocos; Encomenda compõe Opções pedidas)</td></tr>
+<tr><td>Generalização</td><td>triângulo vazio na superclasse</td><td>"é um tipo de" (MBWay, Cartão, Dinheiro são Pagamento)</td></tr>
+<tr><td>Classe-associação</td><td>classe ligada à associação por tracejado</td><td>atributos que pertencem à <strong>relação</strong> N:M (Procedimento realizado com <code>ordem</code>)</td></tr>
+</tbody></table></div>
+<p>Multiplicidades: <code>1</code>, <code>0..1</code>, <code>*</code> (0 ou mais), <code>1..*</code>. Lê-se do lado oposto: "um Cirurgião é responsável por <code>*</code> Cirurgias; cada Cirurgia tem <code>1</code> Cirurgião responsável".</p>
+<div class="box ex"><span class="t">Exame 2023-24: Diagrama 5 (hospital)</span>
+<ul>
+<li>"Um Cirurgião pode ser o responsável em várias cirurgias": <strong>verdadeiro</strong> (1 — *).</li>
+<li>"A duração estimada do Procedimento é independente do Cirurgião": <strong>verdadeiro</strong> (é atributo de Procedimento cirúrgico).</li>
+<li>Quem realizou cada procedimento? O modelo só liga a Cirurgia a <strong>um</strong> cirurgião responsável, logo associa todos os procedimentos dessa cirurgia a esse cirurgião.</li>
+<li>Falsas: um Bloco partilhado por hospitais (é composição com Hospital); um Cirurgião contratado por vários hospitais (multiplicidade 1); formado em várias especialidades (1); a ordem dos procedimentos não se sabe (a classe-associação tem <code>ordem</code>).</li>
+</ul></div>
+<div class="box ex"><span class="t">Exame 2023-24: Diagrama 9 (encomendas de restaurante)</span>
+<p>Resposta certa: <strong>um Prato pode estar indisponível</strong> (atributo <code>disponibilidade : Estado</code>, enumeração Ativo/Indisponível). Falsas: a encomenda guarda só a <code>situação atual</code> (não o histórico); uma Entrega tem 0..1 Estafeta; cada Opção pedida guarda o seu <code>preco unitario</code>, por isso mudar o preço do Prato não afeta encomendas antigas.</p></div>
+<p>Padrões de análise do TP12: <strong>Quantidade e Unidade</strong> (valor + unidade em vez de um número solto), <strong>Histórico e estados temporais</strong> (guardar estados com datas em vez de só o atual).</p>
+</section>
+
+<section id="swproc" data-nav="7 · Processos de software" data-grp="Processos e gestão" data-track>
+<h2>7 · Processos de software e metodologias<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Um <strong>processo de software</strong> define papéis, atividades e resultados para orientar a equipa. Duas famílias:</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Sequencial (Waterfall)</th><th>Evolutivo / iterativo (UP, OpenUP, ágil)</th></tr></thead>
+<tbody>
+<tr><td>Organização</td><td>disciplinas em sequência linear (requisitos → desenho → código → testes)</td><td><strong>ciclos com entregas incrementais</strong></td></tr>
+<tr><td>Requisitos</td><td>definidos e congelados no início</td><td>refinados ao longo do projeto</td></tr>
+<tr><td>Risco</td><td>"tende a <strong>mascarar os riscos</strong> até ser tarde": a integração e os testes só acontecem no fim</td><td>cada iteração integra e testa: erros e inviabilidades aparecem cedo</td></tr>
+<tr><td>Adequado quando</td><td>requisitos claros e estáveis, domínio conhecido, contratos de âmbito fixo, sistemas críticos regulados</td><td>requisitos incertos ou que mudam, inovação, feedback frequente</td></tr>
+</tbody></table></div>
+<h3>Unified Process / OpenUP</h3>
+<p>Processo genérico e adaptável, <strong>orientado por casos de utilização, focado na arquitetura, iterativo e incremental</strong>. Quatro fases, cada uma com várias iterações e um marco no fim:</p>
+<div class="tw"><table>
+<thead><tr><th>Fase</th><th>Objetivo</th><th>Marco (milestone)</th></tr></thead>
+<tbody>
+<tr><td>Inception</td><td>âmbito, visão, viabilidade</td><td>Lifecycle Objectives: <strong>decidir avançar ou parar</strong></td></tr>
+<tr><td>Elaboration</td><td>requisitos principais, <strong>arquitetura</strong>, eliminar riscos técnicos</td><td>Lifecycle Architecture: <strong>arquitetura definida e validada</strong></td></tr>
+<tr><td>Construction</td><td>implementar incrementalmente</td><td>Initial Operational Capability: <strong>funcionalidades da 1.ª versão implementadas</strong></td></tr>
+<tr><td>Transition</td><td>estabilizar e entregar</td><td>Product Release: <strong>solução instalada e aceite pelo cliente</strong></td></tr>
+</tbody></table></div>
+<p>As fases têm durações diferentes; as iterações são regulares. Cada iteração <strong>não</strong> se dedica a uma só disciplina: em cada uma fazem-se requisitos, desenho, código e testes em proporções diferentes (afirmação falsa no exame 2018-19, P2). O OpenUP pode considerar-se ágil: iterativo, entregas frequentes, aceita a mudança, colaboração próxima.</p>
+<h3>Manifesto Ágil: os 4 valores</h3>
+<ol>
+<li><strong>Indivíduos e interações</strong> mais que processos e ferramentas.</li>
+<li><strong>Software a funcionar</strong> mais que documentação exaustiva.</li>
+<li><strong>Colaboração com o cliente</strong> mais que negociação de contratos.</li>
+<li><strong>Responder à mudança</strong> mais que seguir um plano.</li>
+</ol>
+<p>"Mais que" não é "em vez de": os itens da direita também têm valor. Por isso "responder à mudança" significa que <strong>as alterações são acomodadas quando trazem valor, e o backlog pode mudar de iteração para iteração</strong> (exame 2023-24, P10), não que não há planeamento ou que a iteração muda de duração.</p>
+<p>Alguns dos 12 princípios: entregar cedo e continuamente software com valor; acolher a mudança, mesmo tarde; entregas frequentes (semanas); cliente e programadores trabalham juntos diariamente; o software a funcionar é a medida de progresso; ritmo sustentável; simplicidade; equipas auto-organizadas; refletir regularmente e ajustar.</p>
+<p>Os métodos ágeis reduzem o risco porque <strong>os testes acontecem entrelaçados com o desenvolvimento</strong> e o <strong>feedback é frequente</strong>: um requisito ou opção técnica inviável descobre-se depressa.</p>
+</section>
+
+<section id="agil" data-nav="8 · Gestão ágil de projetos" data-grp="Processos e gestão" data-track>
+<h2>8 · Gestão ágil de projetos<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th>Gestão clássica</th><th>Gestão ágil</th></tr></thead>
+<tbody>
+<tr><td><strong>WBS</strong> (decomposição hierárquica do trabalho), diagrama de <strong>Gantt</strong>, estimativas em horas</td><td><strong>Timeboxing</strong> (iterações de duração fixa), backlog, <strong>story points</strong>, story map, quadro Kanban, burndown</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Timeboxing</strong>: a duração da iteração é fixa; o que varia é o âmbito. No fim há sempre um incremento a funcionar.</li>
+<li><strong>Épico</strong>: história grande, a dividir em várias histórias.</li>
+<li><strong>Story points</strong>: medida <strong>relativa</strong> do esforço/complexidade de uma história, estimada pela equipa (ex.: planning poker com a sequência de Fibonacci), por comparação com histórias de referência.</li>
+<li><strong>Velocidade</strong>: <strong>média dos pontos realizados por iteração</strong>, contando só histórias concluídas. Serve para prever quantas histórias cabem nas próximas iterações. Não é comparável entre equipas.</li>
+<li><strong>Story map</strong>: organiza as histórias pela jornada do utilizador (colunas = atividades, linhas = prioridade/releases); ajuda a planear iterações.</li>
+<li><strong>Kanban</strong>: quadro visual do estado das tarefas (To Do, In Progress, Done), com limite de trabalho em curso.</li>
+</ul>
+<h3>Scrum</h3>
+<div class="tw"><table>
+<thead><tr><th>Papéis</th><th>Eventos</th><th>Artefactos</th></tr></thead>
+<tbody><tr>
+<td>Product Owner (prioriza o backlog), Scrum Master (facilita, remove impedimentos), equipa de desenvolvimento</td>
+<td>Sprint (1 a 4 semanas), Sprint Planning, Daily Scrum (15 min), Sprint Review (mostrar o incremento aos stakeholders), Sprint Retrospective (melhorar o processo)</td>
+<td>Product Backlog (lista priorizada de histórias), Sprint Backlog, Incremento</td>
+</tr></tbody></table></div>
+<p><strong>O Scrum não é um processo de software completo</strong>: é uma <em>framework</em> de gestão da equipa e do trabalho; não diz como fazer requisitos, desenho ou testes. Sprint e iteração são o mesmo conceito. O backlog é <strong>dinâmico</strong>: a ordem muda conforme o valor e o conhecimento. Relação próxima com o cliente: <strong>stakeholders participam na priorização e na definição dos critérios de aceitação</strong> (exame 2023-24, P13).</p>
+</section>
+
+<section id="comport" data-nav="9 · Sequência e desenho por objetos" data-grp="Desenho e construção" data-track>
+<h2>9 · Diagramas de sequência e desenho por objetos<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th>Uso</th><th>O que mostra</th><th>Participantes</th></tr></thead>
+<tbody>
+<tr><td><strong>DSS</strong> (análise)</td><td>eventos que os atores geram para um cenário de um CaU, a ordem, e integração com outros sistemas</td><td>ator(es) e o <strong>sistema como caixa-negra</strong>; mensagens = operações de sistema</td></tr>
+<tr><td>Desenho</td><td>como objetos trocam mensagens para realizar um cenário (<em>use case realization</em>)</td><td>objetos (<code>prato : Prato</code>)</td></tr>
+</tbody></table></div>
+<p>Elementos: <strong>linha de vida</strong> (tracejado vertical), <strong>barra de ativação</strong>, mensagem síncrona (seta cheia), assíncrona (seta aberta), retorno (tracejado), criação <code>«create»</code>, fragmentos <code>alt</code> (alternativas com guardas), <code>opt</code> (opcional), <code>loop</code> (repetição <code>[for each x in lista]</code>; não é infinito), <code>par</code> (paralelo).</p>
+<div class="box teo"><span class="t">Do diagrama ao código Java</span>
+<ul>
+<li>Uma <strong>mensagem recebida</strong> por um objeto corresponde a um <strong>método da classe</strong> desse objeto (exame 2023-24, P17).</li>
+<li>Se A envia mensagem a B, A precisa de uma referência para B: há <strong>dependência (acoplamento)</strong> de A para B.</li>
+<li><code>loop [for each prato in opcoes]</code> é um ciclo for-each sobre uma coleção.</li>
+</ul></div>
+<div class="box ex"><span class="t">Exame 2023-24, Diagrama 10</span>
+<p><code>:Pedido</code> recebe <code>calcularCalorias()</code>, chama <code>totalCalorias()</code> em cada <code>Prato</code>, que chama <code>getCalorias()</code> em cada <code>Alimento</code>. Certo: as mensagens recebidas correspondem a métodos das classes. Falso: o Pedido não tem <code>totalCalorias()</code> (é do Prato); o Pedido não depende do Alimento (só fala com o Prato); não há interdependência entre as três.</p>
+<pre><code><span class="k">class</span> Pedido {
+    <span class="k">private</span> List&lt;Prato&gt; opcoes;
+    <span class="k">double</span> calcularCalorias() {
+        <span class="k">double</span> total = <span class="n">0</span>;
+        <span class="k">for</span> (Prato prato : opcoes) total += prato.totalCalorias();   <span class="c">// 1.1</span>
+        <span class="k">return</span> total;
+    }
+}
+<span class="k">class</span> Prato {
+    <span class="k">private</span> List&lt;Alimento&gt; listaAlimentos;
+    <span class="k">double</span> totalCalorias() {
+        <span class="k">double</span> t = <span class="n">0</span>;
+        <span class="k">for</span> (Alimento alim : listaAlimentos) t += alim.getCalorias(); <span class="c">// 1.1.1</span>
+        <span class="k">return</span> t;
+    }
+}</code></pre></div>
+<p><strong>Diagrama de comunicação</strong>: a mesma informação em forma de grafo, com mensagens numeradas (1, 1.1, 1.1.1). O de sequência realça a <strong>ordem temporal</strong>; o de comunicação realça <strong>quem está ligado a quem</strong>.</p>
+<p><strong>Baixo acoplamento</strong>: cada classe depende de poucas outras (mudanças propagam-se menos). <strong>Alta coesão</strong>: cada classe tem um conjunto coerente e delimitado de responsabilidades. Não são contraditórios; atingem-se em conjunto. Enviar mensagens só a objetos próximos/conhecidos reduz o acoplamento.</p>
+</section>
+
+<section id="arq" data-nav="10 · Arquitetura" data-grp="Desenho e construção" data-track>
+<h2>10 · Arquitetura: vistas e estilos<span class="done-tag" hidden>estudado ✓</span></h2>
+<p><strong>Arquitetura de software</strong>: o conjunto de estruturas para raciocinar sobre o sistema (elementos, relações, comportamentos). É uma abstração que omite detalhes internos.</p>
+<p><strong>Requisitos significativos para a arquitetura</strong>: os que a afetam profundamente, quase sempre atributos de qualidade (desempenho, segurança, escalabilidade, disponibilidade, portabilidade). Ex.: "suportar 10 000 utilizadores simultâneos" afeta; "mostrar a data de nascimento no perfil" não.</p>
+<div class="tw"><table>
+<thead><tr><th>Perspetiva</th><th>Mostra</th><th>Diagrama UML</th></tr></thead>
+<tbody>
+<tr><td>Lógica</td><td>organização dos blocos de software, independente da tecnologia (camadas, módulos, dependências)</td><td><strong>Pacotes</strong></td></tr>
+<tr><td>Componentes</td><td>peças implementadas com tecnologia concreta e as suas interfaces</td><td><strong>Componentes</strong></td></tr>
+<tr><td>Instalação</td><td>nós de hardware/execução e os artefactos instalados</td><td><strong>Instalação</strong> (deployment)</td></tr>
+</tbody></table></div>
+<p><strong>Arquitetura em camadas</strong>: níveis de abstração sobrepostos; cada camada usa a de baixo. Padrão de <strong>3 camadas</strong>: Apresentação (UI) → Lógica de domínio (negócio) → Acesso a dados. As <em>partições</em> dividem uma camada na vertical (ex.: subsistemas de vendas e de stock).</p>
+<p><strong>Arquitetura evolutiva (OpenUP)</strong>: na Elaboration define-se e valida-se uma <strong>arquitetura basal executável</strong> para eliminar os maiores riscos técnicos; depois evolui. Definir a arquitetura cedo importa porque é a parte mais cara de mudar mais tarde.</p>
+</section>
+
+<section id="qa" data-nav="11 · Qualidade e testes" data-grp="Desenho e construção" data-track>
+<h2>11 · Garantia de qualidade e testes<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th></th><th>Verificação</th><th>Validação</th></tr></thead>
+<tbody>
+<tr><td>Pergunta</td><td>Estamos a construir o produto <strong>corretamente</strong>?</td><td>Estamos a construir o produto <strong>correto</strong>?</td></tr>
+<tr><td>Compara com</td><td>especificações</td><td>necessidades reais do utilizador</td></tr>
+<tr><td>Práticas</td><td>testes unitários e de integração, inspeções de código</td><td>testes de aceitação, protótipos, revisões com stakeholders</td></tr>
+</tbody></table></div>
+<p><strong>Pirâmide dos testes</strong>: mostra que há <strong>diferentes tipos de testes com âmbitos diferentes</strong> (resposta certa no exame). Base: muitos testes <strong>unitários</strong> (rápidos, uma classe/método, escritos pelo programador); meio: <strong>integração</strong> (colaboração entre componentes); topo: <strong>sistema / aceitação</strong> (fim a fim, poucos, mais lentos; verificam os requisitos na perspetiva do utilizador).</p>
+<ul>
+<li><strong>V-Model</strong>: versão do Waterfall que emparelha cada fase de desenvolvimento com um nível de teste (requisitos ↔ aceitação, desenho ↔ integração, código ↔ unitários).</li>
+<li><strong>No ágil</strong>, a QA é contínua: cada incremento é verificado e validado; os critérios de aceitação das histórias guiam os testes de aceitação (<strong>ATDD</strong>).</li>
+<li><strong>TDD</strong>: escrever um teste que falha → escrever o código mínimo para passar → refatorar. Ao contrário do "debug-later", produz código mais simples e testável.</li>
+<li><strong>CI/CD</strong>: integrar, construir e testar automaticamente a cada commit; entregar com frequência. Por isso os testes devem ser <strong>automatizáveis</strong>, para correr tanto os novos como os antigos (testes de regressão).</li>
+<li><strong>Controlo de qualidade</strong> (QC) deteta defeitos no produto (testar, inspecionar). <strong>Garantia de qualidade</strong> (QA) previne defeitos no processo (normas, revisões, TDD, CI).</li>
+</ul>
+</section>
+
+<section id="comuns" data-nav="12 · Elementos comuns da UML" data-grp="Desenho e construção" data-track>
+<h2>12 · Elementos comuns da UML<span class="done-tag" hidden>estudado ✓</span></h2>
+<ul>
+<li><strong>Notas</strong>: comentários ligados a elementos por tracejado.</li>
+<li><strong>Estereótipos</strong>: estendem o significado de um elemento, entre guillemets: <code>«include»</code>, <code>«datastore»</code>, <code>«enumeration»</code>, <code>«interface»</code>, <code>«create»</code>.</li>
+<li><strong>Pacotes</strong>: agrupam elementos do modelo; com dependências mostram a arquitetura lógica.</li>
+<li><strong>Restrições</strong> entre chavetas, por vezes em <strong>OCL</strong>: <code>{dataFim &gt; dataInicio}</code>.</li>
+<li><strong>Diagrama de objetos</strong>: instâncias concretas num momento (<code>c1 : Cirurgia</code>), útil para validar um diagrama de classes com exemplos.</li>
+</ul>
+</section>
+
+<section id="cosmic" data-nav="Ten Cosmic Truths (desenvolvimento)" data-grp="Exame">
+<h2>Ten Cosmic Truths About Software Requirements</h2>
+<p>Uma das perguntas de desenvolvimento cita uma destas "verdades" e pede um comentário crítico. Resumo de cada uma, por palavras próprias:</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Ideia</th><th>O que dizer</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Sem requisitos certos, o resto do projeto não importa</td><td>Os requisitos são a base; desenvolvem-se ao longo do projeto; critérios de aceitação ajudam a validar</td></tr>
+<tr><td>2</td><td>Requisitos descobrem-se e inventam-se, não se "recolhem"</td><td>Elicitação é exploratória e iterativa; o analista é investigador e pode propor ideias que os clientes aprovem</td></tr>
+<tr><td>3</td><td>A mudança acontece</td><td>Controlar a mudança não é impedi-la; usar <em>baselines</em> e prever folgas; mudar tem sempre custo</td></tr>
+<tr><td>4</td><td>Os interesses de todos os stakeholders cruzam-se nos requisitos</td><td>Identificar grupos e representantes; haverá conflitos; definir cedo quem decide</td></tr>
+<tr><td>5</td><td>O envolvimento do cliente é o maior fator de qualidade</td><td>Classes de utilizadores, <em>product champions</em>, direitos e deveres, protótipos</td></tr>
+<tr><td>6</td><td>O cliente nem sempre tem razão, mas tem sempre um motivo</td><td>Perceber a razão por trás do pedido (soluções disfarçadas de requisitos, "prioridade por decibéis") e negociar</td></tr>
+<tr><td>7</td><td>A 1.ª pergunta sobre um requisito novo é "está no âmbito?"</td><td>Âmbito bem definido evita <em>scope creep</em>; senão adiar, rejeitar ou alargar com custos</td></tr>
+<tr><td>8</td><td>Nenhum documento substitui o diálogo</td><td>A especificação é memória do grupo, mas falar com utilizadores esclarece; mais detalhe se houver outsourcing</td></tr>
+<tr><td>9</td><td>Os requisitos podem ser vagos, o produto será específico</td><td>A vagueza agrada a clientes e programadores mas alguém acaba por decidir (os programadores, que sabem menos do negócio)</td></tr>
+<tr><td>10</td><td>Nunca terás requisitos perfeitos</td><td>Evitar a paralisia da análise; requisitos "bons o suficiente" para avançar com risco aceitável; baselines sucessivas</td></tr>
+</tbody></table></div>
+<div class="box met"><span class="t">Como estruturar a resposta (2,5 valores)</span>
+<ol>
+<li><strong>Explica a ideia</strong> por palavras tuas (2-3 frases).</li>
+<li><strong>Porquê</strong>: as causas (ex.: para a #9, especificar é difícil porque é algo novo, os stakeholders não sabem tudo à partida, há interesses em manter a ambiguidade).</li>
+<li><strong>Impacto</strong> no projeto: retrabalho, custos, expectativas desalinhadas, decisões de negócio tomadas por programadores, testes impossíveis de definir.</li>
+<li><strong>Práticas que ajudam</strong>, ligando à matéria: requisitos S.M.A.R.T.; critérios de aceitação com exemplos concretos (DADO-QUANDO-ENTÃO); protótipos; iterações curtas com feedback; refinamento progressivo do backlog (detalhe <em>just in time</em>); product owner envolvido; baselines.</li>
+<li><strong>Perspetiva crítica</strong>: um equilíbrio (nem vagueza, nem especificação exaustiva antes de começar).</li>
+</ol></div>
+</section>
+
+<section id="exame" data-nav="Exame 2023-24 resolvido" data-grp="Exame">
+<h2>Exame final 2023-24 (respostas oficiais)</h2>
+<p>Respostas certas segundo a revisão do Moodle, com a explicação. Tapa a coluna da resposta e tenta primeiro.</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Pergunta (resumo)</th><th>Resposta certa e porquê</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Porque é a UML adequada para modelar código Java?</td><td>Java é OO: as abstrações do código e os elementos da UML partilham o mesmo significado</td></tr>
+<tr><td>2</td><td>Ideia da pirâmide dos testes</td><td>Existem diferentes tipos de testes, que focam âmbitos diferentes do código</td></tr>
+<tr><td>3</td><td>Coerência objetos → classes</td><td>Todos os atributos de um objeto são atributos de uma classe</td></tr>
+<tr><td>4</td><td>Número de CaU vs histórias</td><td>Os CaU desdobram-se em várias histórias (formas de percorrer o CaU)</td></tr>
+<tr><td>5</td><td>Critérios de aceitação</td><td>Explorar cenários representativos com exemplos concretos (valores de entrada e resultados esperados)</td></tr>
+<tr><td>6</td><td>Porque reduzem os ágeis o risco de falhas grandes?</td><td>Os testes acontecem entrelaçados com o desenvolvimento: o inviável descobre-se cedo</td></tr>
+<tr><td>7</td><td>Marcos do UP, por ordem</td><td>Decisão de avançar ou parar; arquitetura definida e validada; funcionalidades da 1.ª versão implementadas; solução instalada e aceite</td></tr>
+<tr><td>8</td><td>Vantagem que NÃO decorre dos modelos</td><td>"Permite eliminar a documentação" (falso)</td></tr>
+<tr><td>9</td><td>Requisito "carregamento rápido e experiência fluída"</td><td>Relevante, mas mal formulado: nem específico nem mensurável</td></tr>
+<tr><td>10</td><td>"Responder à mudança mais que seguir um plano"</td><td>Acomodar alterações que trazem valor; o backlog muda entre iterações</td></tr>
+<tr><td>11</td><td>FALSO sobre o modelo do domínio</td><td>"As classes do código são as mesmas do modelo do domínio"</td></tr>
+<tr><td>12</td><td>S.M.A.R.T. segundo Wiegers</td><td>O requisito tem de ser específico e alcançável; tem de se poder dizer objetivamente se está no produto</td></tr>
+<tr><td>13</td><td>Prática de relação com o cliente</td><td>Stakeholders participam na priorização e nos critérios de aceitação</td></tr>
+<tr><td>14</td><td>Processos sequenciais vs evolutivos</td><td>Os evolutivos organizam o desenvolvimento em ciclos com entregas incrementais</td></tr>
+<tr><td>15</td><td>QA recomendada no ágil</td><td>Testes automatizáveis, para correr os novos e os antigos com facilidade</td></tr>
+<tr><td>16</td><td>Relação CaU – requisitos</td><td>Os CaU recolhem os requisitos em contexto, através de narrativas centradas nos cenários de uso</td></tr>
+<tr><td>17</td><td>Diagrama 10 (sequência das calorias)</td><td>As mensagens recebidas por um objeto correspondem a métodos da sua classe</td></tr>
+<tr><td>18</td><td>Diagrama 5 (hospital)</td><td>A duração estimada do Procedimento é independente do Cirurgião</td></tr>
+<tr><td>19</td><td>Diagrama 12 (helpdesk)</td><td>Mesmo num diagrama de atividades vê-se que o ticket evolui por vários estados</td></tr>
+<tr><td>20</td><td>Diagrama 5: quem realizou os procedimentos</td><td>O modelo associa todos os procedimentos de uma cirurgia a um único cirurgião</td></tr>
+<tr><td>21</td><td>Diagrama 9 (encomendas)</td><td>Um Prato pode estar indisponível (enumeração Estado)</td></tr>
+<tr><td>22</td><td>Diagrama 5</td><td>Um Cirurgião pode ser responsável por várias cirurgias</td></tr>
+<tr><td>23</td><td>Em que fase se faz o Diagrama 12?</td><td>Na Análise, para caracterizar processos de trabalho existentes ou pretendidos</td></tr>
+</tbody></table></div>
+<details><summary>P24 (2,5): críticas às abordagens "clássicas" sequenciais</summary><div class="in">
+<p>O professor não publicou correção. Uma resposta completa deve cobrir:</p>
+<ul>
+<li><strong>Críticas</strong>: o software é invisível e maleável, e os requisitos raramente são conhecidos e estáveis à partida. Com fases sequenciais, a integração e os testes só acontecem no fim, por isso os riscos (técnicos e de requisitos) <strong>ficam escondidos até ser tarde</strong> e caro corrigir. O cliente só vê o produto no fim.</li>
+<li><strong>Não se deve excluir</strong> totalmente: o sequencial serve para requisitos claros e estáveis, domínios conhecidos, contratos de âmbito fixo, sistemas regulados.</li>
+<li><strong>O que é "original" no software</strong>: construir é quase como desenhar (o custo de mudar código é baixo comparado com mudar uma ponte), o produto evolui com o uso e os utilizadores só descobrem o que querem quando veem algo a funcionar.</li>
+<li><strong>Como lidar</strong>: processos evolutivos/iterativos (OpenUP, ágil): iterações curtas com entregas incrementais, feedback dos stakeholders, testes contínuos e automatizados, arquitetura validada cedo, backlog priorizado por valor e risco.</li>
+</ul></div></details>
+<details><summary>P25 (2,55): Cosmic Truth #9, requisitos vagos</summary><div class="in">
+<p>Segue a estrutura da <a href="#cosmic">secção anterior</a>: dificuldade (inventar algo novo, ninguém sabe tudo, interesses em manter a ambiguidade); impacto (retrabalho, custos, expectativas desalinhadas, decisões tomadas por quem sabe menos do negócio, testes de aceitação impossíveis); práticas (S.M.A.R.T., critérios de aceitação com exemplos concretos, protótipos, iterações com feedback, refinamento progressivo, product owner presente, baselines).</p></div></details>
+</section>
+
+<section id="ex1819" data-nav="Exame 2018-19 (chave)" data-grp="Exame">
+<h2>Exame 2018-19: perguntas com a chave de correção</h2>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Pergunta</th><th>Resposta</th></tr></thead>
+<tbody>
+<tr><td>P1</td><td>Trabalho típico da fase de Análise</td><td>Analisar sistemas existentes, recolher requisitos com os promotores, desenvolver o conceito da solução</td></tr>
+<tr><td>P2</td><td>O que NÃO caracteriza o UP</td><td>"Cada iteração foca uma disciplina técnica específica"</td></tr>
+<tr><td>P3</td><td>Porque é o UP orientado por CaU</td><td>Os CaU dão uma divisão funcional do sistema usada ao longo do projeto: análise, desenho e testes</td></tr>
+<tr><td>P4</td><td>Benefício que NÃO decorre dos modelos</td><td>"Construir uma visão partilhada do progresso e das prioridades de cada sprint"</td></tr>
+<tr><td>P5</td><td>Um elemento do modelo (ex.: Ator) e os diagramas</td><td>Pode ser visualizado em vários diagramas, de tipos distintos</td></tr>
+<tr><td>P6</td><td>Velocidade da equipa</td><td>Média dos pontos realizados por iteração, respeitantes às histórias implementadas</td></tr>
+<tr><td>P7</td><td>Prática decisiva para mitigar o risco no ágil</td><td>Gestão do risco baseada em feedback frequente entre equipa e stakeholders</td></tr>
+<tr><td>P8</td><td>Desenho por objetos fácil de expandir e manter</td><td>Uma classe cujos métodos se focam só nos seus próprios atributos mantém a coesão</td></tr>
+<tr><td>P9</td><td>Afirmação NÃO correta sobre a pirâmide</td><td>"Os testes unitários são escritos por testers e não pelo programador"</td></tr>
+<tr><td>P10</td><td>"As recolhas devem continuar mesmo com desconexões pontuais"</td><td>Requisito de fiabilidade (integridade e recuperação face a falhas)</td></tr>
+<tr><td>P11</td><td>Relação UML – arquitetura</td><td>A arquitetura comunica-se com diagramas que suportam módulos e dependências (pacotes, componentes)</td></tr>
+<tr><td>P15</td><td>Estereótipo «extend»</td><td>Tem pontos de extensão que definem as condições em que o cenário adicional entra no cenário base</td></tr>
+</tbody></table></div>
+<details><summary>P21: cenários de utilização vs histórias (critérios de correção)</summary><div class="in">
+<p>a) As especificações por cenários centram-se nos <strong>objetivos dos atores</strong> (o que querem alcançar) e não no produto; dão os requisitos funcionais em contexto, evitam funcionalidades órfãs, facilitam a participação dos stakeholders e ajudam a priorizar.</p>
+<p>b) Os CaU dão a <em>big picture</em> e documentam os cenários de forma estruturada; as histórias são decomposições mais finas, focadas em incrementos de valor e na gestão diária do backlog. São <strong>complementares</strong>: as histórias podem derivar dos CaU, extraindo formas particulares de os percorrer.</p></div></details>
+<details><summary>P22: diagrama de classes e de sequência a partir de código (ConversorMoedas)</summary><div class="in">
+<p>Classes <code>Quantia</code> (codigoInternacional, valor), <code>TabelaDeCambio</code> (existe, procurarTaxa) e <code>ConversorMoedas</code> (atributo tabelaCambio, método converter). Associação ConversorMoedas → TabelaDeCambio (1), dependência <code>«create»</code> para Quantia. No diagrama de sequência: <code>converter(origem, codigoDestino)</code> entra no conversor; fragmento <code>alt</code> com a guarda que verifica que os dois códigos existem; mensagens <code>getCodigoInternacional()</code> à origem, <code>procurarTaxa(...)</code> à tabela, <code>getValor()</code> à origem, e criação da Quantia convertida, que é devolvida.</p></div></details>
+</section>
+
+<section id="erros" data-nav="Erros clássicos" data-grp="Exame">
+<h2>Erros clássicos</h2>
+<div class="cols">
+<div><h4>Conceitos</h4>
+<ul>
+<li>Confundir UML (linguagem) com UP/OpenUP (processo).</li>
+<li>Achar que ágil significa sem planeamento ou sem documentação.</li>
+<li>Achar que o Scrum é um processo de software completo.</li>
+<li>Dizer que modelo do domínio = classes do código.</li>
+<li>Confundir verificação com validação.</li>
+<li>Requisitos vagos ("rápido", "fácil", "intuitivo") tratados como bons.</li>
+</ul></div>
+<div><h4>Diagramas</h4>
+<ul>
+<li>Ler multiplicidades do lado errado.</li>
+<li>Trocar agregação (vazio) com composição (cheio).</li>
+<li>Pôr atores dentro da fronteira do sistema.</li>
+<li>Trocar a direção de «include» e «extend».</li>
+<li>Pensar que <code>loop</code> é um ciclo infinito.</li>
+<li>Assumir no diagrama coisas que ele não permite inferir.</li>
+</ul></div>
+</div>
+</section>
+
+<section id="checklist" data-nav="Lista de verificação final" data-grp="Exame">
+<h2>Lista de verificação final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="m1"> Descrever as 5 fases do SDLC e o papel do analista</label></li>
+<li><label><input type="checkbox" data-k="m2"> Classificar os diagramas UML (funcional, estrutural, comportamental)</label></li>
+<li><label><input type="checkbox" data-k="m3"> Ler e desenhar diagramas de atividades com partições e nós de objeto</label></li>
+<li><label><input type="checkbox" data-k="m4"> Distinguir requisitos funcionais e não funcionais (FURPS+) e aplicar S.M.A.R.T.</label></li>
+<li><label><input type="checkbox" data-k="m5"> Comparar técnicas de elicitação, incluindo prototipagem</label></li>
+<li><label><input type="checkbox" data-k="m6"> Desenhar diagramas de CaU com include/extend e especificar um CaU</label></li>
+<li><label><input type="checkbox" data-k="m7"> Explicar personas, CJM, histórias e critérios DADO-QUANDO-ENTÃO</label></li>
+<li><label><input type="checkbox" data-k="m8"> Desenhar e ler um modelo do domínio com todas as relações e multiplicidades</label></li>
+<li><label><input type="checkbox" data-k="m9"> Comparar sequencial vs evolutivo; fases e marcos do OpenUP; 4 valores do Manifesto</label></li>
+<li><label><input type="checkbox" data-k="m10"> Explicar timeboxing, story points, velocidade, Scrum, story map, Kanban</label></li>
+<li><label><input type="checkbox" data-k="m11"> Ler e criar diagramas de sequência (DSS e desenho) e traduzi-los para Java</label></li>
+<li><label><input type="checkbox" data-k="m12"> Identificar as 3 vistas de arquitetura e o padrão de 3 camadas</label></li>
+<li><label><input type="checkbox" data-k="m13"> Explicar V&amp;V, V-Model, pirâmide de testes, TDD e CI/CD</label></li>
+<li><label><input type="checkbox" data-k="m14"> Escrever uma resposta de desenvolvimento sobre qualquer uma das 10 Cosmic Truths</label></li>
+<li><label><input type="checkbox" data-k="m15"> Estudar a Folha de diagramas da edição em curso antes do exame</label></li>
+</ul>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var KEY='guia-mas', state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('.chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var tag=document.querySelector('#'+id+' .done-tag'); if(tag) tag.hidden=!on;
+    });
+    pbar.style.width=(secBoxes.length?100*n/secBoxes.length:0)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){ cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); }); });
+  var rst=document.getElementById('rst'), cf=document.getElementById('cf');
+  rst.addEventListener('click',function(){
+    if(cf.hidden){ cf.hidden=false; rst.textContent='Confirmar limpeza'; return; }
+    state={}; save(); refresh(); cf.hidden=true; rst.textContent='Limpar progresso';
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+        if(links[en.target.id]) links[en.target.id].classList.add('on'); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>

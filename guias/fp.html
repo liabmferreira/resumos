@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FP — guia de estudo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB; --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC; --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8; --ex:#475569; --ex-bg:#EEF1F5;
+  --code-bg:#F0F2F7; --kw:#7A2BB0; --str:#1C7A3A; --cm:#7A8494; --num:#9A5700;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.confirm{font-size:12.5px;color:var(--muted);margin-top:8px}
+.mnav{display:none}
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:940px;width:100%;min-width:0}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em;text-wrap:balance}
+.hero p{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;text-wrap:balance}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);margin-left:10px}
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0;min-width:0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:12px 0;max-width:100%}
+pre code{background:none;padding:0;font-size:inherit}
+.box pre{background:var(--card)}
+pre .k{color:var(--kw);font-weight:500} pre .s{color:var(--str)} pre .c{color:var(--cm);font-style:italic} pre .n{color:var(--num)}
+.out{border-left:3px solid var(--teo)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+td code,th code{white-space:nowrap}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px;min-width:0}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px;min-width:0}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+.ov{text-decoration:overline;text-decoration-thickness:1px}
+.bits td{font-family:var(--mono);text-align:center;font-size:13px}
+.fig{margin:16px 0;overflow-x:auto}
+.fig svg{display:block;max-width:100%;height:auto}
+.fig figcaption{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:6px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details>summary{display:none}
+  .box,pre{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>FP — guia de estudo</h1>
+  <p class="sub">Fundamentos de Programação · Python · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 13 capítulos estudados</div>
+  <nav id="nav">
+<a href="#intro">Antes de começar</a>
+<div class="grp">Bases</div>
+<a href="#bases"><input type="checkbox" data-sec="bases" aria-label="Marcar 1 · Tipos, variáveis e operadores como estudado"><span>1 · Tipos, variáveis e operadores</span></a>
+<a href="#cond"><input type="checkbox" data-sec="cond" aria-label="Marcar 2 · Condições como estudado"><span>2 · Condições</span></a>
+<a href="#func"><input type="checkbox" data-sec="func" aria-label="Marcar 3 · Funções e parâmetros como estudado"><span>3 · Funções e parâmetros</span></a>
+<a href="#ciclos"><input type="checkbox" data-sec="ciclos" aria-label="Marcar 4 · Ciclos como estudado"><span>4 · Ciclos</span></a>
+<a href="#rec"><input type="checkbox" data-sec="rec" aria-label="Marcar 5 · Recursividade como estudado"><span>5 · Recursividade</span></a>
+<div class="grp">Coleções</div>
+<a href="#strings"><input type="checkbox" data-sec="strings" aria-label="Marcar 6 · Strings como estudado"><span>6 · Strings</span></a>
+<a href="#listas"><input type="checkbox" data-sec="listas" aria-label="Marcar 7 · Listas e tuplos como estudado"><span>7 · Listas e tuplos</span></a>
+<a href="#dict"><input type="checkbox" data-sec="dict" aria-label="Marcar 8 · Dicionários e conjuntos como estudado"><span>8 · Dicionários e conjuntos</span></a>
+<div class="grp">Funcional</div>
+<a href="#comp"><input type="checkbox" data-sec="comp" aria-label="Marcar 9 · Compreensões como estudado"><span>9 · Compreensões</span></a>
+<a href="#lambda"><input type="checkbox" data-sec="lambda" aria-label="Marcar 10 · Lambda, map, filter como estudado"><span>10 · Lambda, map, filter</span></a>
+<div class="grp">Algoritmos</div>
+<a href="#ordenar"><input type="checkbox" data-sec="ordenar" aria-label="Marcar 11 · Ordenação como estudado"><span>11 · Ordenação</span></a>
+<a href="#pesquisa"><input type="checkbox" data-sec="pesquisa" aria-label="Marcar 12 · Pesquisa como estudado"><span>12 · Pesquisa</span></a>
+<a href="#ficheiros"><input type="checkbox" data-sec="ficheiros" aria-label="Marcar 13 · Ficheiros como estudado"><span>13 · Ficheiros</span></a>
+<div class="grp">Treino</div>
+<a href="#teste">Teste teórico resolvido</a>
+<a href="#pratica">Exercícios práticos resolvidos</a>
+<a href="#erros">Erros clássicos</a>
+<a href="#checklist">Lista de verificação final</a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+  <div class="confirm" id="cf" hidden>Carrega outra vez para apagar o progresso guardado neste navegador.</div>
+</aside>
+<main>
+<div class="hero" id="top">
+<h1>FP: Python do zero ao teste</h1>
+<p>Todos os temas das aulas (variáveis, condições, funções, ciclos, recursividade, coleções, compreensões, lambda, ordenação, pesquisa e ficheiros), com o teste teórico e os exercícios práticos resolvidos e testados.</p>
+</div>
+
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<h3>Como é a avaliação</h3>
+<p>O material dos anos anteriores mostra duas partes. O <strong>teste teórico</strong> é feito no Moodle e quase nunca pede que escrevas um programa inteiro. Pede que <strong>leias código e digas o que acontece</strong>. A <strong>parte prática</strong> pede funções curtas sobre dicionários, conjuntos, lambda e recursividade.</p>
+<div class="tw"><table>
+<thead><tr><th>Tipo de pergunta no teste teórico</th><th>Exemplo real</th><th>Onde estudar</th></tr></thead>
+<tbody>
+<tr><td>Escolha múltipla (resposta errada desconta 20%)</td><td>Caso base do fatorial; fatia que dá <code>[4, 5]</code>; <code>key=</code> do <code>sorted</code></td><td><a href="#rec">Recursividade</a>, <a href="#listas">Listas</a>, <a href="#ordenar">Ordenação</a></td></tr>
+<tr><td>Indicar o que é impresso</td><td>Ler um ficheiro e somar; operações com dicionário e <code>format</code></td><td><a href="#ficheiros">Ficheiros</a>, <a href="#dict">Dicionários</a></td></tr>
+<tr><td>Tabela valor e tipo (ou erro)</td><td><code>[x+2 for x in lst if x&lt;6]</code></td><td><a href="#comp">Compreensões</a></td></tr>
+<tr><td>Arrastar caixas para reescrever código</td><td>Ciclo de soma de quadrados num <code>sum(...)</code></td><td><a href="#comp">Compreensões</a></td></tr>
+<tr><td>Completar uma lambda</td><td><code>def pak(a,b)</code> em versão lambda</td><td><a href="#lambda">Lambda</a></td></tr>
+<tr><td>Completar uma função recursiva</td><td><code>toStr(num)</code> com <code>//</code> e <code>%</code></td><td><a href="#rec">Recursividade</a></td></tr>
+</tbody></table></div>
+
+<div class="box exa"><span class="t">Como estudar para isto</span>
+<p>Para cada exemplo de código deste guia, <strong>tapa a saída e tenta prever o resultado</strong> antes de olhares. É exatamente o que o teste pede. Usa o <a href="https://pythontutor.com" target="_blank" rel="noopener">Python Tutor</a> (recomendado pelo professor nos slides) para ver passo a passo o que acontece às variáveis quando tiveres dúvidas.</p></div>
+
+<div class="box bad"><span class="t">Regras do Moodle</span>
+<p>Nas respostas de "o que é impresso", <strong>não ponhas espaços a mais</strong> (o enunciado avisa). Escreve exatamente o que o Python mostra: <code>[5,6,7]</code> e <code>[5, 6, 7]</code> podem ser corrigidos de forma diferente. Lê sempre o que a pergunta pede: valor, tipo ou erro.</p></div>
+</section>
+
+<section id="bases" data-nav="1 · Tipos, variáveis e operadores" data-grp="Bases" data-track>
+<h2>1 · Tipos, variáveis e operadores<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Tipos básicos</h3>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Exemplos</th><th>Mutável?</th></tr></thead>
+<tbody>
+<tr><td><code>int</code></td><td><code>3</code>, <code>-7</code>, <code>0</code></td><td>não</td></tr>
+<tr><td><code>float</code></td><td><code>3.0</code>, <code>2.15</code>, <code>1e-3</code></td><td>não</td></tr>
+<tr><td><code>bool</code></td><td><code>True</code>, <code>False</code></td><td>não</td></tr>
+<tr><td><code>str</code></td><td><code>"ola"</code>, <code>'a'</code>, <code>""</code></td><td>não</td></tr>
+<tr><td><code>tuple</code></td><td><code>(1, 2)</code>, <code>(3,)</code></td><td>não</td></tr>
+<tr><td><code>list</code></td><td><code>[1, "a", 2.0]</code></td><td><strong>sim</strong></td></tr>
+<tr><td><code>dict</code></td><td><code>{"a": 1}</code></td><td><strong>sim</strong></td></tr>
+<tr><td><code>set</code></td><td><code>{1, 2, 3}</code>, <code>set()</code></td><td><strong>sim</strong></td></tr>
+</tbody></table></div>
+<p><code>type(x)</code> diz o tipo. Conversões: <code>int("12")</code>, <code>float("2.5")</code>, <code>str(3)</code>, <code>list("abc")</code> dá <code>['a','b','c']</code>, <code>int(3.9)</code> dá <code>3</code> (trunca, não arredonda).</p>
+
+<h3>Operadores aritméticos</h3>
+<div class="tw"><table>
+<thead><tr><th>Operador</th><th>Significado</th><th>Exemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>/</code></td><td>divisão real (dá sempre <code>float</code>)</td><td><code>7 / 2</code></td><td><code>3.5</code></td></tr>
+<tr><td><code>//</code></td><td>divisão inteira (arredonda para baixo)</td><td><code>7 // 2</code>, <code>-7 // 2</code></td><td><code>3</code>, <code>-4</code></td></tr>
+<tr><td><code>%</code></td><td>resto</td><td><code>7 % 2</code>, <code>2976 % 10</code></td><td><code>1</code>, <code>6</code></td></tr>
+<tr><td><code>**</code></td><td>potência</td><td><code>2 ** 10</code></td><td><code>1024</code></td></tr>
+<tr><td><code>+</code> em strings/listas</td><td>concatenação</td><td><code>[1] + [2]</code></td><td><code>[1, 2]</code></td></tr>
+<tr><td><code>*</code> em strings/listas</td><td>repetição</td><td><code>3 * "ab"</code></td><td><code>'ababab'</code></td></tr>
+</tbody></table></div>
+<div class="box teo"><span class="t">Truque dos dígitos (sai muito)</span>
+<p><code>n % 10</code> dá o <strong>último dígito</strong>; <code>n // 10</code> <strong>tira o último dígito</strong>. Com <code>n = 2976</code>: <code>n % 10 = 6</code>, <code>n // 10 = 297</code>. Paridade: <code>n % 2 == 0</code> é par.</p></div>
+
+<h3>Comparação e lógica</h3>
+<p><code>== != &lt; &gt; &lt;= &gt;=</code> dão <code>bool</code>. <code>and</code>, <code>or</code>, <code>not</code> avaliam em curto-circuito: em <code>a and b</code>, se <code>a</code> é falso, <code>b</code> nem é avaliado. Strings comparam-se por ordem alfabética do código de cada carácter: maiúsculas vêm antes de minúsculas (<code>"Z" &lt; "a"</code> é <code>True</code>), e <code>"bell"[0] &lt; "d"</code> é <code>True</code>.</p>
+<p>São considerados falsos: <code>0</code>, <code>0.0</code>, <code>""</code>, <code>[]</code>, <code>{}</code>, <code>set()</code>, <code>None</code>. Tudo o resto é verdadeiro.</p>
+
+<h3>Entrada, saída e formatação</h3>
+<pre><code>nome = input(<span class="s">"Nome? "</span>)              <span class="c"># input devolve SEMPRE str</span>
+idade = int(input(<span class="s">"Idade? "</span>))        <span class="c"># converter para número</span>
+print(<span class="s">"Olá"</span>, nome)                   <span class="c"># separa por espaço</span>
+print(<span class="s">"a"</span>, <span class="s">"b"</span>, sep=<span class="s">"-"</span>)             <span class="c"># a-b</span>
+print(<span class="n">1</span>, end=<span class="s">","</span>)                    <span class="c"># não muda de linha</span>
+print(f<span class="s">"{nome} tem {idade} anos"</span>)    <span class="c"># f-string</span>
+print(<span class="s">"{}:{}"</span>.format(<span class="s">"oil"</span>, <span class="s">"NA"</span>))   <span class="c"># oil:NA</span>
+print(f<span class="s">"{3.14159:.2f}"</span>)              <span class="c"># 3.14  (2 casas decimais)</span>
+print(f<span class="s">"{7:6.2f}"</span>)                   <span class="c"># '  7.00' (6 posições, 2 decimais)</span>
+print(f<span class="s">"{5:02d}"</span>)                    <span class="c"># 05  (útil para horas 01:01:06)</span></code></pre>
+<p>Biblioteca <code>math</code>: <code>math.sqrt</code>, <code>math.pi</code>, <code>math.sin/cos</code> (em <strong>radianos</strong>: converte com <code>math.radians(graus)</code>), <code>math.hypot(dx, dy)</code>, <code>math.fabs</code>, <code>math.floor</code>, <code>math.ceil</code>.</p>
+<div class="box ex"><span class="t">Exemplo das aulas: segundos para hh:mm:ss</span>
+<pre><code>t = int(input(<span class="s">"Segundos? "</span>))
+h = t // <span class="n">3600</span>
+m = (t % <span class="n">3600</span>) // <span class="n">60</span>
+s = t % <span class="n">60</span>
+print(f<span class="s">"{h:02d}:{m:02d}:{s:02d}"</span>)    <span class="c"># 3661 -&gt; 01:01:01</span></code></pre></div>
+</section>
+
+<section id="cond" data-nav="2 · Condições" data-grp="Bases" data-track>
+<h2>2 · Condições<span class="done-tag" hidden>estudado ✓</span></h2>
+<pre><code><span class="k">if</span> x &gt; <span class="n">0</span>:
+    print(<span class="s">"positivo"</span>)
+<span class="k">elif</span> x == <span class="n">0</span>:
+    print(<span class="s">"zero"</span>)
+<span class="k">else</span>:
+    print(<span class="s">"negativo"</span>)
+
+<span class="c"># expressão condicional (numa linha) — usada em lambdas e compreensões</span>
+sinal = <span class="s">"par"</span> <span class="k">if</span> x % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> <span class="s">"ímpar"</span></code></pre>
+<p>A <strong>indentação</strong> define os blocos: tudo o que está mais à direita depois dos <code>:</code> pertence ao <code>if</code>. Misturar espaços e tabs dá erro.</p>
+<div class="box met"><span class="t">Trocar duas variáveis (swap)</span>
+<pre><code><span class="k">if</span> a &gt; b:
+    a, b = b, a       <span class="c"># forma Python: sem variável auxiliar</span></code></pre>
+<p>Usado para "corrigir" um intervalo <code>[4, 2]</code> para <code>[2, 4]</code>.</p></div>
+<div class="box ex"><span class="t">Exemplos clássicos das aulas</span>
+<pre><code><span class="k">def</span> isleap(y):
+    <span class="c"># bissexto: divisível por 4 e não por 100, ou divisível por 400</span>
+    <span class="k">return</span> (y % <span class="n">4</span> == <span class="n">0</span> <span class="k">and</span> y % <span class="n">100</span> != <span class="n">0</span>) <span class="k">or</span> y % <span class="n">400</span> == <span class="n">0</span>
+
+<span class="k">def</span> intersect(a1, b1, a2, b2):
+    <span class="c"># intervalos [a1,b1] e [a2,b2] intersetam-se?</span>
+    <span class="k">return</span> <span class="k">not</span> (a1 &gt;= b2 <span class="k">or</span> a2 &gt;= b1)
+
+<span class="k">def</span> daysMonth(m, y):
+    <span class="k">if</span> m <span class="k">in</span> (<span class="n">4</span>, <span class="n">6</span>, <span class="n">9</span>, <span class="n">11</span>):
+        <span class="k">return</span> <span class="n">30</span>
+    <span class="k">elif</span> m == <span class="n">2</span>:
+        <span class="k">return</span> <span class="n">29</span> <span class="k">if</span> isleap(y) <span class="k">else</span> <span class="n">28</span>
+    <span class="k">return</span> <span class="n">31</span></code></pre></div>
+</section>
+
+<section id="func" data-nav="3 · Funções e parâmetros" data-grp="Bases" data-track>
+<h2>3 · Funções e parâmetros<span class="done-tag" hidden>estudado ✓</span></h2>
+<pre><code><span class="k">def</span> pol(a, b, c, x):          <span class="c"># parâmetros</span>
+    <span class="k">return</span> a*x**<span class="n">2</span> + b*x + c   <span class="c"># valor devolvido</span>
+
+pol(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">1</span>)               <span class="c"># 6</span>
+<span class="k">def</span> f(x, y=<span class="n">10</span>): <span class="k">return</span> x + y  <span class="c"># valor por omissão</span>
+f(<span class="n">1</span>), f(<span class="n">1</span>, <span class="n">2</span>), f(y=<span class="n">5</span>, x=<span class="n">1</span>)    <span class="c"># 11, 3, 6 (argumentos com nome)</span></code></pre>
+<ul>
+<li>Uma função sem <code>return</code> (ou com <code>return</code> sozinho) devolve <code>None</code>.</li>
+<li><code>return a, b</code> devolve um <strong>tuplo</strong>; recebe-se com <code>x, y = f()</code>.</li>
+<li>Variáveis criadas dentro da função são <strong>locais</strong>: desaparecem quando a função termina.</li>
+<li><code>return</code> termina logo a função; código depois dele não corre.</li>
+</ul>
+
+<h3>Passagem de argumentos: mutáveis e imutáveis</h3>
+<p>O parâmetro recebe uma <strong>referência</strong> para o mesmo objeto. O que acontece depende do tipo e do que fazes dentro da função.</p>
+<div class="cols">
+<div><h4>Alterar o objeto (mutável)</h4>
+<pre><code><span class="k">def</span> changeme(l):
+    l.append(<span class="n">4</span>)
+
+m = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>]
+changeme(m)
+print(m)   <span class="c"># [1, 2, 3, 4]</span></code></pre><p>A lista original <strong>muda</strong>: os dois nomes apontam para o mesmo "papagaio" (como diz o professor).</p></div>
+<div><h4>Reatribuir o nome</h4>
+<pre><code><span class="k">def</span> changeme(l):
+    l = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>]
+
+m = [<span class="n">10</span>, <span class="n">20</span>, <span class="n">30</span>]
+changeme(m)
+print(m)   <span class="c"># [10, 20, 30]</span></code></pre><p>A lista original <strong>não muda</strong>: <code>l</code> passou a apontar para outra lista.</p></div>
+</div>
+<p>Com <code>int</code>, <code>str</code>, <code>tuple</code> (imutáveis) nunca consegues alterar o original dentro da função; tens de devolver o novo valor (<code>a = increment(a)</code>).</p>
+<div class="box bad"><span class="t">Cuidado</span>
+<p><code>l2 = l</code> <strong>não copia</strong>: é a mesma lista com dois nomes. Para copiar usa <code>l.copy()</code>, <code>l[:]</code> ou <code>list(l)</code>.</p></div>
+</section>
+
+<section id="ciclos" data-nav="4 · Ciclos" data-grp="Bases" data-track>
+<h2>4 · Ciclos<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Regra prática do professor: <strong>sabes quantas vezes repetir? usa <code>for</code>. Para tudo o resto (por exemplo, "ler até aparecer 0"), usa <code>while</code>.</strong></p>
+<h3><code>range</code></h3>
+<div class="tw"><table>
+<thead><tr><th>Chamada</th><th>Valores</th></tr></thead>
+<tbody>
+<tr><td><code>range(5)</code></td><td>0, 1, 2, 3, 4</td></tr>
+<tr><td><code>range(2, 6)</code></td><td>2, 3, 4, 5 (o fim fica de fora)</td></tr>
+<tr><td><code>range(0, 10, 3)</code></td><td>0, 3, 6, 9</td></tr>
+<tr><td><code>range(5, 0, -1)</code></td><td>5, 4, 3, 2, 1</td></tr>
+</tbody></table></div>
+<h3>Formas de percorrer</h3>
+<pre><code><span class="k">for</span> x <span class="k">in</span> [<span class="n">3</span>, <span class="n">4</span>, <span class="n">2</span>]:           <span class="c"># pelos valores</span>
+    ...
+<span class="k">for</span> i <span class="k">in</span> range(len(l)):       <span class="c"># pelas posições</span>
+    ...
+<span class="k">for</span> i, x <span class="k">in</span> enumerate(l):     <span class="c"># posição e valor ao mesmo tempo</span>
+    ...
+<span class="k">for</span> a, b <span class="k">in</span> zip(l1, l2):      <span class="c"># duas listas em paralelo (pára na mais curta)</span>
+    ...
+<span class="k">for</span> k, v <span class="k">in</span> d.items():        <span class="c"># dicionário: chave e valor</span>
+    ...</code></pre>
+<h3><code>break</code> e <code>continue</code></h3>
+<p><code>break</code> sai do ciclo de imediato. <code>continue</code> salta para a próxima iteração sem executar o resto do corpo.</p>
+
+<h3>Padrões de leitura (aparecem em todos os slides)</h3>
+<div class="box met"><span class="t">Ler até aparecer 0 e calcular máximo, soma e média</span>
+<pre><code>a = int(input(<span class="s">"a? "</span>))
+mx = a
+soma = <span class="n">0</span>
+c = <span class="n">0</span>
+<span class="k">while</span> a != <span class="n">0</span>:
+    <span class="k">if</span> a &gt; mx:
+        mx = a
+    soma += a
+    c += <span class="n">1</span>
+    a = int(input(<span class="s">"a? "</span>))        <span class="c"># ler o próximo NO FIM do ciclo</span>
+
+<span class="k">if</span> c &gt; <span class="n">0</span>:                        <span class="c"># evitar divisão por zero!</span>
+    print(mx, soma, soma / c)</code></pre>
+<p>O professor pergunta nos slides "o que acontece com <code>avg = sum / c</code> em todos os exemplos?". A resposta: se o primeiro valor já for o de paragem, <code>c</code> fica <code>0</code> e dá <code>ZeroDivisionError</code>. Por isso confirma sempre <code>c &gt; 0</code>.</p></div>
+<div class="box ex"><span class="t">Variante com <code>while True</code> e <code>break</code></span>
+<pre><code>valores = []
+<span class="k">while</span> <span class="k">True</span>:
+    s = input(<span class="s">"valor? "</span>)
+    <span class="k">if</span> s == <span class="s">""</span>:                  <span class="c"># parar com linha vazia</span>
+        <span class="k">break</span>
+    valores.append(int(s))</code></pre></div>
+
+<h3>Sucessões (padrão "valor antigo → valor novo")</h3>
+<pre><code>a = <span class="n">1</span>                  <span class="c"># condição inicial a0</span>
+<span class="k">for</span> i <span class="k">in</span> range(n):     <span class="c"># repetir n vezes</span>
+    a = <span class="n">3</span> * a          <span class="c"># a regra: a(n+1) = 3 * a(n)</span>
+print(a)               <span class="c"># 3**n</span></code></pre>
+<h3>Ciclos encaixados</h3>
+<pre><code><span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, <span class="n">4</span>):
+    <span class="k">for</span> j <span class="k">in</span> range(<span class="n">1</span>, <span class="n">4</span>):
+        print(i * j, end=<span class="s">" "</span>)
+    print()            <span class="c"># muda de linha no fim de cada i</span></code></pre>
+</section>
+
+<section id="rec" data-nav="5 · Recursividade" data-grp="Bases" data-track>
+<h2>5 · Recursividade<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Uma função recursiva chama-se a si própria com um problema <strong>mais pequeno</strong>, até chegar a um <strong>caso base</strong> que se resolve diretamente.</p>
+<div class="box met"><span class="t">Receita para escrever uma função recursiva</span>
+<ol>
+<li><strong>Caso base</strong>: qual é o caso mais simples, com resposta imediata? (n == 0, lista vazia, string de 1 letra, número com 1 dígito)</li>
+<li><strong>Passo recursivo</strong>: como reduzo o problema? (n-1, n//10, lista sem o primeiro elemento)</li>
+<li><strong>Combinação</strong>: como junto o resultado da chamada ao que falta? (multiplicar por n, somar 1, concatenar)</li>
+<li>Confirma que todas as chamadas chegam ao caso base. Senão: <code>RecursionError</code>.</li>
+</ol></div>
+<pre><code><span class="k">def</span> fact(n):
+    <span class="k">if</span> n == <span class="n">0</span>:                 <span class="c"># caso base: 0! = 1</span>
+        <span class="k">return</span> <span class="n">1</span>
+    <span class="k">return</span> n * fact(n - <span class="n">1</span>)
+
+<span class="k">def</span> fib(n):
+    <span class="k">if</span> n &lt;= <span class="n">1</span>:                 <span class="c"># fib(0)=0, fib(1)=1</span>
+        <span class="k">return</span> n
+    <span class="k">return</span> fib(n - <span class="n">1</span>) + fib(n - <span class="n">2</span>)
+
+<span class="k">def</span> soma_recursiva(n):         <span class="c"># 1 + 2 + ... + n</span>
+    <span class="k">if</span> n &lt;= <span class="n">0</span>:
+        <span class="k">return</span> <span class="n">0</span>
+    <span class="k">return</span> n + soma_recursiva(n - <span class="n">1</span>)
+
+<span class="k">def</span> contar_digitos(n):
+    n = abs(n)                 <span class="c"># ignorar o sinal</span>
+    <span class="k">if</span> n &lt; <span class="n">10</span>:                 <span class="c"># caso base: 1 dígito</span>
+        <span class="k">return</span> <span class="n">1</span>
+    <span class="k">return</span> <span class="n">1</span> + contar_digitos(n // <span class="n">10</span>)
+
+<span class="k">def</span> soma_lista(l):
+    <span class="k">if</span> l == []:
+        <span class="k">return</span> <span class="n">0</span>
+    <span class="k">return</span> l[<span class="n">0</span>] + soma_lista(l[<span class="n">1</span>:])</code></pre>
+<div class="box exa"><span class="t">Pergunta do teste: caso base do fatorial</span>
+<p>Sabendo que <code>fact(0) = 1</code>, o caso base mais apropriado é <strong><code>n == 0</code></strong>. <code>n == 1</code> falha para <code>fact(0)</code> (nunca pára: 0, -1, -2...); <code>n &gt;= 0</code> seria verdadeiro logo à primeira e nunca recursaria.</p></div>
+<h3>Rastrear uma chamada</h3>
+<pre><code>fact(3) = 3 * fact(2)
+        = 3 * (2 * fact(1))
+        = 3 * (2 * (1 * fact(0)))
+        = 3 * (2 * (1 * 1)) = 6</code></pre>
+</section>
+
+<section id="strings" data-nav="6 · Strings" data-grp="Coleções" data-track>
+<h2>6 · Strings<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Uma string é uma sequência de caracteres e comporta-se quase como uma lista, mas é <strong>imutável</strong>: <code>s[0] = "x"</code> dá <code>TypeError</code>. Para "mudar", cria-se uma nova string.</p>
+<h3>Indexação e fatias (vale para strings, listas e tuplos)</h3>
+<pre><code>s = <span class="s">"python"</span>
+s[<span class="n">0</span>]      <span class="c"># 'p'        primeiro</span>
+s[-<span class="n">1</span>]     <span class="c"># 'n'        último</span>
+s[<span class="n">1</span>:<span class="n">4</span>]    <span class="c"># 'yth'      posições 1, 2, 3 (o fim fica de fora)</span>
+s[:<span class="n">2</span>]     <span class="c"># 'py'</span>
+s[<span class="n">2</span>:]     <span class="c"># 'thon'</span>
+s[::<span class="n">2</span>]    <span class="c"># 'pto'      de 2 em 2</span>
+s[::-<span class="n">1</span>]   <span class="c"># 'nohtyp'   invertida</span>
+len(s)    <span class="c"># 6</span>
+s[<span class="n">10</span>]     <span class="c"># IndexError</span>
+s[<span class="n">2</span>:<span class="n">100</span>]  <span class="c"># 'thon'     fatias NÃO dão erro fora dos limites</span></code></pre>
+<h3>Métodos mais usados</h3>
+<div class="tw"><table>
+<thead><tr><th>Método</th><th>Exemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>upper()</code>, <code>lower()</code>, <code>capitalize()</code></td><td><code>"cat".capitalize()</code></td><td><code>'Cat'</code></td></tr>
+<tr><td><code>strip()</code>, <code>rstrip()</code></td><td><code>" 10\n".strip()</code></td><td><code>'10'</code></td></tr>
+<tr><td><code>split(sep)</code></td><td><code>"a;b;c".split(";")</code></td><td><code>['a', 'b', 'c']</code></td></tr>
+<tr><td><code>sep.join(lista)</code></td><td><code>"-".join(["a","b"])</code></td><td><code>'a-b'</code></td></tr>
+<tr><td><code>replace(a, b)</code></td><td><code>"aba".replace("a","o")</code></td><td><code>'obo'</code></td></tr>
+<tr><td><code>find(x)</code>, <code>index(x)</code></td><td><code>"bell".find("l")</code></td><td><code>2</code> (<code>find</code> dá -1 se não existir; <code>index</code> dá erro)</td></tr>
+<tr><td><code>count(x)</code></td><td><code>"banana".count("a")</code></td><td><code>3</code></td></tr>
+<tr><td><code>startswith</code>, <code>endswith</code></td><td><code>"oliveoil".startswith("olive")</code></td><td><code>True</code></td></tr>
+<tr><td><code>isdigit()</code>, <code>isalpha()</code></td><td><code>"12".isdigit()</code></td><td><code>True</code></td></tr>
+<tr><td><code>in</code></td><td><code>"olive" in "oliveoil"</code></td><td><code>True</code> (procura substring)</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="listas" data-nav="7 · Listas e tuplos" data-grp="Coleções" data-track>
+<h2>7 · Listas e tuplos<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Listas</h3>
+<div class="tw"><table>
+<thead><tr><th>Operação</th><th>Efeito</th><th>Devolve</th></tr></thead>
+<tbody>
+<tr><td><code>l.append(x)</code></td><td>acrescenta <code>x</code> no fim</td><td><code>None</code></td></tr>
+<tr><td><code>l.extend(l2)</code></td><td>acrescenta todos os elementos de <code>l2</code></td><td><code>None</code></td></tr>
+<tr><td><code>l.insert(i, x)</code></td><td>insere na posição <code>i</code></td><td><code>None</code></td></tr>
+<tr><td><code>l.remove(x)</code></td><td>apaga a 1.ª ocorrência de <code>x</code> (erro se não existir)</td><td><code>None</code></td></tr>
+<tr><td><code>l.pop()</code>, <code>l.pop(i)</code></td><td>tira o último (ou o da posição <code>i</code>)</td><td>o elemento tirado</td></tr>
+<tr><td><code>del l[i]</code></td><td>apaga a posição <code>i</code></td><td>—</td></tr>
+<tr><td><code>l.index(x)</code>, <code>l.count(x)</code></td><td>posição / número de ocorrências</td><td><code>int</code></td></tr>
+<tr><td><code>l.sort()</code>, <code>l.reverse()</code></td><td>ordena / inverte <strong>a própria lista</strong></td><td><code>None</code></td></tr>
+<tr><td><code>sum</code>, <code>min</code>, <code>max</code>, <code>len</code>, <code>sorted</code></td><td>funções sobre a lista</td><td>valor / nova lista</td></tr>
+</tbody></table></div>
+<div class="box bad"><span class="t">Erro clássico</span>
+<p><code>l = l.append(4)</code> deixa <code>l</code> a <code>None</code>, porque <code>append</code> não devolve nada. O mesmo para <code>sort</code>: <code>l = l.sort()</code> perde a lista.</p></div>
+
+<div class="box exa"><span class="t">Pergunta do teste: <code>A = [2, 8, 4, 5, 2]</code>, como obter <code>[4, 5]</code>?</span>
+<p>Resposta: <strong><code>A[2:4]</code></strong> (posições 2 e 3). <code>A[3:5]</code> dá <code>[5, 2]</code>; <code>A[2]+A[3]</code> dá o número <code>9</code>; <code>A[2:3]</code> dá <code>[4]</code>. Cuidado: as respostas erradas descontam 20%.</p></div>
+
+<h3>Tuplos</h3>
+<p>São "listas fixas": <code>t = (4, "corpo")</code>. Acedes por índice (<code>t[1]</code>) mas não podes alterar. Servem para devolver vários valores e como chaves de dicionário. Desempacotar: <code>n, palavra = t</code>. Um tuplo com um só elemento precisa de vírgula: <code>(3,)</code>.</p>
+<p>Conversões: <code>list(t)</code>, <code>tuple(l)</code>, <code>dict(lista_de_pares)</code>, <code>list(d.items())</code>.</p>
+
+<h3>Matrizes (listas de listas)</h3>
+<pre><code>m = [[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>], [<span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>]]
+m[<span class="n">1</span>][<span class="n">2</span>]                                 <span class="c"># 6 (linha 1, coluna 2)</span>
+plano = [v <span class="k">for</span> linha <span class="k">in</span> m <span class="k">for</span> v <span class="k">in</span> linha]   <span class="c"># [1, 2, 3, 4, 5, 6]</span></code></pre>
+<div class="box bad"><span class="t">Armadilha</span>
+<p><code>[[0]*3]*2</code> cria duas referências para a mesma linha: alterar uma altera a outra. Usa <code>[[0]*3 for _ in range(2)]</code>.</p></div>
+</section>
+
+<section id="dict" data-nav="8 · Dicionários e conjuntos" data-grp="Coleções" data-track>
+<h2>8 · Dicionários e conjuntos<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Dicionários</h3>
+<p>Associam <strong>chaves</strong> (imutáveis e únicas) a <strong>valores</strong>.</p>
+<pre><code>d = {<span class="s">"a"</span>: <span class="s">"alpha"</span>, <span class="s">"o"</span>: <span class="s">"omega"</span>}
+d[<span class="s">"g"</span>] = <span class="s">"gamma"</span>          <span class="c"># acrescenta (ou substitui se já existir)</span>
+d[<span class="s">"a"</span>]                    <span class="c"># 'alpha'</span>
+d[<span class="s">"b"</span>]                    <span class="c"># KeyError!</span>
+d.get(<span class="s">"b"</span>, <span class="s">"NA"</span>)          <span class="c"># 'NA' — valor por omissão, sem erro</span>
+<span class="s">"a"</span> <span class="k">in</span> d                  <span class="c"># True  (procura nas CHAVES)</span>
+<span class="s">"alpha"</span> <span class="k">in</span> d              <span class="c"># False</span>
+len(d)                    <span class="c"># 3</span>
+<span class="k">del</span> d[<span class="s">"o"</span>]                <span class="c"># apaga a chave</span>
+d.pop(<span class="s">"g"</span>)                <span class="c"># apaga e devolve 'gamma'</span>
+d.keys(), d.values(), d.items()
+<span class="k">for</span> k <span class="k">in</span> d: ...           <span class="c"># percorrer = percorrer as chaves</span>
+<span class="k">for</span> k, v <span class="k">in</span> d.items(): ...
+sorted(d)                 <span class="c"># lista das chaves ordenadas</span></code></pre>
+<div class="box met"><span class="t">Padrão "contar ocorrências" (o mais útil de todos)</span>
+<pre><code>cont = {}
+<span class="k">for</span> x <span class="k">in</span> dados:
+    cont[x] = cont.get(x, <span class="n">0</span>) + <span class="n">1</span></code></pre>
+<p>Variante para agrupar: <code>grupos.setdefault(chave, []).append(valor)</code>.</p></div>
+
+<h3>Conjuntos (<code>set</code>)</h3>
+<p>Coleção <strong>sem repetidos e sem ordem</strong>. Não tem índices (<code>s[0]</code> dá erro). <code>{}</code> é um dicionário vazio; o conjunto vazio é <code>set()</code>.</p>
+<pre><code>s = {<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>}
+s.add(<span class="n">4</span>); s.remove(<span class="n">1</span>); s.discard(<span class="n">9</span>)   <span class="c"># discard não dá erro se não existir</span>
+a | b      <span class="c"># união</span>
+a &amp; b      <span class="c"># interseção</span>
+a - b      <span class="c"># diferença</span>
+a ^ b      <span class="c"># diferença simétrica (está num só)</span>
+set([<span class="n">1</span>, <span class="n">1</span>, <span class="n">2</span>])    <span class="c"># {1, 2} — forma rápida de tirar repetidos</span></code></pre>
+</section>
+
+<section id="comp" data-nav="9 · Compreensões" data-grp="Funcional" data-track>
+<h2>9 · Compreensões (list, set, dict)<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Forma compacta de construir uma coleção a partir de outra. É dos temas que mais sai no teste.</p>
+<div class="box teo"><span class="t">Equivalência a decorar</span>
+<div class="cols">
+<div><pre><code>res = [expr <span class="k">for</span> x <span class="k">in</span> col <span class="k">if</span> cond]</code></pre></div>
+<div><pre><code>res = []
+<span class="k">for</span> x <span class="k">in</span> col:
+    <span class="k">if</span> cond:
+        res.append(expr)</code></pre></div>
+</div>
+<ul>
+<li><code>[...]</code> lista; <code>{...}</code> conjunto; <code>{k: v ...}</code> dicionário; <code>(...)</code> gerador (só dentro de <code>sum</code>, <code>max</code>, etc.).</li>
+<li><strong><code>if</code> no fim filtra</strong>: <code>[x for x in l if x &gt; 0]</code>.</li>
+<li><strong><code>if ... else</code> no início transforma</strong> e tem de ter <code>else</code>: <code>[x if x &gt; 0 else 0 for x in l]</code>.</li>
+<li>Vários <code>for</code> leem-se da esquerda para a direita, como ciclos encaixados (o primeiro é o de fora).</li>
+</ul></div>
+
+<div class="box exa"><span class="t">Pergunta do teste: valor e tipo (ou erro)</span>
+<p>Com <code>lst = [7, 8, 3, 4, 6, 5]</code> e <code>txt = ["philips", "bell", "dog"]</code>:</p>
+<div class="tw"><table>
+<thead><tr><th>Expressão</th><th>Valor</th><th>Tipo/Erro</th></tr></thead>
+<tbody>
+<tr><td><code>[x+2 for x in lst if x&lt;6]</code></td><td><code>[5,6,7]</code></td><td>list</td></tr>
+<tr><td><code>max(len(s) for s in txt)</code></td><td><code>7</code></td><td>int</td></tr>
+<tr><td><code>{s:len(s) for s in txt if s[0]&lt;'d'}</code></td><td><code>{'bell':4}</code></td><td>dict</td></tr>
+<tr><td><code>[x-5 if x&gt;5 for x in lst]</code></td><td>—</td><td><strong>SyntaxError</strong> (falta o <code>else</code>)</td></tr>
+<tr><td><code>[s[0]+str(x) for x in lst[:2] for s in txt[:2]]</code></td><td><code>['p7','b7','p8','b8']</code></td><td>list</td></tr>
+</tbody></table></div>
+<p>Na terceira linha: <code>'p' &lt; 'd'</code> é falso, <code>'b' &lt; 'd'</code> verdadeiro, <code>'d' &lt; 'd'</code> falso. Na última, o <code>for x</code> é o ciclo de fora: para <code>x=7</code> percorre <code>'philips'</code> e <code>'bell'</code>, depois para <code>x=8</code>.</p></div>
+
+<div class="box exa"><span class="t">Pergunta do teste: reescrever com <code>sum</code></span>
+<pre><code>s = <span class="n">0</span>
+<span class="k">for</span> x <span class="k">in</span> lst:
+    s += x**<span class="n">2</span>
+<span class="c"># é equivalente a</span>
+s = sum(x**<span class="n">2</span> <span class="k">for</span> x <span class="k">in</span> lst)</code></pre>
+<p>Arrastas as caixas <code>x**2</code>, <code>for</code>, <code>x</code>, <code>in</code>, <code>lst</code>. As caixas <code>s+=x**2</code>, <code>while</code> e <code>if</code> são distratores.</p></div>
+<h3>Mais exemplos dos slides</h3>
+<pre><code>[x*x <span class="k">for</span> x <span class="k">in</span> range(<span class="n">10</span>) <span class="k">if</span> x % <span class="n">2</span> == <span class="n">0</span>]       <span class="c"># [0, 4, 16, 36, 64]</span>
+[i <span class="k">for</span> i <span class="k">in</span> <span class="s">"the rocket"</span> <span class="k">if</span> i <span class="k">in</span> <span class="s">"aeiou"</span>]    <span class="c"># ['e', 'o', 'e']</span>
+{n**<span class="n">2</span> <span class="k">for</span> n <span class="k">in</span> [<span class="n">10</span>, <span class="n">10</span>, -<span class="n">10</span>, <span class="n">0</span>]}             <span class="c"># {0, 100}</span>
+{k: float(v) <span class="k">for</span> k, v <span class="k">in</span> precos.items()}
+{x: x*x <span class="k">for</span> x <span class="k">in</span> range(<span class="n">5</span>)}                   <span class="c"># {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}</span>
+[x*y <span class="k">for</span> x <span class="k">in</span> [<span class="n">20</span>, <span class="n">40</span>] <span class="k">for</span> y <span class="k">in</span> [<span class="n">2</span>, <span class="n">4</span>]]      <span class="c"># [40, 80, 80, 160]</span>
+[[<span class="n">0</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)] <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">2</span>)]    <span class="c"># [[0, 0, 0], [0, 0, 0]]</span></code></pre>
+</section>
+
+<section id="lambda" data-nav="10 · Lambda, map, filter" data-grp="Funcional" data-track>
+<h2>10 · Lambda, map, filter, reduce<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Uma <strong>lambda</strong> é uma função sem nome, com <strong>uma só expressão</strong> (sem <code>return</code>, sem <code>if</code> em bloco, só a forma <code>a if c else b</code>).</p>
+<pre><code>soma = <span class="k">lambda</span> x, y: x + y          <span class="c"># igual a def soma(x, y): return x + y</span>
+soma(<span class="n">3</span>, <span class="n">4</span>)                         <span class="c"># 7</span>
+(<span class="k">lambda</span> x, y, z=<span class="n">3</span>: x + y + z)(<span class="n">1</span>, <span class="n">2</span>)    <span class="c"># 6</span>
+intervalo = <span class="k">lambda</span> a, b: (b, a) <span class="k">if</span> a &gt; b <span class="k">else</span> (a, b)</code></pre>
+<div class="box exa"><span class="t">Pergunta do teste: lambda equivalente</span>
+<pre><code><span class="k">def</span> pak(a, b):
+    p = a*b
+    <span class="k">return</span> p, a
+<span class="c"># equivalente:</span>
+pak = <span class="k">lambda</span> a,b: (a*b, a)</code></pre>
+<p>Preenches <code>a,b</code> antes dos dois pontos e <code>a*b</code>, <code>a</code> no tuplo. Não há variável <code>p</code>: numa lambda escreve-se diretamente a expressão.</p></div>
+
+<h3>Funções que recebem funções</h3>
+<div class="tw"><table>
+<thead><tr><th>Função</th><th>O que faz</th><th>Exemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>map(f, l)</code></td><td>aplica <code>f</code> a cada elemento</td><td><code>list(map(lambda x: x*10, [1,2,3]))</code></td><td><code>[10, 20, 30]</code></td></tr>
+<tr><td><code>map(f, l1, l2)</code></td><td>em paralelo</td><td><code>list(map(lambda x,y: x+y, [1,2], [10,20]))</code></td><td><code>[11, 22]</code></td></tr>
+<tr><td><code>filter(f, l)</code></td><td>mantém os que dão <code>True</code></td><td><code>list(filter(lambda x: x%2==0, range(7)))</code></td><td><code>[0, 2, 4, 6]</code></td></tr>
+<tr><td><code>functools.reduce(f, l, ini)</code></td><td>acumula</td><td><code>reduce(lambda acc, x: acc+x, [1,2,3], 0)</code></td><td><code>6</code></td></tr>
+<tr><td><code>max/min(l, key=f)</code></td><td>maior/menor segundo <code>f</code></td><td><code>max(["ab","abc","c"], key=len)</code></td><td><code>'abc'</code></td></tr>
+<tr><td><code>all(l)</code>, <code>any(l)</code></td><td>todos / algum verdadeiro</td><td><code>all([True, False])</code></td><td><code>False</code></td></tr>
+</tbody></table></div>
+<div class="box bad"><span class="t">Cuidado</span>
+<p><code>map</code> e <code>filter</code> devolvem um objeto "preguiçoso": <code>print(map(...))</code> mostra <code>&lt;map object at ...&gt;</code>. Converte com <code>list(...)</code> para ver os valores. E só se pode percorrer uma vez.</p></div>
+<p>Tudo isto também se faz com compreensões: <code>[f(x) for x in l]</code> é o <code>map</code>, <code>[x for x in l if c(x)]</code> é o <code>filter</code>.</p>
+</section>
+
+<section id="ordenar" data-nav="11 · Ordenação" data-grp="Algoritmos" data-track>
+<h2>11 · Ordenação<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th></th><th><code>sorted(l)</code></th><th><code>l.sort()</code></th></tr></thead>
+<tbody>
+<tr><td>Altera <code>l</code>?</td><td>não</td><td><strong>sim</strong></td></tr>
+<tr><td>Devolve</td><td>nova lista</td><td><code>None</code></td></tr>
+<tr><td>Funciona em</td><td>qualquer coleção (string, tuplo, dicionário...)</td><td>só listas</td></tr>
+</tbody></table></div>
+<p>Ambos aceitam <code>reverse=True</code> e <code>key=função</code>. A <code>key</code> recebe <strong>um elemento</strong> e devolve o valor pelo qual se ordena.</p>
+<pre><code>sorted([<span class="s">"Harry"</span>, <span class="s">"Suzy"</span>, <span class="s">"Al"</span>])              <span class="c"># ['Al', 'Harry', 'Suzy']</span>
+sorted(words, key=len)                       <span class="c"># pelo comprimento</span>
+sorted(names, key=str.lower)                 <span class="c"># ignorando maiúsculas</span>
+sorted(alunos, key=<span class="k">lambda</span> t: t[<span class="n">2</span>])           <span class="c"># pelo 3.º campo do tuplo</span>
+sorted(l, key=<span class="k">lambda</span> i: i[<span class="n">0</span>] + i[<span class="n">1</span>])         <span class="c"># por uma conta</span>
+sorted(d.items(), key=<span class="k">lambda</span> kv: kv[<span class="n">1</span>], reverse=<span class="k">True</span>)   <span class="c"># dicionário por valor, decrescente</span>
+sorted(l, key=<span class="k">lambda</span> t: (-t[<span class="n">1</span>], t[<span class="n">0</span>]))      <span class="c"># 2 critérios: valor desc., depois nome asc.</span></code></pre>
+<p>A ordenação é <strong>estável</strong>: elementos com a mesma chave mantêm a ordem original. Sem <code>key</code>, maiúsculas vêm antes de minúsculas: <code>sorted(["Mario", "anabela"])</code> dá <code>['Mario', 'anabela']</code>.</p>
+<div class="box exa"><span class="t">Pergunta do teste</span>
+<p>Para <code>lst = [(4, "corpo"), (7, "alma"), ...]</code> ordenada pelo comprimento da palavra: <strong><code>key=lambda t: len(t[1])</code></strong>. <code>key=len</code> mediria o tuplo (sempre 2); <code>key=lambda t: t[0]</code> ordena pelo número.</p></div>
+<h3>Algoritmos clássicos</h3>
+<pre><code><span class="k">def</span> selection_sort(l):
+    l = l.copy()
+    <span class="k">for</span> i <span class="k">in</span> range(len(l)):
+        m = i
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(l)):     <span class="c"># procurar o mínimo do resto</span>
+            <span class="k">if</span> l[j] &lt; l[m]:
+                m = j
+        l[i], l[m] = l[m], l[i]            <span class="c"># pô-lo na posição i</span>
+    <span class="k">return</span> l
+
+<span class="k">def</span> insertion_sort(l):
+    l = l.copy()
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(l)):
+        x, j = l[i], i - <span class="n">1</span>
+        <span class="k">while</span> j &gt;= <span class="n">0</span> <span class="k">and</span> l[j] &gt; x:          <span class="c"># empurrar os maiores para a direita</span>
+            l[j + <span class="n">1</span>] = l[j]
+            j -= <span class="n">1</span>
+        l[j + <span class="n">1</span>] = x                       <span class="c"># inserir no sítio certo</span>
+    <span class="k">return</span> l</code></pre>
+</section>
+
+<section id="pesquisa" data-nav="12 · Pesquisa" data-grp="Algoritmos" data-track>
+<h2>12 · Pesquisa<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Já existem: <code>x in l</code> (<code>True</code>/<code>False</code>) e <code>l.index(x)</code> (posição, erro se não existir).</p>
+<pre><code><span class="k">def</span> pesquisa_linear(l, x):          <span class="c"># funciona em qualquer lista</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(l)):
+        <span class="k">if</span> l[i] == x:
+            <span class="k">return</span> i
+    <span class="k">return</span> -<span class="n">1</span>                      <span class="c"># ou None</span>
+
+<span class="k">def</span> pesquisa_binaria(l, x):         <span class="c"># SÓ em listas ORDENADAS</span>
+    lo, hi = <span class="n">0</span>, len(l) - <span class="n">1</span>
+    <span class="k">while</span> lo &lt;= hi:
+        mid = (lo + hi) // <span class="n">2</span>
+        <span class="k">if</span> l[mid] == x:
+            <span class="k">return</span> mid
+        <span class="k">elif</span> l[mid] &lt; x:
+            lo = mid + <span class="n">1</span>           <span class="c"># está à direita</span>
+        <span class="k">else</span>:
+            hi = mid - <span class="n">1</span>           <span class="c"># está à esquerda</span>
+    <span class="k">return</span> -<span class="n">1</span></code></pre>
+<p>A pesquisa binária corta o problema a meio a cada passo: em 1 milhão de elementos precisa de ~20 comparações em vez de 1 milhão.</p>
+<p>Módulo <code>bisect</code> (lista ordenada <code>li = [1, 3, 4, 4, 4, 6, 7]</code>): <code>bisect.bisect_left(li, 4)</code> dá <code>2</code> (primeira posição onde inserir 4); <code>bisect.bisect(li, 4)</code> (= <code>bisect_right</code>) dá <code>5</code> (última). <code>x</code> existe se <code>k &lt; len(li) and li[k] == x</code> com <code>k = bisect_left(li, x)</code>.</p>
+</section>
+
+<section id="ficheiros" data-nav="13 · Ficheiros" data-grp="Algoritmos" data-track>
+<h2>13 · Ficheiros<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th>Modo</th><th>Significado</th></tr></thead>
+<tbody>
+<tr><td><code>"r"</code></td><td>ler (por omissão); erro se não existir</td></tr>
+<tr><td><code>"w"</code></td><td>escrever; <strong>apaga</strong> o conteúdo anterior</td></tr>
+<tr><td><code>"a"</code></td><td>acrescentar no fim</td></tr>
+</tbody></table></div>
+<pre><code><span class="k">with</span> open(<span class="s">"dados.txt"</span>, <span class="s">"r"</span>, encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:   <span class="c"># fecha sozinho no fim do with</span>
+    <span class="k">for</span> line <span class="k">in</span> f:                  <span class="c"># cada linha INCLUI o "\n" no fim</span>
+        words = line.strip().split()
+
+<span class="k">with</span> open(<span class="s">"dados.txt"</span>) <span class="k">as</span> f:
+    tudo = f.read()                 <span class="c"># uma string com o ficheiro todo</span>
+    <span class="c"># f.readline()  -&gt; uma linha</span>
+    <span class="c"># f.readlines() -&gt; lista de linhas (com "\n")</span>
+
+<span class="k">with</span> open(<span class="s">"saida.txt"</span>, <span class="s">"w"</span>) <span class="k">as</span> f:
+    f.write(<span class="s">"linha 1\n"</span>)            <span class="c"># write NÃO acrescenta "\n" sozinho</span>
+    print(<span class="s">"linha 2"</span>, file=f)        <span class="c"># print acrescenta</span></code></pre>
+<p>Sem <code>with</code>, tens de fazer <code>f.close()</code>. Formato CSV simples: <code>campos = line.strip().split(";")</code>.</p>
+<div class="box exa"><span class="t">Pergunta do teste (25%): ficheiro <code>f1.txt</code> com 5, 10, 15, 20 (um por linha)</span>
+<pre><code><span class="k">def</span> f1(lst):
+    fin = open(<span class="s">'f1.txt'</span>)
+    s1 = <span class="n">0</span>
+    s2 = <span class="n">0</span>
+    <span class="k">for</span> x <span class="k">in</span> fin:
+        lst.append(int(x))
+        s1 += int(x)
+        s2 += len(x.rstrip())
+    <span class="k">return</span> s1, s2
+
+L = []
+k1, k2 = f1(L)
+print(k1)
+print(k2)
+print(len(L))
+print(sum(L))</code></pre>
+<pre class="out"><code>50
+7
+4
+50</code></pre>
+<p><code>s1</code> soma os números (5+10+15+20). <code>s2</code> soma o número de caracteres de cada linha sem o <code>\n</code>: 1+2+2+2 = 7. <code>L</code> foi alterada dentro da função (lista mutável), por isso tem os 4 números.</p></div>
+</section>
+
+<section id="teste" data-nav="Teste teórico resolvido" data-grp="Treino">
+<h2>Teste teórico resolvido</h2>
+<p>As 10 perguntas do teste teórico, com as respostas confirmadas a correr o código. Tenta primeiro sem abrir.</p>
+<details><summary>Q1 (10%): caso base do fatorial</summary><div class="in">
+<p>Opções: <code>n &gt;= 0</code>, <code>n &lt;= 1</code>, <code>n == 0</code>, <code>n == 1</code>. Resposta: <strong><code>n == 0</code></strong>, porque o fatorial de zero é 1 e é o caso mais simples.</p></div></details>
+<details><summary>Q2 (10%): <code>A = [2, 8, 4, 5, 2]</code>, obter <code>[4, 5]</code></summary><div class="in">
+<p><strong><code>A[2:4]</code></strong>. As fatias incluem o início e excluem o fim.</p></div></details>
+<details><summary>Q3 (25%): ler <code>f1.txt</code></summary><div class="in">
+<p>Imprime <code>50</code>, <code>7</code>, <code>4</code>, <code>50</code>. A explicação está na <a href="#ficheiros">secção de ficheiros</a>.</p></div></details>
+<details><summary>Q4 (25%): listas <code>lstA</code> e <code>lstB</code></summary><div class="in">
+<pre><code>lstA = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>]
+lstB = [<span class="n">6</span>, <span class="n">7</span>, <span class="n">8</span>, <span class="n">9</span>, <span class="n">10</span>]
+print(lstA[-<span class="n">2</span>])                 <span class="c"># 4   (penúltimo)</span>
+print(lstA[<span class="n">2</span>] + lstB[<span class="n">1</span>])        <span class="c"># 10  (3 + 7)</span>
+print(len(<span class="n">3</span>*lstA))              <span class="c"># 15  (lista repetida 3 vezes)</span>
+lstC = <span class="n">2</span>*lstA[<span class="n">1</span>::<span class="n">3</span>] + lstB[:<span class="n">2</span>]  <span class="c"># lstA[1::3] = [2, 5] -&gt; [2,5,2,5] + [6,7]</span>
+<span class="k">for</span> i <span class="k">in</span> lstC:
+    print(i, end=<span class="s">','</span>)
+print()                         <span class="c"># 2,5,2,5,6,7,</span></code></pre>
+<p>Respostas: <code>4</code>, <code>10</code>, <code>15</code>, <code>2,5,2,5,6,7,</code> (repara na vírgula final, que vem do <code>end=','</code>).</p></div></details>
+<details><summary>Q5 (30%): dicionário de preços</summary><div class="in">
+<pre><code>price = {<span class="s">"olive"</span>: <span class="n">2.15</span>, <span class="s">"pineapple"</span>: <span class="n">0.85</span>, <span class="s">"pear"</span>: <span class="n">1.49</span>, <span class="s">"orange"</span>: <span class="n">1.25</span>}
+print(len(price))                          <span class="c"># 4</span>
+item = <span class="s">"pear"</span>
+p = str(price[item]) + <span class="s">"EUR"</span> <span class="k">if</span> item <span class="k">in</span> price <span class="k">else</span> <span class="s">"NA"</span>
+print(item + <span class="s">":"</span> + p)                      <span class="c"># pear:1.49EUR</span>
+price[<span class="s">"oliveoil"</span>] = <span class="n">3.59</span>
+item = <span class="s">"olive"</span>; p = <span class="s">""</span>
+<span class="k">for</span> f <span class="k">in</span> sorted(price.keys()):             <span class="c"># olive, oliveoil, orange, pear, pineapple</span>
+    <span class="k">if</span> item <span class="k">in</span> f:                          <span class="c"># "olive" é substring de f?</span>
+        p += <span class="s">"&lt;{}:{}EUR&gt;"</span>.format(f, price[f])
+print(p)                                   <span class="c"># &lt;olive:2.15EUR&gt;&lt;oliveoil:3.59EUR&gt;</span>
+item = <span class="s">"oil"</span>
+p = price.get(item, <span class="s">"NA"</span>)
+print(<span class="s">"{}:{}"</span>.format(item, p))             <span class="c"># oil:NA</span></code></pre>
+<p>Ponto chave: <code>in</code> entre strings procura <strong>substring</strong>, por isso <code>"olive" in "oliveoil"</code> é verdadeiro. E <code>"oil" in price</code> procura uma <strong>chave</strong> exatamente igual, que não existe.</p></div></details>
+<details><summary>Q6 (20%): tabela valor/tipo</summary><div class="in">
+<p>Resolvida na <a href="#comp">secção de compreensões</a>: <code>[5,6,7]</code> list; <code>7</code> int; <code>{'bell':4}</code> dict; SyntaxError; <code>['p7','b7','p8','b8']</code> list.</p></div></details>
+<details><summary>Q7 (20%): reescrever com <code>sum</code></summary><div class="in">
+<p><code>s = sum(x**2 for x in lst)</code>.</p></div></details>
+<details><summary>Q8 (20%): lambda equivalente a <code>pak</code></summary><div class="in">
+<p><code>pak = lambda a,b: (a*b, a)</code>.</p></div></details>
+<details><summary>Q9 (10%): <code>key=</code> para ordenar pelo comprimento da palavra</summary><div class="in">
+<p><code>key=lambda t: len(t[1])</code>.</p></div></details>
+<details><summary>Q10 (30%): <code>toStr(num)</code> recursiva</summary><div class="in">
+<pre><code><span class="k">def</span> toStr(num):
+    <span class="k">assert</span> num &gt;= <span class="n">0</span>
+    digits = <span class="s">"0123456789"</span>
+    <span class="k">if</span> num &lt; <span class="n">10</span>:                                <span class="c"># caso base: 1 dígito</span>
+        <span class="k">return</span> digits[num]
+    <span class="k">return</span> toStr(num // <span class="n">10</span>) + digits[num % <span class="n">10</span>]  <span class="c"># resto do número + último dígito</span></code></pre>
+<p>Caixas: <code>0</code>, <code>10</code>, <code>num</code>, <code>num//10</code>, <code>num%10</code>. Teste: <code>toStr(2976)</code> = <code>toStr(297) + "6"</code> = ... = <code>"2976"</code>. Passa os 5 asserts.</p></div></details>
+</section>
+
+<section id="pratica" data-nav="Exercícios práticos resolvidos" data-grp="Treino">
+<h2>Exercícios práticos resolvidos</h2>
+<p>Os 7 exercícios da folha de preparação, com soluções curtas e testadas. A do exercício 1 é mais simples e mais correta do que a resolução que circula: usa o mínimo das divisões inteiras.</p>
+<details><summary>1 · Dicionários: quantos bolos o Peter consegue fazer</summary><div class="in">
+<pre><code><span class="k">def</span> cakes(recipe, available):
+    <span class="c"># para cada ingrediente: quantas vezes cabe a quantidade da receita no que há</span>
+    <span class="c"># ingrediente em falta conta como 0, por isso usamos get(..., 0)</span>
+    <span class="k">return</span> min(available.get(ing, <span class="n">0</span>) // qt <span class="k">for</span> ing, qt <span class="k">in</span> recipe.items())
+
+print(cakes({<span class="s">"flour"</span>: <span class="n">500</span>, <span class="s">"sugar"</span>: <span class="n">200</span>, <span class="s">"eggs"</span>: <span class="n">1</span>},
+            {<span class="s">"flour"</span>: <span class="n">1200</span>, <span class="s">"sugar"</span>: <span class="n">1200</span>, <span class="s">"eggs"</span>: <span class="n">5</span>, <span class="s">"milk"</span>: <span class="n">200</span>}))   <span class="c"># 2</span>
+print(cakes({<span class="s">"apples"</span>: <span class="n">3</span>, <span class="s">"flour"</span>: <span class="n">300</span>, <span class="s">"sugar"</span>: <span class="n">150</span>, <span class="s">"milk"</span>: <span class="n">100</span>, <span class="s">"oil"</span>: <span class="n">100</span>},
+            {<span class="s">"sugar"</span>: <span class="n">500</span>, <span class="s">"flour"</span>: <span class="n">2000</span>, <span class="s">"milk"</span>: <span class="n">2000</span>}))              <span class="c"># 0</span></code></pre></div></details>
+<details><summary>2 · Conjuntos: elementos que aparecem exatamente uma vez</summary><div class="in">
+<pre><code><span class="k">def</span> elementos_unicos(listas):
+    cont = {}
+    <span class="k">for</span> l <span class="k">in</span> listas:
+        <span class="k">for</span> x <span class="k">in</span> l:
+            cont[x] = cont.get(x, <span class="n">0</span>) + <span class="n">1</span>
+    <span class="k">return</span> {x <span class="k">for</span> x, n <span class="k">in</span> cont.items() <span class="k">if</span> n == <span class="n">1</span>}
+
+print(elementos_unicos([[<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>], [<span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>], [<span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>]]))   <span class="c"># {1, 2, 4, 6, 7}</span></code></pre></div></details>
+<details><summary>3 · Lambda: ordenar (nome, idade) pela idade</summary><div class="in">
+<pre><code>sorted([(<span class="s">"João"</span>, <span class="n">25</span>), (<span class="s">"Ana"</span>, <span class="n">20</span>), (<span class="s">"Miguel"</span>, <span class="n">30</span>)], key=<span class="k">lambda</span> p: p[<span class="n">1</span>])
+<span class="c"># [('Ana', 20), ('João', 25), ('Miguel', 30)]</span></code></pre></div></details>
+<details><summary>4 · Lambda: inverter e pôr em maiúsculas as strings de tamanho ímpar</summary><div class="in">
+<pre><code>list(map(<span class="k">lambda</span> s: s[::-<span class="n">1</span>].upper() <span class="k">if</span> len(s) % <span class="n">2</span> <span class="k">else</span> s,
+         [<span class="s">"Python"</span>, <span class="s">"is"</span>, <span class="s">"fun"</span>, <span class="s">"cool"</span>, <span class="s">"awesome"</span>]))
+<span class="c"># ['Python', 'is', 'NUF', 'cool', 'EMOSEWA']</span></code></pre></div></details>
+<details><summary>5 · Recursividade: soma de 1 até n</summary><div class="in">
+<pre><code><span class="k">def</span> soma_recursiva(n):
+    <span class="k">if</span> n &lt;= <span class="n">0</span>:
+        <span class="k">return</span> <span class="n">0</span>
+    <span class="k">return</span> n + soma_recursiva(n - <span class="n">1</span>)    <span class="c"># soma_recursiva(5) = 15</span></code></pre></div></details>
+<details><summary>6 · Recursividade: contar dígitos</summary><div class="in">
+<pre><code><span class="k">def</span> contar_digitos_recursivo(n):
+    n = abs(n)
+    <span class="k">if</span> n &lt; <span class="n">10</span>:
+        <span class="k">return</span> <span class="n">1</span>
+    <span class="k">return</span> <span class="n">1</span> + contar_digitos_recursivo(n // <span class="n">10</span>)   <span class="c"># 12345 -&gt; 5, -54321 -&gt; 5</span></code></pre></div></details>
+<details><summary>7 · Recursividade: permutações sem repetidos</summary><div class="in">
+<pre><code><span class="k">def</span> permutacoes_recursivas(s):
+    <span class="k">if</span> len(s) &lt;= <span class="n">1</span>:
+        <span class="k">return</span> {s}
+    res = set()                                  <span class="c"># set elimina repetidos ("aab")</span>
+    <span class="k">for</span> i, letra <span class="k">in</span> enumerate(s):
+        resto = s[:i] + s[i+<span class="n">1</span>:]                  <span class="c"># a string sem a letra i</span>
+        <span class="k">for</span> p <span class="k">in</span> permutacoes_recursivas(resto):
+            res.add(letra + p)
+    <span class="k">return</span> res
+
+print(sorted(permutacoes_recursivas(<span class="s">"aab"</span>)))   <span class="c"># ['aab', 'aba', 'baa']</span></code></pre></div></details>
+</section>
+
+<section id="erros" data-nav="Erros clássicos" data-grp="Treino">
+<h2>Erros clássicos</h2>
+<div class="tw"><table>
+<thead><tr><th>Erro</th><th>Quando acontece</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td><code>SyntaxError</code></td><td>código mal escrito (falta <code>:</code>, <code>if</code> sem <code>else</code> em expressão, parênteses)</td><td><code>[x for x in l if x&gt;5 else 0]</code></td></tr>
+<tr><td><code>IndentationError</code></td><td>indentação errada</td><td>corpo do <code>if</code> não indentado</td></tr>
+<tr><td><code>NameError</code></td><td>variável não definida</td><td>usar <code>soma</code> antes de <code>soma = 0</code></td></tr>
+<tr><td><code>TypeError</code></td><td>operação com o tipo errado</td><td><code>"3" + 4</code>, <code>s[0] = "x"</code> numa string, <code>len(5)</code></td></tr>
+<tr><td><code>ValueError</code></td><td>tipo certo, valor inválido</td><td><code>int("abc")</code>, <code>l.remove(99)</code></td></tr>
+<tr><td><code>IndexError</code></td><td>índice fora da sequência</td><td><code>[1, 2][5]</code></td></tr>
+<tr><td><code>KeyError</code></td><td>chave inexistente num dicionário</td><td><code>d["x"]</code></td></tr>
+<tr><td><code>ZeroDivisionError</code></td><td>divisão por zero</td><td>média com 0 valores lidos</td></tr>
+<tr><td><code>AttributeError</code></td><td>método que não existe para o tipo</td><td><code>(1, 2).append(3)</code>, <code>None.sort()</code></td></tr>
+<tr><td><code>RecursionError</code></td><td>recursão sem caso base alcançável</td><td><code>fact(-1)</code> com caso base <code>n == 0</code></td></tr>
+</tbody></table></div>
+<div class="cols">
+<div><h4>Armadilhas de leitura de código</h4>
+<ul>
+<li><code>input()</code> devolve sempre uma string.</li>
+<li>Fatias excluem o fim: <code>l[2:4]</code> tem 2 elementos.</li>
+<li><code>append</code>, <code>sort</code>, <code>reverse</code> devolvem <code>None</code>.</li>
+<li><code>/</code> dá float, mesmo em <code>4/2</code> (dá <code>2.0</code>).</li>
+<li><code>print(a, b)</code> põe espaço entre eles; <code>end=","</code> muda o fim.</li>
+</ul></div>
+<div><h4>Armadilhas com coleções</h4>
+<ul>
+<li><code>x in dict</code> procura chaves, não valores.</li>
+<li><code>{}</code> é dicionário vazio, não conjunto.</li>
+<li><code>l2 = l</code> não copia a lista.</li>
+<li>Uma função pode alterar uma lista recebida.</li>
+<li><code>map</code>/<code>filter</code> precisam de <code>list()</code> para mostrar valores.</li>
+</ul></div>
+</div>
+</section>
+
+<section id="checklist" data-nav="Lista de verificação final" data-grp="Treino">
+<h2>Lista de verificação final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="c1"> Prever o resultado de <code>//</code>, <code>%</code>, <code>/</code>, <code>**</code> e conversões</label></li>
+<li><label><input type="checkbox" data-k="c2"> Escrever if/elif/else e a expressão condicional numa linha</label></li>
+<li><label><input type="checkbox" data-k="c3"> Explicar porque uma função altera (ou não) uma lista recebida</label></li>
+<li><label><input type="checkbox" data-k="c4"> Escrever ciclos de leitura com máximo, soma e média sem dividir por zero</label></li>
+<li><label><input type="checkbox" data-k="c5"> Escrever funções recursivas e identificar o caso base</label></li>
+<li><label><input type="checkbox" data-k="c6"> Calcular qualquer fatia <code>l[a:b:c]</code> de cabeça</label></li>
+<li><label><input type="checkbox" data-k="c7"> Usar métodos de listas, strings, dicionários e conjuntos sem consultar</label></li>
+<li><label><input type="checkbox" data-k="c8"> Contar ocorrências com <code>d.get(x, 0) + 1</code></label></li>
+<li><label><input type="checkbox" data-k="c9"> Dar valor e tipo (ou erro) de compreensões com <code>if</code> e com vários <code>for</code></label></li>
+<li><label><input type="checkbox" data-k="c10"> Converter funções simples em lambdas e usar <code>map</code>/<code>filter</code></label></li>
+<li><label><input type="checkbox" data-k="c11"> Ordenar com <code>key=lambda</code> por um campo, por comprimento e por dois critérios</label></li>
+<li><label><input type="checkbox" data-k="c12"> Implementar pesquisa linear e binária</label></li>
+<li><label><input type="checkbox" data-k="c13"> Ler um ficheiro linha a linha com <code>strip</code> e <code>split</code>, e escrever com <code>\n</code></label></li>
+<li><label><input type="checkbox" data-k="c14"> Fazer o teste teórico e os 7 exercícios práticos sem ver as soluções</label></li>
+</ul>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var KEY='guia-fp', state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('.chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var tag=document.querySelector('#'+id+' .done-tag'); if(tag) tag.hidden=!on;
+    });
+    pbar.style.width=(secBoxes.length?100*n/secBoxes.length:0)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){ cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); }); });
+  var rst=document.getElementById('rst'), cf=document.getElementById('cf');
+  rst.addEventListener('click',function(){
+    if(cf.hidden){ cf.hidden=false; rst.textContent='Confirmar limpeza'; return; }
+    state={}; save(); refresh(); cf.hidden=true; rst.textContent='Limpar progresso';
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+        if(links[en.target.id]) links[en.target.id].classList.add('on'); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>

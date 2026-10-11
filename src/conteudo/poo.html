@@ -1,0 +1,806 @@
+<hero>
+<h1>POO: Java orientado a objetos para o teste e o exame prático</h1>
+<p>Classes, herança, polimorfismo, interfaces, exceções, enums, coleções, ficheiros, lambdas e streams. Inclui as perguntas dos testes escritos resolvidas e o exame prático de 2024-25 resolvido de raiz, compilado e testado com o ficheiro do exame.</p>
+</hero>
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<h3>Como é a avaliação</h3>
+<div class="tw"><table>
+<thead><tr><th>Prova</th><th>Formato</th><th>O que pedem</th></tr></thead>
+<tbody>
+<tr><td>Testes escritos / Moodle (ATP1, ATP2)</td><td>Verdadeiro/falso com desconto por erro, indicar o que é impresso, completar código</td><td>Regras da linguagem: <code>static</code>, <code>final</code>, construtores, <code>==</code> vs <code>equals</code>, herança, coleções, ficheiros, lambdas</td></tr>
+<tr><td>Avaliações em aula e exame prático (1h30)</td><td>Programar no computador a partir de ficheiros base, submeter no elearning</td><td>Modelar um domínio (concertos, reservas, armazéns, eventos) com classes, interface, herança/enum; guardar em coleções; ler e escrever ficheiros; ordenar e agrupar</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">O padrão de todos os exames práticos (2016 a 2025)</span>
+<ol>
+<li>Uma <strong>classe principal</strong> com id automático (<code>static int nextId</code>), construtor, getters/setters e <code>toString</code>.</li>
+<li>Uma <strong>interface</strong> dada (ex.: <code>IConcertProfitCalculator</code>, <code>ITicketBookingSystem</code>, <code>StorageServiceInterface</code>) que tens de implementar.</li>
+<li><strong>Herança</strong> ou <strong>enum</strong> para os tipos (Cinema/Theatre/Concert; Garage/Locker/Warehouse; ClientType).</li>
+<li>Uma classe <strong>gestora</strong> com um <code>Map&lt;Integer, X&gt;</code> ou <code>List&lt;X&gt;</code> e métodos add, remove, get, listar.</li>
+<li><strong>Ler um ficheiro</strong> (linhas separadas por <code>;</code>, com cabeçalho) e <strong>escrever</strong> outro.</li>
+<li><strong>Ordenar e agrupar</strong> (por mês, por tipo, por valor decrescente).</li>
+<li>Datas com <code>LocalDate</code>/<code>LocalDateTime</code> e <code>DateTimeFormatter</code>.</li>
+</ol>
+<p>Se dominares as secções 2, 3, 4, 8 e 9 deste guia, tens a maior parte da cotação do exame prático.</p></div>
+</section>
+
+<section id="basico" data-nav="1 · Java básico" data-grp="Linguagem" data-track>
+<h2>1 · Java básico</h2>
+<p>Java é compilado para <strong>bytecode</strong> (<code>javac X.java</code> gera <code>X.class</code>) que corre na JVM (<code>java X</code>). Tipagem <strong>estática</strong>: cada variável tem um tipo fixo.</p>
+<div class="tw"><table>
+<thead><tr><th>Tipo primitivo</th><th>Tamanho</th><th>Gama / exemplo</th><th>Por omissão (atributo)</th></tr></thead>
+<tbody>
+<tr><td><code>byte</code></td><td>8 bits</td><td>−128 a 127</td><td>0</td></tr>
+<tr><td><code>short</code></td><td>16 bits</td><td>−32768 a 32767</td><td>0</td></tr>
+<tr><td><code>int</code></td><td>32 bits</td><td>≈ ±2,1 mil milhões</td><td>0</td></tr>
+<tr><td><code>long</code></td><td>64 bits</td><td><code>10L</code></td><td>0</td></tr>
+<tr><td><code>float</code> / <code>double</code></td><td>32 / 64 bits</td><td><code>2.5f</code> / <code>2.5</code></td><td>0.0</td></tr>
+<tr><td><code>char</code></td><td>16 bits</td><td><code>'a'</code></td><td>'\u0000'</td></tr>
+<tr><td><code>boolean</code></td><td>—</td><td><code>true</code>/<code>false</code></td><td>false</td></tr>
+</tbody></table></div>
+<p>Referências (objetos, arrays, <code>String</code>) valem <code>null</code> por omissão. <strong>Variáveis locais não têm valor por omissão</strong>: usar sem inicializar dá erro de compilação. Constantes: <code>final</code>, em MAIÚSCULAS (<code>SPEED_LIMIT</code>). Classes em PascalCase, métodos e variáveis em camelCase.</p>
+<pre data-lang="java">
+import java.util.Scanner;
+
+public class Ola {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Qual é o teu nome? ");
+        String nome = sc.nextLine();
+        System.out.print("Que idade tens? ");
+        int idade = sc.nextInt();          // cuidado: depois de nextInt, um nextLine lê o resto da linha
+        System.out.printf("Nome: %s%nIdade: %d anos%n", nome, idade);
+        int[] v = new int[5];              // array de tamanho fixo, v.length == 5
+        for (int i = 0; i &lt; v.length; i++) v[i] = i * i;
+        for (int x : v) System.out.print(x + " ");   // for-each
+    }
+}
+</pre>
+<p>Controlo de fluxo igual ao C: <code>if/else</code>, <code>switch</code> (com <code>break</code>, ou a forma nova <code>case X -&gt; ...</code>), <code>while</code>, <code>do-while</code>, <code>for</code>, <code>break</code>, <code>continue</code>. Divisão inteira: <code>7 / 2 == 3</code>; <code>7 / 2.0 == 3.5</code>; cast: <code>(int) 3.9 == 3</code>.</p>
+
+<h3>Strings</h3>
+<p><code>String</code> é <strong>imutável</strong>: os métodos devolvem uma nova String. Para construir texto num ciclo usa <code>StringBuilder</code> (<code>append</code>, <code>reverse</code>, <code>insert</code>, <code>toString</code>), que altera o próprio objeto.</p>
+<div class="tw"><table>
+<thead><tr><th>Método</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td><code>length()</code>, <code>charAt(i)</code></td><td><code>"abc".charAt(1)</code> → <code>'b'</code></td></tr>
+<tr><td><code>substring(a, b)</code></td><td>de a até b−1</td></tr>
+<tr><td><code>equals</code>, <code>equalsIgnoreCase</code>, <code>compareTo</code></td><td><strong>nunca compares Strings com <code>==</code></strong></td></tr>
+<tr><td><code>split(regex)</code></td><td><code>"a;b;c".split(";")</code> → 3 elementos</td></tr>
+<tr><td><code>trim()</code>, <code>strip()</code>, <code>toUpperCase()</code>, <code>replace</code>, <code>contains</code>, <code>startsWith</code>, <code>indexOf</code></td><td></td></tr>
+<tr><td><code>String.format</code>, <code>String.join</code>, <code>String.valueOf</code></td><td><code>String.format("%.2f", 3.14159)</code> → <code>"3.14"</code></td></tr>
+<tr><td><code>Integer.parseInt</code>, <code>Double.parseDouble</code></td><td>converter texto em número</td></tr>
+<tr><td><code>Character.isDigit</code>, <code>isLetter</code>, <code>toUpperCase</code></td><td></td></tr>
+</tbody></table></div>
+<h3>Expressões regulares</h3>
+<p><code>s.matches("^[A-Z][A-Za-z0-9]*$")</code> verifica um nome de classe. Símbolos: <code>X?</code> zero ou um, <code>X*</code> zero ou mais, <code>X+</code> um ou mais, <code>\\d</code> dígito, <code>\\s</code> espaço, <code>[A-Za-z]</code> classe, <code>^</code>/<code>$</code> início/fim. Em Java a barra escreve-se dupla dentro da String. <code>split("\\s+")</code> parte por qualquer número de espaços.</p>
+</section>
+
+<section id="classes" data-nav="2 · Classes e objetos" data-grp="Linguagem" data-track>
+<h2>2 · Classes e objetos</h2>
+<p>Uma <strong>classe</strong> é o molde (atributos + métodos); um <strong>objeto</strong> é uma instância criada com <code>new</code>. Uma classe pode ter atributos, métodos, construtores, blocos <code>static</code> e classes internas.</p>
+<pre data-lang="java">
+public class Book {
+    private static int nextId = 1;     // de CLASSE: partilhado por todos os objetos
+    private final int id;              // final: só se atribui uma vez (no construtor)
+    private String title;              // private: encapsulamento
+    private double price;
+
+    public Book(String title, double price) {   // construtor
+        this.id = nextId++;            // id automático e incremental
+        this.title = title;            // this distingue atributo de parâmetro
+        setPrice(price);
+    }
+
+    public Book(String title) {        // sobrecarga (overloading): mesmo nome, parâmetros diferentes
+        this(title, 0.0);              // chama o outro construtor (tem de ser a 1.ª linha)
+    }
+
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) {
+        if (price &lt; 0) throw new IllegalArgumentException("Preço negativo");
+        this.price = price;            // os setters validam: é para isso que existe encapsulamento
+    }
+
+    @Override
+    public String toString() {         // sem isto, println mostra "Book@33909752"
+        return String.format("Book #%d: %s (%.2f €)", id, title, price);
+    }
+}
+</pre>
+<div class="tw"><table>
+<thead><tr><th>Modificador</th><th>Mesma classe</th><th>Mesmo pacote</th><th>Subclasse</th><th>Qualquer lado</th></tr></thead>
+<tbody>
+<tr><td><code>private</code></td><td>✓</td><td></td><td></td><td></td></tr>
+<tr><td>(nenhum, "package")</td><td>✓</td><td>✓</td><td></td><td></td></tr>
+<tr><td><code>protected</code></td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
+<tr><td><code>public</code></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+</tbody></table></div>
+<div class="box teo"><span class="t">Regras que saem em verdadeiro/falso</span>
+<ul>
+<li>Se <strong>não</strong> definires nenhum construtor, o compilador cria um <strong>construtor por omissão sem argumentos</strong>. Se definires um qualquer, deixa de existir.</li>
+<li>Atributos e métodos <code>static</code> pertencem à classe: chamam-se <code>Classe.metodo()</code>, mesmo sem existirem objetos. Um método <code>static</code> não pode usar <code>this</code> nem atributos de instância.</li>
+<li><code>final</code>: variável não muda; método não pode ser reescrito; classe não pode ter subclasses.</li>
+<li><code>a == b</code> compara <strong>referências</strong> (é o mesmo objeto?). <code>a.equals(b)</code> compara o <strong>conteúdo</strong>, se a classe o redefinir.</li>
+<li>Objetos da mesma classe têm o mesmo comportamento mas guardam dados diferentes.</li>
+</ul></div>
+
+<h3>equals e hashCode</h3>
+<p>Se redefinires <code>equals</code>, redefine também <code>hashCode</code>: o <code>HashSet</code> e o <code>HashMap</code> usam os dois. Objetos iguais têm de ter o mesmo hashCode.</p>
+<pre data-lang="java">
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Book b = (Book) o;
+    return title.equals(b.title) &amp;&amp; price == b.price;
+}
+
+@Override
+public int hashCode() {
+    return java.util.Objects.hash(title, price);
+}
+</pre>
+<p>Métodos que todas as classes herdam de <code>Object</code>: <code>toString()</code>, <code>equals()</code>, <code>hashCode()</code>, <code>getClass()</code>.</p>
+
+<h3>Pacotes e modularidade</h3>
+<p><code>package aula03;</code> na 1.ª linha; a pasta tem de ter o mesmo nome. <code>import java.util.*;</code> ou <code>import java.util.List;</code>. Métodos auxiliares sem estado são <code>static</code> (ex.: <code>Math.sqrt</code>).</p>
+</section>
+
+<section id="heranca" data-nav="3 · Herança e composição" data-grp="Linguagem" data-track>
+<h2>3 · Herança e composição</h2>
+<pre data-lang="java">
+public class Vehicle {
+    protected String plate;
+    public Vehicle(String plate) { this.plate = plate; }
+    public double tax() { return 50; }
+    @Override public String toString() { return "Vehicle " + plate; }
+}
+
+public class Truck extends Vehicle {         // Truck É UM Vehicle
+    private double load;
+    public Truck(String plate, double load) {
+        super(plate);                        // construtor da superclasse: 1.ª instrução
+        this.load = load;
+    }
+    @Override                                // reescrita (overriding): mesma assinatura
+    public double tax() { return super.tax() + load * 2; }   // super.metodo() chama a versão da mãe
+    @Override public String toString() { return super.toString() + " (truck, " + load + " t)"; }
+}
+</pre>
+<ul>
+<li>Java só tem herança <strong>simples</strong> de classes (<code>extends</code> uma). Uma classe pode implementar várias interfaces.</li>
+<li>Os construtores <strong>não se herdam</strong>. Se não chamares <code>super(...)</code>, o Java chama <code>super()</code> sem argumentos (erro se a mãe não o tiver).</li>
+<li>Ao reescrever um método <strong>não podes reduzir a visibilidade</strong> (um <code>public</code> não pode passar a <code>private</code>).</li>
+<li><code>@Override</code> faz o compilador confirmar que estás mesmo a reescrever (apanha erros de nome).</li>
+</ul>
+<div class="tw"><table>
+<thead><tr><th>Relação</th><th>Significado</th><th>Exemplo dos slides</th></tr></thead>
+<tbody>
+<tr><td>Herança (é um)</td><td><code>extends</code></td><td>Revista é uma Publicação</td></tr>
+<tr><td>Associação (usa / tem)</td><td>atributo que aponta para outro objeto</td><td>Car pode ter 1 ou mais Passenger</td></tr>
+<tr><td>Agregação</td><td>tem, mas as partes existem sem o todo</td><td>Quinta tem Árvores</td></tr>
+<tr><td>Composição</td><td>tem, e as partes morrem com o todo</td><td>Car tem 1 Engine; destruído o Car, destrói-se o Engine</td></tr>
+</tbody></table></div>
+<div class="box ex"><span class="t">ATP1 2016-17: modelar Árvore, ÁrvoreDeFruto, Latada, Quinta</span>
+<p><code>Arvore</code> (abstrata) com subclasses <code>Pinheiro</code>, <code>Eucalipto</code> e <code>ArvoreDeFruto</code>; <code>ArvoreDeFruto</code> com <code>Macieira</code>, <code>Oliveira</code>, <code>Pereira</code>. <code>Latada</code> é uma <strong>interface</strong> (<code>setSuporte</code>) implementada por <code>Macieira</code> e <code>Pereira</code>. <code>Quinta</code> agrega uma lista de <code>Arvore</code>; <code>QuintaComLatada</code> agrega uma lista de <code>Latada</code>. A capacidade que atravessa a hierarquia ("crescer em latada") é uma interface, porque só algumas árvores a têm.</p></div>
+</section>
+
+<section id="polimorfismo" data-nav="4 · Polimorfismo, abstratas, interfaces" data-grp="Linguagem" data-track>
+<h2>4 · Polimorfismo, classes abstratas e interfaces</h2>
+<p><strong>Polimorfismo</strong>: uma referência do tipo da superclasse pode apontar para objetos de qualquer subclasse, e o método executado é o do <strong>objeto real</strong> (ligação dinâmica, decidida em execução).</p>
+<pre data-lang="java">
+Vehicle v = new Truck("AA-00-BB", 3);   // OK: um Truck é um Vehicle
+System.out.println(v.tax());            // chama Truck.tax() (ligação dinâmica)
+// v.getLoad();                         // ERRO de compilação: o tipo da referência é Vehicle
+if (v instanceof Truck t) {             // confirmar antes de fazer cast
+    System.out.println(t.getLoad());
+}
+Truck t2 = (Truck) new Vehicle("X");    // compila, mas dá ClassCastException em execução
+</pre>
+<div class="tw"><table>
+<thead><tr><th>Ligação</th><th>Quando se decide</th><th>Exemplos</th></tr></thead>
+<tbody>
+<tr><td>Estática</td><td>em compilação</td><td>métodos <code>static</code>, <code>private</code>, <code>final</code>; sobrecarga (overloading)</td></tr>
+<tr><td>Dinâmica</td><td>em execução</td><td>métodos reescritos (overriding)</td></tr>
+</tbody></table></div>
+<p>Uma referência de subclasse <strong>não</strong> pode apontar para um objeto da superclasse: <code>Pepino p = new Vegetal();</code> não compila.</p>
+
+<h3>Classe abstrata vs interface</h3>
+<pre data-lang="java">
+public abstract class Shape {                  // não se pode fazer new Shape()
+    protected String color;
+    public Shape(String color) { this.color = color; }
+    public abstract double area();             // sem corpo: as subclasses concretas TÊM de implementar
+    public String describe() { return color + " shape with area " + area(); }   // método concreto
+}
+
+public interface Billable {                    // define uma capacidade
+    double price();                            // implicitamente public abstract
+    default String priceTag() {                // método default (com corpo)
+        return String.format("%.2f €", price());
+    }
+}
+
+public class Circle extends Shape implements Billable, Comparable&lt;Circle&gt; {
+    private double r;
+    public Circle(String color, double r) { super(color); this.r = r; }
+    @Override public double area() { return Math.PI * r * r; }
+    @Override public double price() { return area() * 0.1; }
+    @Override public int compareTo(Circle o) { return Double.compare(r, o.r); }
+}
+</pre>
+<div class="tw"><table>
+<thead><tr><th></th><th>Classe abstrata</th><th>Interface</th></tr></thead>
+<tbody>
+<tr><td>Instanciar</td><td>não</td><td>não</td></tr>
+<tr><td>Palavra-chave</td><td><code>extends</code> (só uma)</td><td><code>implements</code> (várias)</td></tr>
+<tr><td>Atributos</td><td>sim, de instância</td><td>só constantes (<code>public static final</code>)</td></tr>
+<tr><td>Métodos</td><td>abstratos e concretos</td><td>abstratos; <code>default</code> e <code>static</code> com corpo</td></tr>
+<tr><td>Construtores</td><td>sim</td><td>não</td></tr>
+<tr><td>Quando usar</td><td>classes muito relacionadas que partilham estado e código</td><td>definir uma capacidade que classes sem relação podem ter</td></tr>
+</tbody></table></div>
+<p>Uma subclasse de uma classe abstrata que não implemente todos os métodos abstratos tem de ser também <code>abstract</code> (por isso "um método abstrato tem de ser reescrito numa subclasse, mesmo abstrata" é <strong>falso</strong>).</p>
+</section>
+
+<section id="comparar" data-nav="5 · Comparable e Comparator" data-grp="Linguagem" data-track>
+<h2>5 · Comparable e Comparator</h2>
+<div class="tw"><table>
+<thead><tr><th></th><th><code>Comparable&lt;T&gt;</code></th><th><code>Comparator&lt;T&gt;</code></th></tr></thead>
+<tbody>
+<tr><td>Onde</td><td>dentro da própria classe</td><td>objeto à parte (muitas vezes uma lambda)</td></tr>
+<tr><td>Método</td><td><code>int compareTo(T o)</code></td><td><code>int compare(T a, T b)</code></td></tr>
+<tr><td>Define</td><td>a ordem <strong>natural</strong> (uma só)</td><td>quantas ordens quiseres</td></tr>
+<tr><td>Usado por</td><td><code>Collections.sort(l)</code>, <code>TreeSet</code>, <code>TreeMap</code></td><td><code>l.sort(cmp)</code>, <code>new TreeSet&lt;&gt;(cmp)</code></td></tr>
+</tbody></table></div>
+<p>Devolve negativo se o primeiro vem antes, 0 se iguais, positivo se vem depois. Para <code>double</code> usa <code>Double.compare(a, b)</code>; para inteiros <code>Integer.compare(a, b)</code>; nunca <code>(int)(a - b)</code> com doubles.</p>
+<pre data-lang="java">
+List&lt;Person&gt; people = new ArrayList&lt;&gt;();
+Collections.sort(people);                                   // ordem natural (compareTo)
+people.sort(Comparator.comparing(Person::getName));         // por nome
+people.sort(Comparator.comparingInt(Person::getAge).reversed());  // idade decrescente
+people.sort(Comparator.comparing(Person::getCity)
+                      .thenComparing(Person::getName));     // dois critérios
+people.sort((a, b) -&gt; Double.compare(b.getSalary(), a.getSalary()));   // lambda, decrescente
+</pre>
+</section>
+
+<section id="excecoes" data-nav="6 · Exceções" data-grp="Linguagem" data-track>
+<h2>6 · Exceções</h2>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Exemplos</th><th>Obrigatório tratar ou declarar?</th></tr></thead>
+<tbody>
+<tr><td><strong>Checked</strong> (<code>Exception</code>, exceto Runtime)</td><td><code>IOException</code>, <code>FileNotFoundException</code></td><td><strong>sim</strong>: <code>try/catch</code> ou <code>throws</code> na assinatura</td></tr>
+<tr><td><strong>Unchecked</strong> (<code>RuntimeException</code>)</td><td><code>NullPointerException</code>, <code>ArrayIndexOutOfBoundsException</code>, <code>NumberFormatException</code>, <code>IllegalArgumentException</code>, <code>ClassCastException</code>, <code>ArithmeticException</code></td><td>não</td></tr>
+<tr><td><code>Error</code></td><td><code>OutOfMemoryError</code>, <code>StackOverflowError</code></td><td>não (não se trata)</td></tr>
+</tbody></table></div>
+<pre data-lang="java">
+public double divide(int a, int b) {
+    if (b == 0) throw new IllegalArgumentException("b não pode ser 0");   // lançar
+    return (double) a / b;
+}
+
+public void read(String path) throws FileNotFoundException { ... }  // passa a responsabilidade a quem chama
+
+try {
+    int n = Integer.parseInt(texto);
+    int[] v = new int[3];
+    v[n] = 1;
+} catch (NumberFormatException e) {               // os catch mais ESPECÍFICOS primeiro
+    System.out.println("Não é número: " + e.getMessage());
+} catch (ArrayIndexOutOfBoundsException | NullPointerException e) {   // multi-catch
+    System.out.println("Erro: " + e);
+} catch (Exception e) {                           // o mais geral no fim
+    e.printStackTrace();
+} finally {
+    System.out.println("Corre sempre, com ou sem exceção");
+}
+
+// exceção própria
+public class TooSmallException extends Exception {
+    public TooSmallException(String msg) { super(msg); }
+}
+</pre>
+<p>A ordem dos <code>catch</code> importa: se apanhares <code>Exception</code> antes de <code>IOException</code>, o segundo <code>catch</code> nunca é alcançado e o código nem compila.</p>
+</section>
+
+<section id="enum" data-nav="7 · Enumerados" data-grp="Linguagem" data-track>
+<h2>7 · Tipos enumerados</h2>
+<pre data-lang="java">
+public enum Season { SPRING, SUMMER, FALL, WINTER }
+
+public enum UnitType {                      // enum com atributos e construtor
+    LOCKER(5.0), GARAGE(12.5), WAREHOUSE(40.0);
+    private final double dailyPrice;
+    UnitType(double p) { this.dailyPrice = p; }   // construtor é sempre privado
+    public double getDailyPrice() { return dailyPrice; }
+}
+
+Season s = Season.valueOf("SUMMER");        // de String para enum (exceção se não existir)
+s.name();       // "SUMMER"
+s.ordinal();    // 1 (posição, começa em 0)
+for (Season x : Season.values()) { ... }    // percorrer todos
+switch (s) {
+    case SPRING -&gt; System.out.println("Primavera");
+    case SUMMER -&gt; System.out.println("Verão");
+    default -&gt; System.out.println("Outro");
+}
+UnitType t = UnitType.valueOf(campos[3].trim().toUpperCase());   // ler um tipo de um ficheiro
+</pre>
+<p>Compara-se com <code>==</code> (cada constante existe uma só vez). <code>EnumMap</code> e <code>EnumSet</code> são coleções otimizadas para enums.</p>
+</section>
+
+<section id="colecoes" data-nav="8 · Coleções" data-grp="Bibliotecas" data-track>
+<h2>8 · Coleções (Java Collections)</h2>
+<div class="tw"><table>
+<thead><tr><th>Interface</th><th>Implementação</th><th>Ordem</th><th>Repetidos</th><th>Notas</th></tr></thead>
+<tbody>
+<tr><td rowspan="2"><code>List</code></td><td><code>ArrayList</code></td><td>inserção</td><td>sim</td><td>acesso por índice rápido</td></tr>
+<tr><td><code>LinkedList</code></td><td>inserção</td><td>sim</td><td>inserir/remover nas pontas rápido</td></tr>
+<tr><td rowspan="3"><code>Set</code></td><td><code>HashSet</code></td><td>nenhuma</td><td>não</td><td>usa <code>equals</code> + <code>hashCode</code></td></tr>
+<tr><td><code>LinkedHashSet</code></td><td>inserção</td><td>não</td><td></td></tr>
+<tr><td><code>TreeSet</code></td><td><strong>ordenada</strong></td><td>não</td><td>usa <code>compareTo</code> ou um Comparator</td></tr>
+<tr><td rowspan="3"><code>Map&lt;K,V&gt;</code></td><td><code>HashMap</code></td><td>nenhuma</td><td>chaves únicas</td><td></td></tr>
+<tr><td><code>LinkedHashMap</code></td><td>inserção</td><td>chaves únicas</td><td></td></tr>
+<tr><td><code>TreeMap</code></td><td><strong>ordenada pela chave</strong></td><td>chaves únicas</td><td><code>firstKey</code>, <code>headMap</code>...</td></tr>
+<tr><td><code>Queue</code>/<code>Deque</code></td><td><code>ArrayDeque</code>, <code>LinkedList</code>, <code>PriorityQueue</code></td><td>FIFO / prioridade</td><td>sim</td><td><code>offer</code>, <code>poll</code>, <code>peek</code></td></tr>
+</tbody></table></div>
+<p><code>Map</code> <strong>não</strong> é uma <code>Collection</code> e <strong>não</strong> tem <code>iterator()</code>: percorre-se pelas suas vistas <code>keySet()</code> (um Set, sem repetidos), <code>values()</code> (Collection) e <code>entrySet()</code>. Declara sempre pela interface: <code>List&lt;String&gt; l = new ArrayList&lt;&gt;();</code>. Coleções guardam objetos: <code>List&lt;Integer&gt;</code>, não <code>List&lt;int&gt;</code>.</p>
+<pre data-lang="java">
+List&lt;String&gt; l = new ArrayList&lt;&gt;(List.of("b", "a", "c"));
+l.add("d"); l.add(0, "z"); l.get(1); l.set(1, "x"); l.remove("c"); l.remove(0);
+l.size(); l.contains("a"); l.indexOf("a"); Collections.sort(l); Collections.reverse(l);
+l.removeIf(s -&gt; s.startsWith("x"));         // apagar dentro de um ciclo dá ConcurrentModificationException; usa isto
+
+Map&lt;String, Integer&gt; stock = new HashMap&lt;&gt;();
+stock.put("toalha", 3);                     // inserir ou substituir
+stock.get("toalha");                        // 3   (null se não existir)
+stock.getOrDefault("chapéu", 0);            // 0
+stock.containsKey("toalha");
+stock.merge("toalha", 1, Integer::sum);     // soma 1 ao valor existente (ou põe 1)
+stock.putIfAbsent("protetor", 0);
+stock.remove("toalha");
+for (Map.Entry&lt;String, Integer&gt; e : stock.entrySet()) {
+    System.out.println(e.getKey() + " = " + e.getValue());
+    e.setValue(e.getValue() * 2);           // pode-se alterar o valor durante o ciclo
+}
+
+// agrupar: mapa de listas (padrão que sai em todos os exames)
+Map&lt;String, List&lt;Book&gt;&gt; porAutor = new TreeMap&lt;&gt;();
+for (Book b : livros) {
+    porAutor.computeIfAbsent(b.getAuthor(), k -&gt; new ArrayList&lt;&gt;()).add(b);
+}
+</pre>
+<p>Utilitários: <code>Collections.sort</code>, <code>reverse</code>, <code>shuffle</code>, <code>max</code>, <code>min</code>, <code>unmodifiableList</code>; <code>Arrays.asList(3, 1, 8, 5)</code>, <code>Arrays.sort(v)</code>, <code>Arrays.toString(v)</code>; <code>List.of(...)</code> cria uma lista <strong>imutável</strong>.</p>
+</section>
+
+<section id="ficheiros" data-nav="9 · Ficheiros e datas" data-grp="Bibliotecas" data-track>
+<h2>9 · Ficheiros e datas</h2>
+<h3>Ler</h3>
+<pre data-lang="java">
+// Scanner linha a linha (o mais usado nos exames)
+try (Scanner sc = new Scanner(new File("bookings.txt"))) {    // try-with-resources: fecha sozinho
+    while (sc.hasNextLine()) {
+        String line = sc.nextLine().trim();
+        if (line.isEmpty() || line.startsWith("#")) continue;   // saltar vazias e comentários/cabeçalho
+        String[] f = line.split(";");
+        int taxId = Integer.parseInt(f[0].trim());
+        LocalDate start = LocalDate.parse(f[1].trim());        // formato ISO yyyy-MM-dd
+        int days = Integer.parseInt(f[2].trim());
+        UnitType type = UnitType.valueOf(f[3].trim());
+        String[] dims = f[4].split("x");                        // "200x300x250"
+    }
+} catch (FileNotFoundException e) {
+    System.out.println("Ficheiro não encontrado");
+}
+
+// alternativa: todas as linhas de uma vez (java.nio.file)
+List&lt;String&gt; lines = Files.readAllLines(Paths.get("dados.txt"));   // lança IOException
+</pre>
+<h3>Escrever</h3>
+<pre data-lang="java">
+try (PrintWriter pw = new PrintWriter(new File("result.txt"))) {   // cria/apaga o ficheiro
+    pw.println("id;local;lucro");
+    pw.printf("%d;%s;%.2f%n", 1, "Aveiro, Portugal", 2250.0);
+} catch (FileNotFoundException e) { ... }
+
+new FileWriter("log.txt", true);       // true = acrescentar no fim em vez de apagar
+PrintStream fl = new PrintStream(new File("out.txt"));   // exame 2023-24: o mesmo código escreve na consola (System.out) ou num ficheiro
+</pre>
+<p><code>PrintWriter</code> é para <strong>escrever</strong>, não para ler. <code>File</code> representa um caminho: <code>exists()</code>, <code>isFile()</code>, <code>isDirectory()</code>, <code>listFiles()</code>, <code>getName()</code>, <code>mkdir()</code>. A classe <code>java.nio.file.Files</code> tem só métodos estáticos (<code>readAllLines</code>, <code>write</code>, <code>exists</code>, <code>copy</code>, <code>delete</code>).</p>
+<h3>Datas (java.time)</h3>
+<pre data-lang="java">
+DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+LocalDateTime d = LocalDateTime.parse("2025-05-29 16:00", fmt);
+d.format(fmt);                    // "2025-05-29 16:00"
+d.getMonthValue();                // 5        d.getMonth() -&gt; MAY
+d.plusDays(3); d.isBefore(outra); d.toLocalDate();
+LocalDate a = LocalDate.of(2023, 6, 1);
+long dias = ChronoUnit.DAYS.between(a, a.plusMonths(1));   // 30
+</pre>
+<p>Duas reservas [s1, e1] e [s2, e2] sobrepõem-se se <code>!(e1.isBefore(s2) || e2.isBefore(s1))</code> (padrão do exame 2022-23 <code>checkAvailable</code>).</p>
+</section>
+
+<section id="lambdas" data-nav="10 · Lambdas e interfaces funcionais" data-grp="Bibliotecas" data-track>
+<h2>10 · Lambdas e interfaces funcionais</h2>
+<p>Uma <strong>interface funcional</strong> tem exatamente <strong>um método abstrato</strong> (pode ter <code>@FunctionalInterface</code>). Onde se espera uma, podes passar uma <strong>lambda</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Interface (java.util.function)</th><th>Método</th><th>Recebe → devolve</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td><code>Predicate&lt;T&gt;</code></td><td><code>test</code></td><td>T → boolean</td><td><code>s -&gt; s.isEmpty()</code></td></tr>
+<tr><td><code>Function&lt;T,R&gt;</code></td><td><code>apply</code></td><td>T → R</td><td><code>s -&gt; s.length()</code></td></tr>
+<tr><td><code>Consumer&lt;T&gt;</code></td><td><code>accept</code></td><td>T → nada</td><td><code>s -&gt; System.out.println(s)</code></td></tr>
+<tr><td><code>Supplier&lt;T&gt;</code></td><td><code>get</code></td><td>nada → T</td><td><code>() -&gt; new ArrayList&lt;&gt;()</code></td></tr>
+<tr><td><code>BiFunction&lt;T,U,R&gt;</code></td><td><code>apply</code></td><td>T, U → R</td><td><code>(a, b) -&gt; a + b</code></td></tr>
+<tr><td><code>UnaryOperator&lt;T&gt;</code>, <code>BinaryOperator&lt;T&gt;</code></td><td><code>apply</code></td><td>T → T; T, T → T</td><td><code>String::toUpperCase</code></td></tr>
+</tbody></table></div>
+<pre data-lang="java">
+@FunctionalInterface
+interface InspectionTest&lt;T&gt; {
+    boolean inspectAction(T testedValue, T correctValue);
+}
+
+static void genericTest(InspectionTest&lt;Double&gt; test, String name, double read, double max) {
+    if (test.inspectAction(read, max)) System.out.println("Test " + name + " passed!");
+    else System.out.println("Test " + name + " failed!");
+}
+
+genericTest((v1, v2) -&gt; v1 &lt;= v2, "CO2", 0.3, 0.5);             // passa
+genericTest((light, max) -&gt; light == 0, "Lights", 10.0, 10.0);   // falha
+</pre>
+<p><strong>Referências a métodos</strong>: <code>String::toUpperCase</code>, <code>System.out::println</code>, <code>Person::getName</code>, <code>ArrayList::new</code>. Escrevem-se <strong>sem parênteses</strong>: <code>list.replaceAll(String::toUpperCase())</code> não compila.</p>
+<pre data-lang="java">
+list.forEach(System.out::println);
+list.replaceAll(String::toUpperCase);
+list.removeIf(s -&gt; s.length() &lt; 3);
+map.forEach((k, v) -&gt; System.out.println(k + "=" + v));
+</pre>
+</section>
+
+<section id="streams" data-nav="11 · Streams" data-grp="Bibliotecas" data-track>
+<h2>11 · Streams</h2>
+<p>Uma stream processa os dados de uma coleção em <strong>pipeline</strong>: fonte → operações <strong>intermédias</strong> (devolvem outra stream, são preguiçosas) → uma operação <strong>terminal</strong> (produz o resultado). Não altera a coleção original e só se percorre uma vez.</p>
+<div class="tw"><table>
+<thead><tr><th>Intermédias</th><th>Terminais</th></tr></thead>
+<tbody><tr>
+<td><code>filter(Predicate)</code>, <code>map(Function)</code>, <code>mapToInt</code>, <code>sorted()</code>, <code>sorted(Comparator)</code>, <code>distinct()</code>, <code>limit(n)</code>, <code>skip(n)</code></td>
+<td><code>collect(...)</code>, <code>forEach</code>, <code>count()</code>, <code>sum()</code>, <code>average()</code>, <code>max/min(Comparator)</code>, <code>anyMatch</code>, <code>allMatch</code>, <code>findFirst()</code>, <code>reduce</code>, <code>toList()</code></td>
+</tr></tbody></table></div>
+<pre data-lang="java">
+List&lt;String&gt; nomes = people.stream()
+        .filter(p -&gt; p.getAge() &gt;= 18)            // só adultos
+        .sorted(Comparator.comparing(Person::getName))
+        .map(Person::getName)                     // map transforma com uma Function (não um Comparator)
+        .collect(Collectors.toList());
+
+double media = people.stream().mapToInt(Person::getAge).average().orElse(0);
+long n = people.stream().filter(p -&gt; p.getCity().equals("Aveiro")).count();
+
+Map&lt;String, List&lt;Person&gt;&gt; porCidade = people.stream()
+        .collect(Collectors.groupingBy(Person::getCity));
+Map&lt;String, Long&gt; contagem = people.stream()
+        .collect(Collectors.groupingBy(Person::getCity, TreeMap::new, Collectors.counting()));
+
+List&lt;String&gt; linhas = Files.lines(Paths.get("dados.txt"))   // stream de linhas de um ficheiro
+        .filter(l -&gt; !l.startsWith("#")).toList();
+</pre>
+</section>
+
+<section id="extra" data-nav="12 · JARs, Maven, sockets" data-grp="Bibliotecas" data-track>
+<h2>12 · JARs, Maven e sockets</h2>
+<ul>
+<li><strong>JAR</strong>: ficheiro zip com as <code>.class</code> e um <code>MANIFEST.MF</code>. <code>jar cfe app.jar Main *.class</code> cria um jar executável (a linha <code>Main-Class: Main</code> no manifest); corre-se com <code>java -jar app.jar</code>.</li>
+<li><strong>Maven</strong>: gere o projeto com o <code>pom.xml</code> (groupId, artifactId, version, dependências). Estrutura <code>src/main/java</code> e <code>src/test/java</code>. Comandos: <code>mvn package</code> (gera o jar em <code>target/</code>), <code>mvn exec:java</code>. Um <em>fat jar</em> (plugin shade) inclui as dependências e indica a Main-Class.</li>
+<li><strong>Sockets</strong>: comunicação em rede como se fosse um ficheiro. Servidor: <code>ServerSocket ss = new ServerSocket(5000); Socket s = ss.accept();</code>. Cliente: <code>new Socket("localhost", 5000)</code>. Lê-se e escreve-se com <code>s.getInputStream()</code>/<code>getOutputStream()</code> (envolvidos em Scanner/PrintWriter).</li>
+</ul>
+</section>
+
+<section id="testes" data-nav="Testes escritos resolvidos" data-grp="Treino">
+<h2>Testes escritos resolvidos</h2>
+<h3>ATP1 2016-17: verdadeiro ou falso (resposta errada desconta)</h3>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Afirmação</th><th>V/F</th><th>Porquê</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Os modificadores de visibilidade implementam o encapsulamento</td><td>V</td><td></td></tr>
+<tr><td>2</td><td>Um método abstrato tem de ser reescrito numa subclasse, mesmo abstrata</td><td>F</td><td>uma subclasse abstrata pode deixá-lo por implementar</td></tr>
+<tr><td>3</td><td>Métodos <code>final</code> não podem ser reescritos</td><td>V</td><td></td></tr>
+<tr><td>4</td><td>Sem construtores, o compilador cria um sem argumentos</td><td>V</td><td></td></tr>
+<tr><td>5</td><td>Objetos <code>String</code> são imutáveis</td><td>V</td><td></td></tr>
+<tr><td>6</td><td>Variáveis estáticas são comuns a todos os objetos</td><td>V</td><td></td></tr>
+<tr><td>7</td><td>O menor <code>byte</code> é −128</td><td>V</td><td></td></tr>
+<tr><td>8</td><td>Pode-se invocar um método estático sem existirem objetos</td><td>V</td><td></td></tr>
+<tr><td>9</td><td>Pode-se reduzir a visibilidade de métodos herdados</td><td>F</td><td>só se pode manter ou aumentar</td></tr>
+<tr><td>10</td><td><code>c1 == c2</code> compara os dados dos objetos</td><td>F</td><td>compara referências; os dados comparam-se com <code>equals</code></td></tr>
+<tr><td>11</td><td>Uma referência <code>Pepino</code> (subclasse) pode apontar para um <code>Vegetal</code></td><td>F</td><td>é ao contrário</td></tr>
+<tr><td>12</td><td>Objetos da mesma classe têm o mesmo comportamento mas dados diferentes</td><td>V</td><td></td></tr>
+</tbody></table></div>
+<details><summary>ATP1 2016-17: o que é impresso (programa da String)</summary><div class="in">
+<pre data-lang="java">
+String x = "1-de-janeiro-2017";
+int n = 0, p;
+for (p = 0; p &lt; x.length(); p++) {
+    if (Character.isDigit(x.charAt(p))) n++;
+}
+System.out.println("n=" + n);          // dígitos: 1, 2, 0, 1, 7
+System.out.println("p=" + p);          // no fim do ciclo p == x.length()
+String y[] = x.split("-");
+System.out.println(y.length);
+for (String s : y) System.out.print(s);
+System.out.println();
+</pre>
+<pre data-lang="txt" class="out">
+n=5
+p=17
+4
+1dejaneiro2017
+</pre></div></details>
+<details><summary>ATP1 2016-17: o que é impresso (MyClass com static e equals)</summary><div class="in">
+<p>Cada construtor imprime o valor atual de <code>y</code> (partilhado) e soma-lhe 10. <code>obj1.equals(obj2)</code> é falso (5 ≠ 10), por isso imprime <code>obj2</code>. <code>K</code> é uma constante estática.</p>
+<pre data-lang="txt" class="out">
+Novo=100
+Novo=110
+x = 10
+10
+</pre></div></details>
+<details><summary>ATP1 2016-17: completar OneClass e OtherClass</summary><div class="in">
+<pre data-lang="java">
+class OneClass {
+    private int s;
+    public OneClass(int s) { this.s = s; }
+    public int getS() { return s; }
+}
+
+class OtherClass extends OneClass {
+    private int x;
+    public OtherClass(int s, int x) {
+        super(s);                       // s é private em OneClass: só lá chegamos pelo construtor
+        this.x = x;
+    }
+    public String getInfo() { return "AllInfo:" + getS() + x; }   // "AllInfo:" + 10 + 20 = "AllInfo:1020"
+}
+</pre>
+<p><code>OneClass obj3 = new OtherClass(100, 50)</code> funciona por polimorfismo e <code>obj3.getS()</code> dá 100.</p></div></details>
+
+<h3>ATP2 2019-20 (Moodle): respostas corretas</h3>
+<div class="tw"><table>
+<thead><tr><th>Afirmação</th><th>V/F</th></tr></thead>
+<tbody>
+<tr><td>ArrayList guarda a ordem de inserção</td><td>V</td></tr>
+<tr><td><code>Set&lt;Student&gt; tab</code> tem o método <code>getName()</code></td><td>F (o Set não; cada Student sim)</td></tr>
+<tr><td>TreeSet guarda os elementos ordenados</td><td>V</td></tr>
+<tr><td><code>java.util.List</code> é uma interface implementada por ArrayList</td><td>V</td></tr>
+<tr><td><code>Map&lt;K,V&gt;</code> disponibiliza <code>iterator()</code></td><td>F</td></tr>
+<tr><td><code>Map&lt;String, Map&lt;String, List&lt;Integer&gt;&gt;&gt; m = new HashMap&lt;&gt;();</code> é válido</td><td>V</td></tr>
+<tr><td><code>m.keySet()</code> pode ter elementos repetidos</td><td>F</td></tr>
+<tr><td>Com try-with-resources ainda é preciso fechar o Scanner</td><td>F</td></tr>
+<tr><td><code>java.nio.file.Files</code> tem métodos estáticos para ficheiros e pastas</td><td>V</td></tr>
+<tr><td>Podemos ler ficheiros com PrintWriter</td><td>F</td></tr>
+<tr><td><code>list.replaceAll(String::toUpperCase());</code> usa uma referência a método</td><td>F (com parênteses nem compila)</td></tr>
+<tr><td>Predicate recebe um argumento e devolve boolean</td><td>V</td></tr>
+<tr><td>Uma função que aceita uma interface funcional pode receber uma lambda</td><td>V</td></tr>
+<tr><td><code>list.sort(Comparing.comparator(p -&gt; p.getName()))</code> ordena por nome</td><td>F (é <code>Comparator.comparing</code>)</td></tr>
+<tr><td><code>map</code> de uma stream transforma usando um Comparator</td><td>F (usa uma Function)</td></tr>
+</tbody></table></div>
+<details><summary>ATP2 2019-20: completar código (listas, TreeMap, juntar ficheiros)</summary><div class="in">
+<pre data-lang="java">
+List&lt;Integer&gt; list = new ArrayList&lt;&gt;(Arrays.asList(3, 1, 8, 5));
+Collections.reverse(list);                 // [5, 8, 1, 3]
+list.sort(Collections.reverseOrder());     // [8, 5, 3, 1]
+
+Map&lt;Character, Integer&gt; pares = new TreeMap&lt;&gt;();
+// ... puts ...
+System.out.println(pares.get('a'));        // 3
+for (Map.Entry&lt;Character, Integer&gt; e : pares.entrySet())
+    if (e.getKey() == 'e') e.setValue(7);  // {a=3, e=7, i=4, o=2, u=5}
+
+File directorio = new File("a1");
+File[] arquivos = directorio.listFiles();
+PrintWriter merge = new PrintWriter(new File("merge.txt"));
+for (File f : arquivos) {
+    if (f.isFile()) {
+        Scanner input = new Scanner(f);
+        while (input.hasNextLine()) merge.println(input.nextLine());
+        input.close();
+    }
+}
+merge.close();
+</pre>
+<p>Todos testados: dão exatamente os resultados indicados no enunciado.</p></div></details>
+</section>
+
+<section id="exame" data-nav="Exame prático 2024-25 resolvido" data-grp="Treino">
+<h2>Exame prático 2024-25 resolvido</h2>
+<p><strong>Gestão de concertos de uma banda</strong> (1h30). Cada concerto tem id automático a começar em 1, duração em minutos, local "Cidade, País" e data/hora (<code>LocalDateTime</code>). Lucro: 1500 €/hora; duplica fora de Portugal; menos 800 € fora da península ibérica.</p>
+<div class="box bad"><span class="t">Cuidado com a "resolução" que circula</span>
+<p>Está incompleta (faltam <code>readFile</code> e <code>sortConcertsByProfit</code>) e tem erros que custam pontos: compara Strings com <code>==</code>; usa <code>country != "Portugal" || country != "Espanha"</code>, que é <strong>sempre</strong> verdadeiro; nunca inicializa a calculadora (daria <code>NullPointerException</code>); guarda a data como String. A versão abaixo foi compilada e testada com o <code>classicpimba.txt</code> do exame.</p></div>
+<details open><summary>Concert.java</summary><div class="in">
+<pre data-lang="java">
+public class Concert {
+    public static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static int nextId = 1;          // contador partilhado por todos os concertos
+
+    private final int id;
+    private double duration;                // minutos
+    private String location;                // "Cidade, País"
+    private LocalDateTime start;
+
+    public Concert(double duration, String location, LocalDateTime start) {
+        this(nextId, duration, location, start);        // id automático
+    }
+
+    public Concert(int id, double duration, String location, LocalDateTime start) {
+        this.id = id;                                    // id vindo do ficheiro
+        this.duration = duration;
+        this.location = location;
+        this.start = start;
+        if (id &gt;= nextId) nextId = id + 1;               // nota #3: contador acima do maior id
+    }
+
+    public int getId() { return id; }
+    public double getDuration() { return duration; }
+    public void setDuration(double duration) { this.duration = duration; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    public LocalDateTime getStart() { return start; }
+    public void setStart(LocalDateTime start) { this.start = start; }
+
+    public String getCountry() {                        // texto depois da última vírgula
+        String[] parts = location.split(",");
+        return parts[parts.length - 1].trim();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Concert #%d: %s, %s, %.1f min", id, location, start.format(FMT), duration);
+    }
+}
+</pre></div></details>
+<details><summary>IConcertProfitCalculator e StandardConcertProfitCalculator</summary><div class="in">
+<pre data-lang="java">
+public interface IConcertProfitCalculator {
+    double calculateConcertProfit(Concert c);
+}
+
+public class StandardConcertProfitCalculator implements IConcertProfitCalculator {
+    @Override
+    public double calculateConcertProfit(Concert c) {
+        double profit = 1500 * (c.getDuration() / 60.0);
+        String country = c.getCountry();
+        if (!country.equalsIgnoreCase("Portugal")) {
+            profit *= 2;                                   // fora de Portugal
+        }
+        if (!country.equalsIgnoreCase("Portugal") &amp;&amp; !country.equalsIgnoreCase("Espanha")) {
+            profit -= 800;                                 // fora da península ibérica (repara no &amp;&amp;)
+        }
+        return profit;
+    }
+}
+</pre></div></details>
+<details><summary>ConcertManager.java</summary><div class="in">
+<pre data-lang="java">
+public class ConcertManager {
+    private Map&lt;Integer, Concert&gt; concerts = new TreeMap&lt;&gt;();      // id -&gt; concerto, ordenado por id
+    private IConcertProfitCalculator calculator = new StandardConcertProfitCalculator();
+
+    public void addConcert(Concert c) { concerts.put(c.getId(), c); }   // id repetido: substitui
+    public void removeConcert(int id) { concerts.remove(id); }
+    public Concert getConcert(int id) { return concerts.get(id); }      // null se não existir
+
+    public double calculateConcertProfit(int id) {
+        Concert c = concerts.get(id);
+        if (c == null) return -1;
+        return calculator.calculateConcertProfit(c);
+    }
+
+    public void printAllConcerts() {
+        for (Concert c : concerts.values()) System.out.println(c);
+    }
+
+    public void sortConcertsByProfit() {                // por mês; dentro do mês, lucro decrescente
+        Map&lt;Integer, List&lt;Concert&gt;&gt; byMonth = new TreeMap&lt;&gt;();
+        for (Concert c : concerts.values()) {
+            int month = c.getStart().getMonthValue();
+            byMonth.putIfAbsent(month, new ArrayList&lt;&gt;());
+            byMonth.get(month).add(c);
+        }
+        for (Map.Entry&lt;Integer, List&lt;Concert&gt;&gt; e : byMonth.entrySet()) {
+            List&lt;Concert&gt; list = e.getValue();
+            list.sort((a, b) -&gt; Double.compare(calculator.calculateConcertProfit(b),
+                                               calculator.calculateConcertProfit(a)));
+            System.out.println("Mês " + e.getKey() + ":");
+            for (Concert c : list)
+                System.out.printf("  %s -&gt; %.2f €%n", c, calculator.calculateConcertProfit(c));
+        }
+    }
+
+    public void readFile(String fich) {
+        try (Scanner sc = new Scanner(new File(fich))) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine().trim();
+                if (line.isEmpty() || line.startsWith("ID")) continue;   // cabeçalho
+                String[] f = line.split(";");
+                int id = Integer.parseInt(f[0].trim());
+                double duration = Double.parseDouble(f[1].trim());
+                String location = f[2].trim();                           // "Aveiro, Portugal" (a vírgula não estraga o split por ;)
+                LocalDateTime start = LocalDateTime.parse(f[3].trim(), Concert.FMT);
+                addConcert(new Concert(id, duration, location, start));  // nota #2: substitui se existir
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Ficheiro não encontrado: " + fich);
+        }
+    }
+
+    public void writeFile(String fich) {
+        try (PrintWriter pw = new PrintWriter(fich)) {
+            for (Concert c : concerts.values()) {
+                pw.printf("%d;%.1f;%s;%s;%.2f%n", c.getId(), c.getDuration(), c.getLocation(),
+                          c.getStart().format(Concert.FMT), calculator.calculateConcertProfit(c));
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Erro ao escrever " + fich);
+        }
+    }
+}
+</pre>
+<p>Resultados com o ficheiro do exame: Madrid 25 min → 1250 €; Oslo 35 min → 950 €; Vigo 125 min → 6250 €; Frankfurt 16 min → 0 €. Depois de ler o ficheiro (ids até 30), o próximo id automático é 31.</p></div></details>
+
+<h3>Os outros exames práticos (para treinar)</h3>
+<div class="tw"><table>
+<thead><tr><th>Ano</th><th>Tema</th><th>O que exige</th></tr></thead>
+<tbody>
+<tr><td>2023-24</td><td>Bilheteira (Cinema, Theatre, Concert, Place, Ticket)</td><td>Herança de <code>Event</code>; implementar <code>ITicketBookingSystem</code> (não deixar dois eventos no mesmo local e hora; reservar e cancelar bilhetes); escrever num <code>PrintStream</code></td></tr>
+<tr><td>2022-23</td><td>Aluguer de armazenamento (Garage, Locker, Warehouse)</td><td>Subclasses <code>GarageStorage</code>, <code>LockerStorage</code>, <code>WarehouseStorage</code> de <code>StorageUnit</code>; enums <code>ClientType</code> e <code>CaravanType</code>; implementar <code>StorageServiceInterface</code>; verificar disponibilidade entre datas (<code>LocalDate</code>); ler <code>bookings.txt</code> com dimensões <code>200x300x250</code></td></tr>
+<tr><td>2021-22</td><td>Gestão de eventos (Sport, Culture, Catering)</td><td>Interface <code>IEvent</code> implementada por <code>Event</code>, com subclasses <code>Sport</code>, <code>Culture</code>, <code>Catering</code>; <code>Client</code> e um gestor <code>EventManager</code></td></tr>
+<tr><td>2020-21</td><td>Agência turística (Restaurante, Passeio de bicicleta)</td><td>Interface <code>PontosdeInteresse</code>, classe abstrata <code>Atividade</code>, enum <code>TipoComida</code>, ler <code>uafest.txt</code></td></tr>
+<tr><td>2019-20</td><td>Loja (Livro, Documentário, Eletrodoméstico, Telemóvel)</td><td>Classe abstrata <code>Produto</code> que implementa a interface <code>PVP</code>, subclasses de produtos, enum <code>ClasseEnergetica</code></td></tr>
+</tbody></table></div>
+<p>As resoluções desses anos estão nas pastas "Resolução" do teu zip. Usa-as para comparar a estrutura, mas confirma sempre que compilam: a de 2024-25 mostra que nem todas estão corretas.</p>
+</section>
+
+<section id="erros" data-nav="Erros clássicos" data-grp="Treino">
+<h2>Erros clássicos</h2>
+<div class="cols">
+<div><h4>Que dão erro ou pontos perdidos</h4>
+<ul>
+<li>Comparar Strings com <code>==</code> (usa <code>equals</code>).</li>
+<li>Condições com <code>!=</code> ligadas por <code>||</code> que são sempre verdadeiras.</li>
+<li>Atributo de objeto não inicializado → <code>NullPointerException</code>.</li>
+<li>Remover de uma lista dentro de um for-each → <code>ConcurrentModificationException</code>.</li>
+<li><code>nextInt()</code> seguido de <code>nextLine()</code> devolve linha vazia.</li>
+<li>Redefinir <code>equals</code> sem <code>hashCode</code> (HashSet deixa de funcionar).</li>
+<li><code>catch (Exception e)</code> antes de exceções mais específicas.</li>
+</ul></div>
+<div><h4>De desenho</h4>
+<ul>
+<li>Atributos <code>public</code> (perde-se o encapsulamento).</li>
+<li>Usar herança onde é composição ("tem um", não "é um").</li>
+<li>Declarar pelo tipo concreto (<code>ArrayList&lt;X&gt; l</code>) em vez da interface.</li>
+<li>Guardar datas como String em vez de <code>LocalDate</code>.</li>
+<li>Esquecer o <code>toString</code> (os testes imprimem os objetos).</li>
+<li>Não testar no <code>main</code> todas as funcionalidades pedidas.</li>
+</ul></div>
+</div>
+</section>
+
+<section id="checklist" data-nav="Lista de verificação final" data-grp="Treino">
+<h2>Lista de verificação final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="p1"> Escrever uma classe com id automático, construtores, getters/setters validados e toString</label></li>
+<li><label><input type="checkbox" data-k="p2"> Explicar static, final, visibilidades e construtor por omissão</label></li>
+<li><label><input type="checkbox" data-k="p3"> Redefinir equals e hashCode corretamente</label></li>
+<li><label><input type="checkbox" data-k="p4"> Usar herança com super e @Override; distinguir composição, agregação e herança</label></li>
+<li><label><input type="checkbox" data-k="p5"> Prever o resultado de chamadas polimórficas e casts</label></li>
+<li><label><input type="checkbox" data-k="p6"> Escolher entre classe abstrata e interface e implementar ambas</label></li>
+<li><label><input type="checkbox" data-k="p7"> Ordenar com Comparable e com Comparator de vários critérios</label></li>
+<li><label><input type="checkbox" data-k="p8"> Lançar, apanhar e criar exceções; saber checked vs unchecked</label></li>
+<li><label><input type="checkbox" data-k="p9"> Usar enums com atributos e valueOf</label></li>
+<li><label><input type="checkbox" data-k="p10"> Escolher a coleção certa e agrupar com Map&lt;K, List&lt;V&gt;&gt;</label></li>
+<li><label><input type="checkbox" data-k="p11"> Ler um ficheiro com Scanner e split, e escrever com PrintWriter</label></li>
+<li><label><input type="checkbox" data-k="p12"> Trabalhar com LocalDate e LocalDateTime</label></li>
+<li><label><input type="checkbox" data-k="p13"> Escrever lambdas, referências a métodos e streams com groupingBy</label></li>
+<li><label><input type="checkbox" data-k="p14"> Fazer um exame prático completo em 1h30</label></li>
+</ul>
+</section>

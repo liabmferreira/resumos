@@ -1,0 +1,521 @@
+<hero>
+<h1>AED: C, complexidade, procura e ordenação</h1>
+<p>Resumo das aulas de 2026/27 (C I e II, Complexidade I e II, Procura e Ordenação I a III), com as respostas aos exercícios dos slides, um resumo da matéria que vem a seguir (listas, árvores, dispersão, grafos, C++, P e NP) e o exame de 2023/24 resolvido, com o código C compilado e testado.</p>
+</hero>
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<div class="tw"><table>
+<thead><tr><th>Componente</th><th>Peso</th><th>Formato</th></tr></thead>
+<tbody>
+<tr><td>Exame (papel, sem consulta, sem IA)</td><td>50 % (mínimo 7,5)</td><td>Escolha múltipla e V/F com desconto; escrever funções em C e analisar a sua complexidade</td></tr>
+<tr><td>2 projetos em grupo de 2</td><td>22,5 % + 22,5 %</td><td>Defesa oral por amostragem; uso de IA condicionado e declarado</td></tr>
+<tr><td>Participação nas aulas práticas</td><td>5 %</td><td>Reprovação por faltas acima de 20 % das aulas práticas</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">O exame de 2023/24 tinha esta forma</span>
+<ul>
+<li><strong>1.ª parte:</strong> 20 perguntas de escolha múltipla (+0,3 / −0,1) e 20 V/F (+0,2 / −0,1). Complexidade, tabelas de operações, ordenação, árvores, grafos, C++ STL, P e NP.</li>
+<li><strong>2.ª parte:</strong> 3 perguntas para escrever em C: um algoritmo de ordenação e a contagem de comparações e trocas (melhor, pior e caso médio); uma função sobre <strong>listas ligadas</strong>; funções <strong>recursivas sobre árvores binárias</strong>. No recurso: uma recorrência resolvida de forma recursiva e com <strong>programação dinâmica</strong>.</li>
+</ul></div>
+<div class="box bad"><span class="t">Material deste guia</span>Os slides recebidos vão até à Ordenação III (bubble e insertion sort). A secção "Matéria seguinte" resume os temas que o programa da cadeira e o exame cobrem a seguir, para não seres apanhada desprevenida, mas confirma-os quando saírem os slides dessas aulas.</div>
+</section>
+
+<section id="c1" data-nav="1 · C vs Java, tipos, I/O" data-grp="Linguagem C" data-track>
+<h2>1 · C para quem vem de Java</h2>
+<div class="cols">
+<div><h4>Igual (quase)</h4><ul><li>tipos, literais, expressões, variáveis</li><li><code>if</code>, <code>switch</code>, <code>while</code>, <code>for</code>, <code>do-while</code> (sem for-each)</li><li>funções em vez de métodos</li><li><code>bool</code> existe (<code>&lt;stdbool.h&gt;</code>; antes usava-se <code>int</code>)</li></ul></div>
+<div><h4>Diferente</h4><ul><li>Não há classes nem objetos: há <code>struct</code>, <code>union</code>, <code>typedef</code></li><li>Arrays <strong>não sabem o tamanho</strong> e os índices <strong>não são verificados</strong></li><li>Strings são arrays de <code>char</code> terminados em <code>'\0'</code></li><li>Sem coleções, exceções nem genéricos</li><li>Memória gerida à mão: <code>malloc</code>/<code>free</code></li><li>Ponteiros e aritmética de ponteiros</li></ul></div>
+</div>
+<h3>Compilar</h3>
+<pre data-lang="txt">cc -Wall -Wextra prog.c -o prog        # Linux (gcc no Windows)
+./prog
+cc -Wall -Wextra prog.c -o prog -lm    # se usar &lt;math.h&gt; (sqrt, floor, ceil)</pre>
+<p><strong>Erro</strong> de compilação: viola a sintaxe ou os tipos, não gera executável. <strong>Aviso</strong> (warning): é C válido mas parece um bug; gera executável. Usa sempre <code>-Wall -Wextra</code> e corrige os avisos. <code>-Wall</code> apanha falhas comuns (variável não usada); <code>-Wextra</code> apanha mais (comparar inteiros com e sem sinal).</p>
+<h3>Tipos e I/O</h3>
+<p><code>float</code> tem 4 bytes (≈ 7 algarismos), <code>double</code> 8 bytes (≈ 16). Usa <code>double</code> por omissão.</p>
+<div class="tw"><table><thead><tr><th>Formato</th><th>Escreve</th></tr></thead><tbody>
+<tr><td><code>%d</code> / <code>%u</code></td><td>inteiro com / sem sinal</td></tr>
+<tr><td><code>%f</code> / <code>%e</code> / <code>%.2f</code></td><td>real em decimal / exponencial / com 2 casas</td></tr>
+<tr><td><code>%c</code> / <code>%s</code> / <code>%p</code> / <code>%%</code></td><td>carácter / string / endereço / o próprio %</td></tr>
+</tbody></table></div>
+<pre data-lang="c">int n; char c; char nome[30];
+scanf("%d %c", &amp;n, &amp;c);   // scanf recebe ENDEREÇOS
+scanf("%s", nome);          // array já é endereço; lê até ao 1.º espaço</pre>
+<details><summary>Exercícios "Qual é o output?" (C, 1.ª parte)</summary><div class="in">
+<div class="tw"><table><thead><tr><th>Ex.</th><th>Output</th><th>Porquê</th></tr></thead><tbody>
+<tr><td>1</td><td><code>10 / 3 = 3</code> e <code>10.000000 / 3.000000 = 3.333333</code></td><td>Divisão inteira entre <code>int</code>; <code>%f</code> mostra 6 casas</td></tr>
+<tr><td>2</td><td><code>12</code> e <code>25</code></td><td><code>n/2</code> = 1 (inteira), depois 11+1; precedência de <code>*</code></td></tr>
+<tr><td>3</td><td><code>10.000000 11.000000 3.000000 4.000000</code></td><td>floor arredonda para baixo, ceil para cima</td></tr>
+<tr><td>4</td><td><code>a = 6, res1 = 5</code> / <code>b = 6, res2 = 6</code></td><td><code>a++</code> devolve o valor antigo; <code>++b</code> o novo</td></tr>
+<tr><td>5</td><td><code>3.00</code> e <code>3.75</code></td><td><code>total/count</code> é inteira antes de ir para double; o cast resolve</td></tr>
+<tr><td>6</td><td><code>x = 0, y = 10</code></td><td>Curto-circuito: <code>x != 0</code> é falso, <code>(y = 20)</code> nunca corre</td></tr>
+<tr><td>7</td><td><code>Two Three</code></td><td>Sem <code>break</code> no case 2, cai para o case 3</td></tr>
+</tbody></table></div></div></details>
+</section>
+
+<section id="c2" data-nav="2 · Ponteiros e memória" data-grp="Linguagem C" data-track>
+<h2>2 · Ponteiros, memória e funções</h2>
+<div class="box def"><span class="t">Ponteiro</span>Variável que guarda um <strong>endereço</strong> (índice do 1.º byte da variável apontada). <code>&amp;x</code> dá o endereço de x; <code>*p</code> acede à variável apontada. <code>NULL</code> é o ponteiro que não aponta para nada válido: inicializa sempre com <code>NULL</code> e testa antes de usar.</div>
+<pre data-lang="c">int i = 10;
+int* p = &amp;i;        // p aponta para i
+int* q = p;         // q também
+*p = 5; *q = 20;    // i passa a 20
+int a[3] = {1, 2, 3};
+int* r = a;         // nome do array = endereço do 1.º elemento
+*(a + 1) = 200;     // o mesmo que a[1] = 200
+for (int k = 0; k &lt; 3; k++) { printf("%d\n", *r); r++; }   // aritmética de ponteiros</pre>
+<h3>Onde vive a memória</h3>
+<div class="tw"><table><thead><tr><th>Tipo</th><th>Quando é criada</th><th>Quando é libertada</th></tr></thead><tbody>
+<tr><td>Global</td><td>Antes do programa começar</td><td>No fim do programa (evitar)</td></tr>
+<tr><td>Local (stack)</td><td>Na chamada da função</td><td>Automaticamente no fim da função. Nunca devolver o endereço de uma local!</td></tr>
+<tr><td>Dinâmica (heap)</td><td><code>malloc(bytes)</code> / <code>calloc(n, bytes)</code> (calloc põe a zero)</td><td>Só com <code>free(p)</code>. Sem garbage collector</td></tr>
+</tbody></table></div>
+<pre data-lang="c">double* v = malloc(N * sizeof(double));   // array dinâmico de N doubles
+if (v == NULL) { exit(1); }                // a alocação pode falhar
+v[0] = 3.5;
+free(v);
+v = NULL;      // free NÃO põe v a NULL: fazê-lo evita "dangling pointers"</pre>
+<div class="box bad"><span class="t">Erros clássicos</span><strong>Memory leak:</strong> perder o último ponteiro para um bloco sem o libertar. <strong>Dangling pointer:</strong> usar um ponteiro depois de <code>free</code> ou para uma local que já acabou. <strong>Buffer overflow:</strong> escrever fora do array (<code>strcpy</code> não verifica tamanhos).</div>
+<h3>Passagem de argumentos</h3>
+<p>Em C tudo é passado <strong>por valor</strong> (cópia). Para uma função alterar uma variável do chamador, passa-se o seu endereço (<em>call-by-pointer</em>).</p>
+<pre data-lang="c">void swap(int* a, int* b) { int t = *a; *a = *b; *b = t; }   // troca de facto
+swap(&amp;x, &amp;y);
+
+struct Point { int x; int y; };
+void ResetPoint(struct Point p)   { p.x = 0; p.y = 0; }        // altera a CÓPIA
+void ModifyPoint(struct Point* p) { p->x += 10; p->y += 20; }  // altera o original
+// p = {5,10} -> ModifyPoint(&amp;p) -> {15,30} -> ResetPoint(p) -> continua {15,30}</pre>
+<h3>struct, enum, typedef, assert, argc/argv</h3>
+<pre data-lang="c">enum months { JANUARY = 1, FEBRUARY, MARCH };   // 1, 2, 3 (por omissão começa em 0)
+typedef struct { char* name; unsigned year; enum months month; } Birthday;
+Birthday b = {"joao", 2000, JANUARY};
+Birthday* pb = &amp;b;
+printf("%s %s\n", b.name, pb-&gt;name);   // . para struct, -&gt; para ponteiro para struct
+
+#include &lt;assert.h&gt;
+assert(p != NULL);   // em TEMPO DE EXECUÇÃO: se falso, termina com mensagem (pré/pós-condições)
+
+int main(int argc, char* argv[]) { ... }   // argv[0] = nome do programa, argv[1] = 1.º argumento</pre>
+<details><summary>Respostas aos exercícios da 2.ª parte de C</summary><div class="in">
+<ul>
+<li><code>*ptr_i = 5; *another_ptr = 20;</code> imprime <strong>20</strong>.</li>
+<li><code>sum = *p_a + *p_b</code> vale <strong>109</strong> e não muda depois; <code>a + b</code> passa a <strong>10999</strong>.</li>
+<li>Array: <code>*p_my_array = 30</code> imprime <strong>30</strong>; <code>*(my_array+1) = 200</code> imprime <strong>200</strong>; o ciclo com ponteiro imprime 1 2 3.</li>
+<li>Struct Point: <code>5 10</code>, depois <code>15 30</code>, depois continua <code>15 30</code>.</li>
+<li>V/F: (1) <strong>F</strong>, free não altera o ponteiro; (2) <strong>F</strong>, assert atua em execução; (3) <strong>V</strong>.</li>
+<li>Escolha múltipla: <code>int *p = NULL</code> → <strong>b</strong>; <code>*(arr + 2)</code> → <strong>a</strong> (<code>arr[2]</code>); alocar N doubles → <strong>c</strong>.</li>
+</ul></div></details>
+</section>
+
+<section id="cx1" data-nav="3 · Análise de complexidade" data-grp="Complexidade" data-track>
+<h2>3 · Análise de complexidade</h2>
+<div class="box def"><span class="t">Algoritmo</span>Sequência de instruções <strong>não ambíguas</strong> que atinge um objetivo num tempo <strong>finito</strong>. <strong>Determinista:</strong> mesmos dados ⇒ mesmo resultado e mesma sequência de instruções. <strong>Não determinista:</strong> pode comportar-se de forma diferente com os mesmos dados (usado para soluções aproximadas).</div>
+<div class="cols">
+<div><h4>Complexidade temporal</h4><p>Nº de operações significativas (comparações, trocas, multiplicações…) em função do tamanho n.</p></div>
+<div><h4>Complexidade espacial</h4><p>Memória extra necessária em função de n.</p></div>
+</div>
+<div class="tw"><table><thead><tr><th>Análise experimental</th><th>Análise formal</th></tr></thead><tbody>
+<tr><td>Correr com várias instâncias, contar operações ou medir tempo, deduzir a ordem a partir da tabela. <strong>Limitação:</strong> o tempo depende do hardware, compilador e carga do sistema.</td><td>"Papel e lápis": escolher a operação básica, escrever o nº de vezes que é executada como somatório, ver se a organização dos dados influencia, classificar.</td></tr>
+</tbody></table></div>
+<h3>Somatórios que tens de saber</h3>
+<pre data-lang="txt">Σ_{k=a}^{b} 1      = b − a + 1                 (NÃO é b − a!)
+Σ_{i=1}^{n} i      = n(n+1)/2
+Σ_{i=1}^{n} i²     = n(n+1)(2n+1)/6
+Σ_{i=0}^{k−1} 2^i  = 2^k − 1
+Σ_{i=0}^{k−1} i·2^i = 2^k (k − 2) + 2
+Σ_{k=1}^{n} 1/k    = H_n ≈ ln n + 0,577        (número harmónico)
+Σ_{i=1}^{n} Σ_{j=i}^{n} 1 = n(n+1)/2           Σ_{i=1}^{n} Σ_{j=1}^{i} j = n(n+1)(n+2)/6</pre>
+<div class="box met"><span class="t">Método: contar iterações de ciclos encaixados</span>Cada ciclo é um somatório com os mesmos limites que o <code>for</code>. Exemplo: multiplicação de matrizes n×n tem 3 ciclos ⇒ Σ Σ Σ 1 = n³ multiplicações (cúbico). Para A(m×n)·B(n×p) = C(m×p): <strong>m·n·p</strong> multiplicações.</div>
+<details><summary>Tarefa 3 (f1 a f4): nº de execuções e resultado</summary><div class="in">
+<div class="tw"><table><thead><tr><th>Função</th><th>Ciclos</th><th>Nº de execuções da instrução interna</th><th>Valor devolvido</th></tr></thead><tbody>
+<tr><td>f1</td><td><code>i=1..n: r += i</code></td><td>n</td><td>n(n+1)/2</td></tr>
+<tr><td>f2</td><td><code>i=1..n, j=1..n: r += 1</code></td><td>n²</td><td>n²</td></tr>
+<tr><td>f3</td><td><code>i=1..n, j=i..n: r += 1</code></td><td>n(n+1)/2</td><td>n(n+1)/2</td></tr>
+<tr><td>f4</td><td><code>i=1..n, j=1..i: r += j</code></td><td>n(n+1)/2</td><td>n(n+1)(n+2)/6</td></tr>
+</tbody></table></div></div></details>
+<h3>Melhor, pior e caso médio</h3>
+<p>Para instâncias de tamanho n: <strong>B(n)</strong> = mínimo, <strong>W(n)</strong> = máximo e <strong>A(n)</strong> = Σ p(I)·t(I), a média pesada pela probabilidade de cada instância.</p>
+<div class="box met"><span class="t">Receita do caso médio (abordagem estruturada)</span>
+<ol><li>Definir o cenário (o valor existe? com que probabilidade?).</li><li>Escolher a operação a contar.</li><li>Listar os casos possíveis e quantos são.</li><li>Contar as operações em cada caso.</li><li>Atribuir uma probabilidade a cada caso (normalmente equiprováveis).</li><li>Fazer a tabela e calcular A(n) = Σ prob × operações.</li></ol></div>
+<div class="box exa"><span class="t">Exemplo: posição do máximo (searchMax)</span>
+<pre data-lang="c">int searchMax(int a[], int n) {
+    int indexMax = 0;
+    for (int i = 1; i &lt; n; i++)
+        if (a[i] &gt; a[indexMax]) indexMax = i;
+    return indexMax;
+}</pre>
+<p>Comparações: sempre <strong>n − 1</strong> (não depende dos dados). Atribuições a indexMax (contando a inicial): melhor caso <strong>1</strong> (máximo em a[0]), pior caso <strong>n</strong> (array estritamente crescente).</p></div>
+</section>
+
+<section id="cx2" data-nav="4 · Notação O, Ω, Θ" data-grp="Complexidade" data-track>
+<h2>4 · Ordens de complexidade e notação</h2>
+<div class="tw"><table><thead><tr><th>Notação</th><th>Definição (∃ c &gt; 0, n₀ tal que ∀ n ≥ n₀)</th><th>Ideia</th></tr></thead><tbody>
+<tr><td><strong>t(n) ∈ O(g(n))</strong></td><td>t(n) ≤ c·g(n)</td><td>Majorante: cresce no máximo como g</td></tr>
+<tr><td><strong>t(n) ∈ Ω(g(n))</strong></td><td>t(n) ≥ c·g(n)</td><td>Minorante: cresce pelo menos como g</td></tr>
+<tr><td><strong>t(n) ∈ Θ(g(n))</strong></td><td>c₁·g(n) ≤ t(n) ≤ c₂·g(n)</td><td>Enquadramento: O e Ω ao mesmo tempo</td></tr>
+</tbody></table></div>
+<p>A notação esquece constantes e termos de ordem inferior: <code>2n² + 3000n + 5</code> e <code>10n² + 100n − 23</code> são ambos Θ(n²). Para n grande o termo de maior grau domina (com n = 1000 já é 99,7 % do total).</p>
+<div class="tw"><table><thead><tr><th>Classe</th><th>Nome</th><th>Exemplo típico</th></tr></thead><tbody>
+<tr><td>O(1)</td><td>constante</td><td>aceder a a[i]</td></tr>
+<tr><td>O(log n)</td><td>logarítmica</td><td>procura binária ("diminuir para reinar")</td></tr>
+<tr><td>O(n)</td><td>linear</td><td>percorrer um array ou lista</td></tr>
+<tr><td>O(n log n)</td><td>n-log-n</td><td>mergesort, heapsort ("dividir para reinar")</td></tr>
+<tr><td>O(n²), O(n³)</td><td>polinomial</td><td>k ciclos encaixados</td></tr>
+<tr><td>O(2ⁿ)</td><td>exponencial</td><td>todos os subconjuntos; Torres de Hanói; Fibonacci recursivo</td></tr>
+<tr><td>O(n!)</td><td>fatorial</td><td>todas as permutações (pior ainda que 2ⁿ)</td></tr>
+</tbody></table></div>
+<div class="box met"><span class="t">Método: descobrir a ordem a partir de uma tabela de valores</span>
+<ul>
+<li>n duplica e T(n) <strong>soma uma constante</strong> → logarítmica (ex.: 3, 4, 5, …, 13 para n = 1…1024).</li>
+<li>n duplica e T(n) <strong>duplica</strong> → linear (ex.: 0, 1, 3, 7, …, 1023 = n − 1).</li>
+<li>n duplica e T(n) <strong>quadruplica</strong> → quadrática (ex.: 1, 3, 10, 36, 136 = n(n+1)/2; ou 4, 12, 40, 144 = 2n² + 2n).</li>
+<li>n aumenta 1 e T(n) <strong>duplica</strong> → exponencial (ex.: 1, 3, 7, 15, … = 2ⁿ − 1).</li>
+<li>Cada valor é a soma dos dois anteriores (1, 2, 3, 5, 8…) → Fibonacci, exponencial (≈ 1,618ⁿ).</li>
+</ul></div>
+<details><summary>Respostas aos exercícios de Complexidade I e II</summary><div class="in">
+<ul>
+<li>Limitação da análise experimental → <strong>b</strong> (depende do hardware, compilador e carga).</li>
+<li>A = n²/10, B = 10n: B melhor a partir de n²/10 &gt; 10n ⇔ n &gt; 100 → <strong>c</strong>.</li>
+<li>V/F Complexidade I: (1) <strong>F</strong> (determinista dá sempre o mesmo); (2) <strong>F</strong> (é b − a + 1); (3) <strong>V</strong> (para n suficientemente grande, sim).</li>
+<li>T(n) = 10n² + 100n − 23: ∈ O(n²), O(n³), Ω(n²), Ω(n), Θ(n²); ∉ O(n), Ω(n³), Θ(n³), Θ(n).</li>
+<li>Ex. 2: (1) <strong>F</strong> (≥ é Ω); (2) <strong>F</strong> (≤ é O); (3) <strong>V</strong>.</li>
+<li>Ex. 3: (1) <strong>V</strong>; (2) <strong>F</strong> (n log n cresce mais que n); (3) <strong>F</strong> (é n³).</li>
+<li>Ex. 4: (1) <strong>V</strong>; (2) <strong>V</strong> (O é só majorante); (3) <strong>V</strong>.</li>
+<li>Definição de Ω → <strong>b</strong>. T(n) = 3n² + 50 n log n + 1000 → <strong>Θ(n²)</strong>. Procura sequencial média → <strong>(n+1)/2</strong>.</li>
+</ul></div></details>
+</section>
+
+<section id="proc" data-nav="5 · Procura sequencial e binária" data-grp="Procura e ordenação" data-track>
+<h2>5 · Procura sequencial e procura binária</h2>
+<h3>Sequencial em array não ordenado</h3>
+<pre data-lang="c">int search(int a[], int n, int x) {
+    for (int i = 0; i &lt; n; i++)
+        if (a[i] == x) return i;
+    return -1;
+}</pre>
+<div class="tw"><table><thead><tr><th>Cenário</th><th>B(n)</th><th>W(n)</th><th>A(n)</th></tr></thead><tbody>
+<tr><td>x existe (equiprovável)</td><td>1</td><td>n</td><td>(n + 1)/2 ≈ n/2</td></tr>
+<tr><td>x existe com probabilidade p</td><td>1</td><td>n</td><td>p(n+1)/2 + (1 − p)n ≈ <strong>n(1 − p/2)</strong></td></tr>
+</tbody></table></div>
+<p>p = 50 % ⇒ ≈ 3n/4; p = 25 % ⇒ ≈ 7n/8; p = 75 % ⇒ ≈ 5n/8.</p>
+<h3>Sequencial em array ordenado</h3>
+<pre data-lang="c">int search(int a[], int n, int x) {
+    int stop = 0; int i;
+    for (i = 0; i &lt; n; i++)
+        if (x &lt;= a[i]) { stop = 1; break; }   // pára assim que passa x
+    if (stop &amp;&amp; x == a[i]) return i;          // a ORDEM do &amp;&amp; evita ler a[n]
+    return -1;
+}</pre>
+<p>B(n) = 2 (x ≤ a[0]); W(n) = n + 1 (x é o último ou está entre o penúltimo e o último). Com probabilidade de sucesso p: <strong>A(n) ≈ n/2 + 2 − p/2</strong> (p = 20 % ⇒ n/2 + 1,9). Continua linear, mas é melhor que o caso não ordenado quando é provável não encontrar.</p>
+<h3>Procura binária (diminuir para reinar)</h3>
+<pre data-lang="c">int binSearch(int a[], int n, int x) {
+    int left = 0, right = n - 1;
+    while (left &lt;= right) {
+        int middle = (left + right) / 2;      // divisão inteira
+        if (a[middle] == x) return middle;
+        if (a[middle] &gt; x) right = middle - 1;
+        else left = middle + 1;
+    }
+    return -1;
+}</pre>
+<div class="box teo"><span class="t">Resultados</span>
+<ul>
+<li>B(n) = 1 iteração (x está no meio).</li>
+<li><strong>W(n) = 1 + ⌊log₂ n⌋</strong> iterações = altura da árvore de decisão (n = 1000 ⇒ 10). O(log n), com sucesso ou insucesso.</li>
+<li>Para n = 2ᵏ − 1 e procura sempre com sucesso: A(n) = log₂(n+1) − 1 + log₂(n+1)/n ≈ <strong>W(n) − 1</strong>.</li>
+<li>Com probabilidade de sucesso p: <strong>A(n) ≈ log₂(n+1) − p</strong>.</li>
+<li>Cada iteração faz até 2 comparações, por isso nº de comparações ≈ 2 × nº de iterações.</li>
+</ul></div>
+<div class="box met"><span class="t">Árvore de decisão</span>A raiz é o elemento do meio; o filho esquerdo é o meio da metade esquerda, etc. O nº de consultas para encontrar um valor é o seu <strong>nível + 1</strong>. Para [2,4,6,8,10,12]: raiz 6 (índice 2), filhos 2 e 10, netos 4, 8, 12.</div>
+<div class="tw"><table><thead><tr><th>n</th><th>Sequencial A(n)</th><th>Sequencial W(n)</th><th>Binária A(n)</th><th>Binária W(n)</th></tr></thead><tbody>
+<tr><td>1023</td><td>512</td><td>1024</td><td>19</td><td>20</td></tr>
+<tr><td>1 048 575</td><td>524 288</td><td>1 048 576</td><td>39</td><td>40</td></tr>
+</tbody></table></div>
+<details><summary>Respostas aos exercícios de Procura I e II</summary><div class="in">
+<ul>
+<li>A(10×20)·B(20×10): 10·20·10 = 2000 multiplicações → <strong>V</strong>. A(2×3)·(B(3×4)·C(4×5)): 3·4·5 + 2·3·5 = 60 + 30 = <strong>90</strong>, não 120 → <strong>F</strong>.</li>
+<li>Tabelas: 3, 4, …, 13 → <strong>logarítmica</strong>; 4, 12, 40, 144… = 2n²+2n → <strong>quadrática</strong>; 0, 1, 3, …, 1023 = n − 1 → <strong>linear</strong>.</li>
+<li>[1,3,…,15] (8 elementos): 5 em 3 tentativas (7 → 3 → 5) e 11 em 2 (7 → 11) → <strong>c</strong>. 3 em 2 tentativas e 13 em 3 → <strong>c</strong>.</li>
+<li>[1,3,…,29] (15 elementos): 11 em 3, 1 em 4, 28 falha ao fim de 4 → <strong>d</strong> (todas).</li>
+<li>Pior caso com n = 1000 → <strong>10</strong>. p = 75 % não ordenado → <strong>5n/8</strong>. p = 20 % ordenado → <strong>n/2 + 1,9</strong>.</li>
+<li>V/F: caminho mais longo = elementos visitados no pior caso → <strong>V</strong>; binária muda o pior caso de O(n) para O(log n) → <strong>V</strong>.</li>
+</ul></div></details>
+</section>
+
+<section id="ord" data-nav="6 · Selection, bubble, insertion" data-grp="Procura e ordenação" data-track>
+<h2>6 · Algoritmos de ordenação elementares</h2>
+<div class="cols">
+<div><h4>In-place</h4><p>Só usa um nº constante de variáveis auxiliares (não precisa de um array extra de tamanho n).</p></div>
+<div><h4>Estável</h4><p>Elementos com a mesma chave mantêm a ordem relativa inicial.</p></div>
+<div><h4>Array de índices</h4><p>Para registos grandes, troca-se só os índices num array auxiliar.</p></div>
+</div>
+<h3>Selection sort</h3>
+<pre data-lang="c">void selectionSort(int a[], int n) {
+    for (int k = n - 1; k &gt; 0; k--) {          // coloca o maior na posição k
+        int indMax = 0;
+        for (int i = 1; i &lt;= k; i++)
+            if (a[i] &gt;= a[indMax]) indMax = i;   // última ocorrência do maior
+        if (indMax != k) swap(&amp;a[indMax], &amp;a[k]);
+    }
+}</pre>
+<h3>Bubble sort (com paragem)</h3>
+<pre data-lang="c">void bubbleSort(int a[], int n) {
+    int k = n, stop = 0;
+    while (stop == 0) {
+        stop = 1; k--;
+        for (int i = 0; i &lt; k; i++)
+            if (a[i] &gt; a[i + 1]) { swap(&amp;a[i], &amp;a[i + 1]); stop = 0; }
+    }
+}</pre>
+<h3>Insertion sort</h3>
+<pre data-lang="c">void insertElement(int sorted[], int n, int elem) {   // sorted[0..n-1] ordenado
+    int i;
+    for (i = n - 1; (i &gt;= 0) &amp;&amp; (elem &lt; sorted[i]); i--)
+        sorted[i + 1] = sorted[i];                     // desloca para a direita
+    sorted[i + 1] = elem;
+}
+void insertionSort(int a[], int n) {
+    for (int i = 1; i &lt; n; i++)
+        if (a[i] &lt; a[i - 1]) insertElement(a, i, a[i]);
+}</pre>
+<div class="tw"><table><thead><tr><th>Algoritmo</th><th>Comparações B / W / A</th><th>Trocas ou deslocamentos B / W / A</th><th>Notas</th></tr></thead><tbody>
+<tr><td>Selection</td><td>n(n−1)/2 sempre: <strong>Θ(n²)</strong></td><td>0 / n − 1 / <strong>n − Hₙ ≈ n − ln n</strong>: O(n)</td><td>"Pouco inteligente": compara tudo mesmo ordenado. In-place, <strong>não estável</strong></td></tr>
+<tr><td>Bubble (com stop)</td><td>n − 1 / n(n−1)/2 / ≈ n²/3 − n/6</td><td>0 / n(n−1)/2 / ≈ metade. <strong>Trocas = nº de inversões</strong></td><td>Melhor caso: array ordenado (1 passagem). In-place, estável</td></tr>
+<tr><td>Insertion</td><td>n − 1 / (n−1)(n+2)/2 / ≈ n²/4 + 7n/4</td><td>0 / n(n−1)/2 / ≈ n²/4</td><td>Adapta-se: quase ordenado (cada elemento a ≤ k posições) ⇒ O(n·k). Estável com <code>&lt;</code> estrito</td></tr>
+</tbody></table></div>
+<div class="box teo"><span class="t">Trocas médias do selection sort = n − Hₙ</span>No subarray de tamanho k, o maior já está na posição certa com probabilidade 1/k, e então não se troca. Somando: Σ_{k=2}^{n} (1 − 1/k) = (n − 1) − (Hₙ − 1) = n − Hₙ. Para n = 6 dá 3,55, confirmado a correr o algoritmo sobre as 720 permutações.</div>
+<div class="box exa"><span class="t">Exemplo [7, 2, 6, 4, 3]</span>
+<ul><li><strong>Selection:</strong> 4+3+2+1 = 10 comparações, 1+1+0+1 = 3 trocas.</li>
+<li><strong>Bubble:</strong> 4+3+2+1 = 10 comparações, 4+2+1+0 = 7 trocas (= nº de inversões).</li>
+<li><strong>Insertion:</strong> 1+2+3+4 deslocamentos mais as comparações de controlo: 14 comparações e 11 atribuições no total (contando a colocação de cada elemento).</li></ul></div>
+<details><summary>Respostas aos exercícios de Ordenação II e III</summary><div class="in">
+<ul>
+<li>In-place = memória extra constante → <strong>V</strong>. Selection sort com troca é estável → <strong>F</strong> (a troca salta por cima de iguais).</li>
+<li>Selection em [6,5,4,3,2,1]: 15 comparações e 3 trocas → <strong>c</strong>. "Pouco inteligente" → <strong>b</strong>. Trocas no caso médio → <strong>O(n)</strong>.</li>
+<li>Bubble em [6,5,4,3,2,1]: 15 comparações e 15 trocas → <strong>c</strong>.</li>
+<li>Bubble em [6,5,2,3,4,1]: crescente faz 12 trocas (12 inversões); decrescente faz 3 trocas (15 − 12) → <strong>c</strong>.</li>
+<li>Trocas do bubble = nº de inversões → <strong>b</strong>. Se stop não muda na 1.ª passagem → termina após n − 1 comparações e 0 trocas → <strong>b</strong>. Versão sem stop → <strong>a</strong>.</li>
+<li>V/F: piores casos de comparações e trocas podem ocorrer em configurações diferentes → <strong>V</strong> (ex.: [2,3,…,n,1] também precisa de n − 1 passagens mas só faz n − 1 trocas); insertElement faz no máximo n comparações e n deslocamentos → <strong>V</strong>.</li>
+<li>Insertion em [6,5,4,4,2,1]: crescente faz <strong>20</strong> comparações (não 15); decrescente já está ordenado, 0 atribuições (não 25) → <strong>d</strong>. Confirmado por simulação.</li>
+<li>Melhor caso do insertion → <strong>O(n)</strong>. Elementos a ≤ k posições → <strong>O(n·k)</strong>. Vantagem sobre selection em arrays quase ordenados → <strong>b</strong>. Versão tradicional → <strong>b</strong>.</li>
+<li>V/F finais: deslocamentos no pior caso n(n−1)/2 → <strong>V</strong>; estável com <code>&lt;</code> → <strong>V</strong>; bubble e insertion lineares no melhor caso → <strong>V</strong>.</li>
+</ul></div></details>
+</section>
+
+<section id="seg" data-nav="7 · Matéria seguinte (resumo)" data-grp="Resto do programa" data-track>
+<h2>7 · Matéria seguinte: o essencial para o exame</h2>
+<p class="lead">Resumo de apoio com base no programa da cadeira e nas perguntas dos exames. Ainda não há slides destas aulas no material.</p>
+<h3>Recursão, recorrências e programação dinâmica</h3>
+<div class="tw"><table><thead><tr><th>Problema</th><th>Recorrência</th><th>Solução</th></tr></thead><tbody>
+<tr><td>Torres de Hanói</td><td>M(n) = 2M(n−1) + 1, M(1) = 1</td><td>M(n) = 2ⁿ − 1 (n=2: 3; n=3: 7) ⇒ O(2ⁿ)</td></tr>
+<tr><td>Fibonacci recursivo</td><td>F(n) = F(n−1) + F(n−2)</td><td>Exponencial (≈ 1,618ⁿ); com programação dinâmica fica O(n)</td></tr>
+<tr><td>Escada com passos de 1, 2 ou 3</td><td>T(n) = T(n−1) + T(n−2) + T(n−3), T(1)=1, T(2)=2, T(3)=4</td><td>T(4) = 7</td></tr>
+<tr><td>Dividir por k: S(n) = n·S(n/5)</td><td>D(n) = 1 + D(n/5)</td><td>⌊log₅ n⌋ divisões ⇒ O(log n)</td></tr>
+<tr><td>Mergesort</td><td>C(n) = 2C(n/2) + n</td><td>O(n log n)</td></tr>
+</tbody></table></div>
+<div class="box def"><span class="t">Programação dinâmica</span>Usa-se quando há <strong>subproblemas sobrepostos</strong>: em vez de os resolver repetidamente, resolve-se cada um <strong>uma vez</strong> e guarda-se o resultado numa tabela (normalmente de forma iterativa, do mais pequeno para o maior).</div>
+<h3>Listas ligadas, pilhas e filas</h3>
+<ul>
+<li>Nó = valor + ponteiro para o seguinte. Um <strong>nó cabeçalho</strong> guarda o ponteiro para o 1.º nó e o tamanho.</li>
+<li>Inserir/remover no início O(1); procurar O(n); inserir ordenado O(n).</li>
+<li><strong>Pilha</strong> (stack, LIFO): push/pop no topo. <strong>Fila</strong> (queue, FIFO): insere no fim, remove no início. Ambas O(1) com lista ou array circular.</li>
+</ul>
+<h3>Árvores binárias</h3>
+<ul>
+<li>O nível i tem no máximo <strong>2ⁱ</strong> nós (raiz no nível 0). Uma árvore <strong>completa</strong> (todos os níveis cheios) com n nós tem <strong>log₂(n+1)</strong> níveis e <strong>(n+1)/2</strong> folhas.</li>
+<li>Travessias: <strong>pré-ordem</strong> (raiz, esq, dir), <strong>em-ordem</strong> (esq, raiz, dir; numa BST dá os valores ordenados), <strong>pós-ordem</strong> (esq, dir, raiz), <strong>por níveis</strong> (usa uma <strong>fila</strong>).</li>
+<li><strong>BST</strong>: tudo na subárvore esquerda &lt; nó &lt; tudo na direita. Procura, inserção e mínimo custam a altura: O(log n) se equilibrada, O(n) se degenerada.</li>
+<li><strong>AVL</strong>: para cada nó, as alturas das subárvores diferem <strong>no máximo</strong> 1 (rotações para reequilibrar).</li>
+<li>Árvore guardada num array por níveis: filhos de i em 2i+1 e 2i+2 (binária); 3i+1, 3i+2, 3i+3 (ternária).</li>
+<li><strong>Heap</strong> (fila com prioridade): árvore completa em array onde cada pai ≥ filhos (max-heap). Inserir e remover o máximo O(log n). <strong>Heapsort</strong>: construir uma <strong>max-heap</strong> (para ordem crescente) e retirar sucessivamente o máximo: O(n log n).</li>
+</ul>
+<h3>Tabelas de dispersão (hashing)</h3>
+<p>Função de hash mapeia a chave para um índice. Colisões resolvem-se por <strong>encadeamento</strong> (lista em cada posição) ou <strong>endereçamento aberto</strong> (sondagem linear/quadrática, duplo hashing). Com fator de carga controlado, procura/inserção O(1) em média; O(n) no pior caso.</p>
+<h3>Grafos</h3>
+<ul>
+<li>Representação: matriz de adjacências (O(V²) de espaço) ou listas de adjacências (O(V + E)).</li>
+<li>Grafo não orientado completo: <strong>n(n−1)/2</strong> arestas. Orientado completo: V listas com V(V−1) nós no total.</li>
+<li><strong>BFS</strong> (largura, por níveis) usa uma <strong>fila</strong>; <strong>DFS</strong> (profundidade) usa uma pilha ou recursão. Ambas O(V + E) com listas.</li>
+<li><strong>Fortemente conexo</strong> (orientado): há caminho de qualquer vértice para qualquer outro ⇒ nenhum vértice isolado.</li>
+<li><strong>Circuito hamiltoniano</strong>: passa uma vez por cada vértice e volta ao início. <strong>Euleriano</strong>: passa uma vez por cada aresta.</li>
+</ul>
+<h3>C++ e STL</h3>
+<div class="tw"><table><thead><tr><th>Elemento</th><th>O que faz</th></tr></thead><tbody>
+<tr><td><code>auto</code></td><td>Deduz o tipo da variável em tempo de compilação</td></tr>
+<tr><td><code>std::vector</code></td><td>Array dinâmico: acesso O(1), inserir no fim O(1) amortizado, no início O(n)</td></tr>
+<tr><td><code>std::deque</code></td><td>Inserir/remover nas <strong>duas extremidades</strong> em O(1)</td></tr>
+<tr><td><code>std::queue</code> / <code>std::stack</code></td><td>Adaptadores FIFO / LIFO</td></tr>
+<tr><td><code>std::set</code> / <code>std::map</code></td><td>Elementos <strong>únicos e ordenados</strong> (árvore equilibrada), operações O(log n)</td></tr>
+<tr><td><code>std::unordered_map</code></td><td>Tabela de dispersão, O(1) em média</td></tr>
+<tr><td><code>std::count_if(b, e, pred)</code></td><td>Conta os elementos que satisfazem uma condição</td></tr>
+</tbody></table></div>
+<h3>P, NP e NP-completo</h3>
+<ul>
+<li><strong>P</strong>: problemas de decisão resolúveis em tempo polinomial por um algoritmo determinista.</li>
+<li><strong>NP</strong>: problemas cuja solução <strong>pode ser verificada</strong> em tempo polinomial (P ⊆ NP).</li>
+<li><strong>NP-completo</strong>: os mais difíceis de NP (ex.: caixeiro viajante na versão de decisão, satisfazibilidade). Instâncias grandes não se resolvem em tempo útil, por isso usam-se soluções aproximadas ou heurísticas.</li>
+</ul>
+</section>
+
+<section id="ex1" data-nav="8 · Exame 2023/24: 1.ª parte" data-grp="Exames resolvidos" data-track>
+<h2>8 · Exame final 2023/24: 1.ª parte</h2>
+<h3>Escolha múltipla</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>Resp.</th><th>Justificação</th></tr></thead><tbody>
+<tr><td>1</td><td>d</td><td>t ≤ c·g é O (não Ω) e t ≥ c·g é Ω (não O): as duas alíneas estão trocadas</td></tr>
+<tr><td>2</td><td>a</td><td>Se o esforço depende da configuração, pior caso e caso médio diferem; se é sempre igual, não diferem</td></tr>
+<tr><td>3</td><td>c</td><td>3, 4, 5, …, 13 quando n duplica: log₂ n + 3, logarítmica</td></tr>
+<tr><td>4</td><td>a</td><td>4, 12, 40, 144, … = 2n² + 2n: quadrática</td></tr>
+<tr><td>5</td><td>c</td><td>1, 2, 3, 5, 8, 13…: M(n) = M(n−1) + M(n−2) (Fibonacci), crescimento exponencial</td></tr>
+<tr><td>6</td><td>b</td><td>Bubble em [6,5,4,3,2,1]: 15 trocas (15 inversões) e 15 comparações (não 21)</td></tr>
+<tr><td>7</td><td>c</td><td>Selection (menor à frente): 15 comparações; trocas 1↔6, 2↔5, 3↔4 = 3</td></tr>
+<tr><td>8</td><td>d</td><td>Bubble O(n²), selection O(n²), heapsort O(n log n): todas certas</td></tr>
+<tr><td>9</td><td>c</td><td>Hanói: n=2 ⇒ 3 movimentos, n=3 ⇒ 7; só O(2ⁿ) está certa</td></tr>
+<tr><td>10</td><td>a</td><td>T(3) = 4 maneiras (1+1+1, 1+2, 2+1, 3); T(4) = 7, não 6</td></tr>
+<tr><td>11</td><td>d</td><td>Árvore completa: log₂(n+1) níveis (n=1 dá 1, ⌊log₂ 1⌋ = 0) e (n+1)/2 folhas (n=7 tem 4, não 3)</td></tr>
+<tr><td>12</td><td>c</td><td>Árvore equilibrada: procura sem sucesso e mínimo percorrem no máximo a altura, O(log n)</td></tr>
+<tr><td>13</td><td>c</td><td>Filhos do índice i em 3i+1..3i+3: 9 (índice 2) tem filhos 0, 1, 3; folhas 2, 5, 7, 8, 0, 1, 3 = 7</td></tr>
+<tr><td>14</td><td>c</td><td>BST completa [8,4,12,2,6,10,14]: 1 + 2·2 + 4·3 = 17 consultas; qualquer ímpar termina numa folha ao fim de 3</td></tr>
+<tr><td>15</td><td>a</td><td>Nova aresta: encontrar o vértice e inserir na lista ordenada, O(V). Ver se um nó é isolado exige também procurar arestas que <em>chegam</em> a ele em todas as listas: O(V + E), não O(E)</td></tr>
+<tr><td>16</td><td>a</td><td>NP são os problemas cuja solução <strong>pode</strong> ser verificada em tempo polinomial</td></tr>
+<tr><td>17</td><td>b</td><td><code>auto</code> deduz o tipo em compilação</td></tr>
+<tr><td>18</td><td>c</td><td><code>std::deque</code></td></tr>
+<tr><td>19</td><td>b</td><td><code>std::set</code> mantém os elementos ordenados (e únicos, sem acesso aleatório)</td></tr>
+<tr><td>20</td><td>c</td><td><code>count_if</code> conta os que satisfazem uma condição</td></tr>
+</tbody></table></div>
+<h3>Verdadeiro ou falso</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>V/F</th><th>Porquê</th><th>#</th><th>V/F</th><th>Porquê</th></tr></thead><tbody>
+<tr><td>1</td><td>F</td><td>Instruções <strong>não</strong> ambíguas</td><td>11</td><td>V</td><td>Máximo 2ⁱ nós no nível i</td></tr>
+<tr><td>2</td><td>V</td><td>10·20·10 = 2000</td><td>12</td><td>F</td><td>Pós-ordem visita primeiro a esquerda</td></tr>
+<tr><td>3</td><td>F</td><td>Permutações são O(n!), que não é O(2ⁿ)</td><td>13</td><td>V</td><td>Na BST a esquerda só tem valores menores</td></tr>
+<tr><td>4</td><td>V</td><td>Definição de Θ</td><td>14</td><td>F</td><td>Diferem <strong>no máximo</strong> 1, não sempre 1</td></tr>
+<tr><td>5</td><td>V</td><td>Binária média ≈ log₂ n</td><td>15</td><td>V</td><td>n(n−1)/2 = (n² − n)/2</td></tr>
+<tr><td>6</td><td>F</td><td>A DP existe precisamente para <strong>não</strong> repetir subproblemas</td><td>16</td><td>V</td><td>Todos os vértices têm caminhos de e para os outros</td></tr>
+<tr><td>7</td><td>V</td><td>Soma geométrica</td><td>17</td><td>F</td><td>BFS usa uma <strong>fila</strong></td></tr>
+<tr><td>8</td><td>V</td><td>3·n(n+1)/2</td><td>18</td><td>V</td><td>V listas com V − 1 nós cada</td></tr>
+<tr><td>9</td><td>F</td><td>Para ordem crescente constrói-se uma <strong>MAX</strong>-heap</td><td>19</td><td>V</td><td>Definição de circuito hamiltoniano</td></tr>
+<tr><td>10</td><td>V</td><td>Heapsort O(n log n)</td><td>20</td><td>V</td><td>Caixeiro viajante é NP-difícil</td></tr>
+</tbody></table></div>
+<div class="box bad"><span class="t">Cuidado com o desconto</span>Escolha múltipla errada tira 0,1 e V/F errada também. Na dúvida entre duas opções que não consegues eliminar, deixa em branco.</div>
+</section>
+
+<section id="ex2" data-nav="9 · Exame 2023/24: 2.ª parte" data-grp="Exames resolvidos" data-track>
+<h2>9 · Exame final 2023/24: 2.ª parte (código C)</h2>
+<p>Todo o código desta secção foi compilado com <code>gcc -Wall -Wextra -std=c11</code> e testado com vários casos.</p>
+<h3>1. Ordenação por seleção (menor para a 1.ª posição)</h3>
+<pre data-lang="c">void SelectionSort(int* a, unsigned int n) {
+    if (n &lt; 2) return;
+    for (unsigned int k = 0; k &lt; n - 1; k++) {
+        unsigned int indMin = k;
+        for (unsigned int i = k + 1; i &lt; n; i++)
+            if (a[i] &lt; a[indMin]) indMin = i;      // &lt; estrito: 1.ª ocorrência
+        if (indMin != k) {                         // só troca se for preciso
+            int tmp = a[k]; a[k] = a[indMin]; a[indMin] = tmp;
+        }
+    }
+}</pre>
+<div class="box teo"><span class="t">b) Comparações</span>
+<p>C(n) = Σ_{k=0}^{n−2} Σ_{i=k+1}^{n−1} 1 = Σ_{k=0}^{n−2} (n − 1 − k) = (n−1) + (n−2) + … + 1 = <strong>n(n−1)/2</strong>, para qualquer configuração. Ordem <strong>Θ(n²)</strong>.</p></div>
+<div class="box teo"><span class="t">c) Trocas</span>
+<ul>
+<li><strong>Melhor caso: 0</strong> trocas, com o array já ordenado.</li>
+<li><strong>Pior caso: n − 1</strong> trocas, uma por passo. Por exemplo [n, 1, 2, …, n−1] ou [2, 3, …, n, 1]. Atenção: o array por ordem inversa <strong>não</strong> é pior caso (só faz ⌊n/2⌋ trocas).</li>
+<li><strong>Caso médio:</strong> no passo com k elementos por ordenar, o menor já está na 1.ª posição com probabilidade 1/k. A(n) = Σ_{k=2}^{n} (1 − 1/k) = (n − 1) − (Hₙ − 1) = <strong>n − Hₙ ≈ n − ln n − 0,577</strong>. Ordem O(n).</li>
+</ul>
+<p>Testado: [6,5,4,3,2,1] faz 15 comparações e 3 trocas; [6,1,2,3,4,5] faz 5 trocas; a média sobre as 720 permutações de 6 elementos dá 3,55 = 6 − H₆.</p></div>
+
+<h3>2. Fusão de duas listas ligadas ordenadas</h3>
+<pre data-lang="c">typedef struct node { unsigned int value; struct node* next; } node, *node_pointer;
+typedef struct header { unsigned int size; node_pointer first; } header, *header_pointer;
+
+static node_pointer NewNode(unsigned int v) {
+    node_pointer p = malloc(sizeof(node));
+    if (p == NULL) exit(1);
+    p-&gt;value = v; p-&gt;next = NULL;
+    return p;
+}
+
+header_pointer Merge(header_pointer seq_1, header_pointer seq_2) {
+    header_pointer res = malloc(sizeof(header));
+    if (res == NULL) exit(1);
+    res-&gt;size = 0; res-&gt;first = NULL;
+    node_pointer p1 = (seq_1 != NULL) ? seq_1-&gt;first : NULL;
+    node_pointer p2 = (seq_2 != NULL) ? seq_2-&gt;first : NULL;
+    node_pointer last = NULL;
+    while (p1 != NULL || p2 != NULL) {
+        unsigned int v;
+        if (p2 == NULL)      { v = p1-&gt;value; p1 = p1-&gt;next; }   // só resta a 1.ª
+        else if (p1 == NULL) { v = p2-&gt;value; p2 = p2-&gt;next; }   // só resta a 2.ª
+        else if (p1-&gt;value &lt;= p2-&gt;value) { v = p1-&gt;value; p1 = p1-&gt;next; }  // &lt;= mantém estabilidade
+        else                 { v = p2-&gt;value; p2 = p2-&gt;next; }
+        node_pointer q = NewNode(v);                 // copia: as originais ficam intactas
+        if (last == NULL) res-&gt;first = q; else last-&gt;next = q;
+        last = q;
+        res-&gt;size++;
+    }
+    return res;
+}</pre>
+<div class="box teo"><span class="t">b) Comparações entre elementos</span>
+<ul>
+<li>Só se compara enquanto <strong>as duas</strong> listas têm elementos.</li>
+<li><strong>Melhor caso: min(n₁, n₂)</strong>. Todos os elementos da lista mais curta são ≤ ao 1.º da outra (ex.: [1,2,3] com [7,8,9,10] faz 3 comparações). Se uma estiver vazia, 0.</li>
+<li><strong>Pior caso: n₁ + n₂ − 1</strong>. As listas intercalam-se e só falta um elemento no fim (ex.: [1,3,5] com [2,4,6] faz 5).</li>
+<li>Ambos O(n₁ + n₂) no número de nós criados.</li>
+</ul></div>
+
+<h3>3. Árvore binária de procura</h3>
+<pre data-lang="c">typedef struct tnode { int item; struct tnode *left, *right; } tnode, *pointer;
+
+unsigned int CountNonLeafNodes(pointer root) {
+    if (root == NULL) return 0;
+    if (root-&gt;left == NULL &amp;&amp; root-&gt;right == NULL) return 0;     // folha
+    return 1 + CountNonLeafNodes(root-&gt;left) + CountNonLeafNodes(root-&gt;right);
+}
+
+unsigned int CountValuesInRange(pointer root, int a, int b) {
+    if (root == NULL) return 0;
+    if (root-&gt;item &lt; a) return CountValuesInRange(root-&gt;right, a, b);  // esquerda toda &lt; a: não visitar
+    if (root-&gt;item &gt; b) return CountValuesInRange(root-&gt;left, a, b);   // direita toda &gt; b: não visitar
+    return 1 + CountValuesInRange(root-&gt;left, a, b) + CountValuesInRange(root-&gt;right, a, b);
+}</pre>
+<p><strong>b)</strong> CountNonLeafNodes processa o nó atual e depois as duas subárvores, por isso é uma travessia em <strong>pré-ordem</strong> (raiz, esquerda, direita). A soma só fica completa depois das chamadas, o que também se pode descrever como pós-ordem; justifica a tua escolha na resposta.</p>
+<p><strong>c)</strong> A eficiência vem de usar a ordem da BST: se o nó é menor que a, nada à sua esquerda pode estar no intervalo; se é maior que b, nada à direita. Testado com a árvore 50, 30, 70, 20, 40, 60, 80, 35, 45: 4 nós não-folha; 3 valores em [33, 46].</p>
+
+<h3>Recurso 2023/24: S(n) = n·S(⌊n/5⌋), S(n) = n para n ≤ 4</h3>
+<pre data-lang="c">double s_rec(unsigned int n) {
+    if (n &lt;= 4) return n;
+    return n * s_rec(n / 5);        // divisão inteira já faz o floor
+}
+
+double s_iter(unsigned int n) {     // programação dinâmica
+    if (n &lt;= 4) return n;
+    double* s = malloc((n + 1) * sizeof(double));
+    if (s == NULL) exit(1);
+    for (unsigned int i = 0; i &lt;= 4; i++) s[i] = i;
+    for (unsigned int i = 5; i &lt;= n; i++) s[i] = i * s[i / 5];
+    double r = s[n];
+    free(s);
+    return r;
+}</pre>
+<div class="box teo"><span class="t">Divisões efetuadas</span>
+<ul>
+<li><strong>Recursiva:</strong> D(n) = 0 para n ≤ 4 e D(n) = 1 + D(⌊n/5⌋). Daí D(n) = <strong>⌊log₅ n⌋</strong> para n ≥ 1, ordem <strong>O(log n)</strong>. Exemplos: D(26) = 2, D(130) = 3.</li>
+<li><strong>Iterativa com DP:</strong> uma divisão por cada i de 5 a n, ou seja <strong>n − 4</strong>, ordem <strong>O(n)</strong>, mais O(n) de memória.</li>
+<li>Aqui a DP é <em>pior</em> que a recursão, porque a recursão não repete subproblemas (cada chamada faz só uma chamada). Comenta isto na resposta: é o tipo de observação que o professor valoriza.</li>
+</ul>
+<p>Testado para n = 0, 13, 26, …, 130: as duas versões dão o mesmo resultado (ex.: S(26) = 130, S(130) = 16900).</p></div>
+</section>
+
+<section id="rev" data-nav="Revisão final" data-grp="Exames resolvidos">
+<h2>Revisão final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="a1"> Explicar ponteiros, <code>&amp;</code> e <code>*</code>, malloc/free, leaks e dangling pointers</label></li>
+<li><label><input type="checkbox" data-k="a2"> Prever o output de código com divisão inteira, ++, curto-circuito e switch sem break</label></li>
+<li><label><input type="checkbox" data-k="a3"> Escrever somatórios para ciclos e reduzi-los a fórmula fechada</label></li>
+<li><label><input type="checkbox" data-k="a4"> Distinguir O, Ω e Θ pela definição e classificar uma tabela de valores</label></li>
+<li><label><input type="checkbox" data-k="a5"> Fazer a tabela do caso médio (casos, operações, probabilidades)</label></li>
+<li><label><input type="checkbox" data-k="a6"> Simular a procura binária e saber W(n) = 1 + ⌊log₂ n⌋</label></li>
+<li><label><input type="checkbox" data-k="a7"> Contar comparações e trocas de selection, bubble e insertion num array dado</label></li>
+<li><label><input type="checkbox" data-k="a8"> Escrever em C funções sobre listas ligadas com nó cabeçalho e sobre BST (recursivas)</label></li>
+<li><label><input type="checkbox" data-k="a9"> Resolver uma recorrência de forma recursiva e com programação dinâmica e contar operações</label></li>
+</ul>
+</section>

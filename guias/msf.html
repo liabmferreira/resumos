@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MSF — guia de estudo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+<script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]]},svg:{fontCache:"global"}};</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB; --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC; --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8; --ex:#475569; --ex-bg:#EEF1F5;
+  --code-bg:#F0F2F7; --kw:#7A2BB0; --str:#1C7A3A; --cm:#7A8494; --num:#9A5700;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.confirm{font-size:12.5px;color:var(--muted);margin-top:8px}
+.mnav{display:none}
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:940px;width:100%;min-width:0}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em;text-wrap:balance}
+.hero p{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;text-wrap:balance}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);margin-left:10px}
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0;min-width:0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:12px 0;max-width:100%}
+pre code{background:none;padding:0;font-size:inherit}
+.box pre{background:var(--card)}
+pre .k{color:var(--kw);font-weight:500} pre .s{color:var(--str)} pre .c{color:var(--cm);font-style:italic} pre .n{color:var(--num)}
+.out{border-left:3px solid var(--teo)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+td code,th code{white-space:nowrap}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px;min-width:0}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px;min-width:0}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+.ov{text-decoration:overline;text-decoration-thickness:1px}
+.bits td{font-family:var(--mono);text-align:center;font-size:13px}
+.fig{margin:16px 0;overflow-x:auto}
+.fig svg{display:block;max-width:100%;height:auto}
+.fig figcaption{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:6px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details>summary{display:none}
+  .box,pre{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+
+.fm{font-family:var(--mono);font-size:14px;line-height:1.75;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:10px 0;overflow-x:auto;white-space:pre-wrap;max-width:100%}
+.fm.nw{white-space:normal}
+.fm.center{text-align:center}
+.box .fm{background:var(--card)}
+.fm .cm{color:var(--cm);font-style:italic}
+.lead{color:var(--muted)}
+.kicker{font-family:var(--sans);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:24px 0 0}
+.box.row{display:flex;gap:10px;align-items:flex-start}
+.box.row>.ic{flex:none}
+.ckl{list-style:none;padding-left:0}
+.ckl li::before{content:"☐ ";color:var(--accent)}
+.q{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:12px 16px 6px;margin:14px 0;min-width:0}
+.q-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-family:var(--sans);font-weight:600;color:var(--accent);margin-bottom:4px}
+.q-num{font-family:var(--sans);font-weight:600;color:var(--accent)}
+.q-pts,.q-head span{font-weight:400;color:var(--muted);font-size:13px}
+.q-head .q-num{color:var(--accent);font-weight:600;font-size:15px}
+.ans{display:inline-block;margin:4px 0;padding:2px 10px;border-radius:6px;background:var(--teo-bg);border:1px solid var(--teo);color:var(--teo);font-family:var(--sans);font-weight:600;font-size:14.5px}
+.sn{font-family:var(--mono);font-size:12px;color:var(--muted);margin-right:6px}
+em{font-style:italic}
+main{overflow-wrap:break-word}
+mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;max-width:100%}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>MSF — guia de estudo</h1>
+  <p class="sub">Modelação de Sistemas Físicos · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 37 capítulos estudados</div>
+  <nav id="nav">
+<div class="grp">Cap. 1 · Física: Medição e Modelação</div>
+<a href="#c1-medicao"><input type="checkbox" data-sec="c1-medicao" aria-label="Marcar Medição e incerteza como estudado"><span>Medição e incerteza</span></a>
+<a href="#c1-erros"><input type="checkbox" data-sec="c1-erros" aria-label="Marcar Propagação de erros como estudado"><span>Propagação de erros</span></a>
+<a href="#c1-regressao"><input type="checkbox" data-sec="c1-regressao" aria-label="Marcar Regressão linear como estudado"><span>Regressão linear</span></a>
+<a href="#c1-linearizacao"><input type="checkbox" data-sec="c1-linearizacao" aria-label="Marcar Linearização e polinómios como estudado"><span>Linearização e polinómios</span></a>
+<div class="grp">Cap. 2 · Movimento a uma dimensão</div>
+<a href="#c2-cinematica"><input type="checkbox" data-sec="c2-cinematica" aria-label="Marcar Posição, velocidade, aceleração como estudado"><span>Posição, velocidade, aceleração</span></a>
+<a href="#c2-acel-const"><input type="checkbox" data-sec="c2-acel-const" aria-label="Marcar Aceleração constante como estudado"><span>Aceleração constante</span></a>
+<a href="#c2-acel-naoconst"><input type="checkbox" data-sec="c2-acel-naoconst" aria-label="Marcar Aceleração não constante como estudado"><span>Aceleração não constante</span></a>
+<a href="#c2-euler"><input type="checkbox" data-sec="c2-euler" aria-label="Marcar Método de Euler como estudado"><span>Método de Euler</span></a>
+<a href="#c2-erro"><input type="checkbox" data-sec="c2-erro" aria-label="Marcar Erro de truncatura como estudado"><span>Erro de truncatura</span></a>
+<div class="grp">Cap. 3 · Movimento no plano e no espaço: forças e vetores</div>
+<a href="#c3-vetores"><input type="checkbox" data-sec="c3-vetores" aria-label="Marcar Álgebra de vetores como estudado"><span>Álgebra de vetores</span></a>
+<a href="#c3-forcas"><input type="checkbox" data-sec="c3-forcas" aria-label="Marcar Tipos de força como estudado"><span>Tipos de força</span></a>
+<a href="#c3-newton"><input type="checkbox" data-sec="c3-newton" aria-label="Marcar Leis de Newton como estudado"><span>Leis de Newton</span></a>
+<a href="#c3-2d3d"><input type="checkbox" data-sec="c3-2d3d" aria-label="Marcar Movimento 2D/3D como estudado"><span>Movimento 2D/3D</span></a>
+<a href="#c3-eulercromer"><input type="checkbox" data-sec="c3-eulercromer" aria-label="Marcar Euler-Cromer como estudado"><span>Euler-Cromer</span></a>
+<div class="grp">Cap. 4 · Leis de Conservação</div>
+<a href="#c4-trabalho"><input type="checkbox" data-sec="c4-trabalho" aria-label="Marcar Trabalho-Energia como estudado"><span>Trabalho-Energia</span></a>
+<a href="#c4-conservativas"><input type="checkbox" data-sec="c4-conservativas" aria-label="Marcar Forças conservativas como estudado"><span>Forças conservativas</span></a>
+<a href="#c4-integracao"><input type="checkbox" data-sec="c4-integracao" aria-label="Marcar Integração numérica como estudado"><span>Integração numérica</span></a>
+<a href="#c4-potencia"><input type="checkbox" data-sec="c4-potencia" aria-label="Marcar Potência como estudado"><span>Potência</span></a>
+<a href="#c4-momento"><input type="checkbox" data-sec="c4-momento" aria-label="Marcar Momento e colisões como estudado"><span>Momento e colisões</span></a>
+<div class="grp">Cap. 5 · Oscilações</div>
+<a href="#c5-ohs"><input type="checkbox" data-sec="c5-ohs" aria-label="Marcar Oscilador Harmónico Simples como estudado"><span>Oscilador Harmónico Simples</span></a>
+<a href="#c5-energia"><input type="checkbox" data-sec="c5-energia" aria-label="Marcar Energia e espaço de fase como estudado"><span>Energia e espaço de fase</span></a>
+<a href="#c5-lagrange"><input type="checkbox" data-sec="c5-lagrange" aria-label="Marcar Interpolação de Lagrange como estudado"><span>Interpolação de Lagrange</span></a>
+<a href="#c5-amortecido"><input type="checkbox" data-sec="c5-amortecido" aria-label="Marcar Amortecido como estudado"><span>Amortecido</span></a>
+<a href="#c5-forcado"><input type="checkbox" data-sec="c5-forcado" aria-label="Marcar Forçado e Ressonância como estudado"><span>Forçado e Ressonância</span></a>
+<a href="#c5-rlc"><input type="checkbox" data-sec="c5-rlc" aria-label="Marcar Circuitos RLC como estudado"><span>Circuitos RLC</span></a>
+<a href="#c5-naoharmonico"><input type="checkbox" data-sec="c5-naoharmonico" aria-label="Marcar Não harmónicos e Caos como estudado"><span>Não harmónicos e Caos</span></a>
+<a href="#c5-rk4"><input type="checkbox" data-sec="c5-rk4" aria-label="Marcar Runge-Kutta 4ª ordem como estudado"><span>Runge-Kutta 4ª ordem</span></a>
+<div class="grp">Cap. 6 · Osciladores Acoplados e Ondas</div>
+<a href="#c6-2osc"><input type="checkbox" data-sec="c6-2osc" aria-label="Marcar osciladores acoplados como estudado"><span>osciladores acoplados</span></a>
+<a href="#c6-fourier"><input type="checkbox" data-sec="c6-fourier" aria-label="Marcar Série de Fourier como estudado"><span>Série de Fourier</span></a>
+<a href="#c6-modosnormais"><input type="checkbox" data-sec="c6-modosnormais" aria-label="Marcar Modos normais (matriz) como estudado"><span>Modos normais (matriz)</span></a>
+<a href="#c6-nosc"><input type="checkbox" data-sec="c6-nosc" aria-label="Marcar N osciladores como estudado"><span>N osciladores</span></a>
+<a href="#c6-ondas"><input type="checkbox" data-sec="c6-ondas" aria-label="Marcar Equação de onda como estudado"><span>Equação de onda</span></a>
+<a href="#c6-sinais"><input type="checkbox" data-sec="c6-sinais" aria-label="Marcar Sinais e digitalização como estudado"><span>Sinais e digitalização</span></a>
+<div class="grp">Testes Resolvidos 2023 e 2024</div>
+<a href="#t-msf-t1"><input type="checkbox" data-sec="t-msf-t1" aria-label="Marcar Teste 1 — 2023 como estudado"><span>Teste 1 — 2023</span></a>
+<a href="#t-msf-t2-23"><input type="checkbox" data-sec="t-msf-t2-23" aria-label="Marcar Teste 2 — 2023 como estudado"><span>Teste 2 — 2023</span></a>
+<a href="#t-msf-t2-24"><input type="checkbox" data-sec="t-msf-t2-24" aria-label="Marcar Teste 2 — 2024 como estudado"><span>Teste 2 — 2024</span></a>
+<a href="#t-msf-t3"><input type="checkbox" data-sec="t-msf-t3" aria-label="Marcar Teste 3 — 2023 como estudado"><span>Teste 3 — 2023</span></a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+  <div class="confirm" id="cf" hidden>Carrega outra vez para apagar o progresso guardado neste navegador.</div>
+</aside>
+<main>
+<div class="hero" id="top"><h1>Modelação de Sistemas Físicos</h1><p>Resumo dos 6 capítulos teóricos (medição, movimento, forças, conservação, oscilações, ondas) e testes resolvidos de 2023 e 2024, com código Python.</p></div>
+
+
+<section id="c1-medicao" data-nav="Medição e incerteza" data-grp="Cap. 1 · Física: Medição e Modelação" data-track>
+<h2>1. Medição e incerteza<span class="done-tag" hidden>estudado ✓</span></h2>
+<span id="cap1"></span><p class="lead">Bibliografia: Guião da disciplina · Serway, cap. 1 e apêndice B.8 · Sørenssen, cap. 3</p><p>A Física procura identificar leis fundamentais que governam os fenómenos naturais. Está baseada em
+observações experimentais e medições quantitativas. A análise dos dados medidos fornece relações
+matemáticas entre as quantidades medidas. Há um ciclo central que atravessa toda a disciplina:</p><div class="box def">
+<span class="t">Conceito central</span>
+<p><strong>Fenómeno → Medição → Modelação → Previsão → (de novo) Fenómeno.</strong>
+Medimos um fenómeno, construímos um modelo matemático que o descreve, usamos esse modelo para prever
+comportamentos não observados, e testamos essa previsão de novo no fenómeno real.</p>
+</div>
+<p>Toda a medição requer: instrumentos de medição, padrões de medida, e um sistema de unidades (com
+conversão entre unidades). <strong>Uma medida sem unidade não tem significado.</strong></p>
+<div class="box teo">
+<span class="t">Sistema Internacional (SI), 1960 — grandezas de base</span>
+<div class="tw"><table>
+<tr><th>Quantidade</th><th>Unidade</th><th>Símbolo</th></tr>
+<tr><td>Comprimento</td><td>metro</td><td>m</td></tr>
+<tr><td>Massa</td><td>quilograma</td><td>kg</td></tr>
+<tr><td>Tempo</td><td>segundo</td><td>s</td></tr>
+<tr><td>Temperatura</td><td>kelvin</td><td>K</td></tr>
+<tr><td>Corrente elétrica</td><td>ampere</td><td>A</td></tr>
+</table></div>
+<p>Todas as outras grandezas (velocidade, aceleração, força, energia...) derivam destas.</p>
+</div>
+<h3>Conversão de unidades</h3>
+<p>Exemplo clássico: \(v = 60\) km/h em m/s:</p>
+\[ v = 60 \frac{\text{km}}{\text{h}} = 60 \times \frac{1000\,\text{m}}{3600\,\text{s}} = 60 \times 0.27777\ldots\ \text{m/s} = 16.67\ \text{m/s} \]
+
+<h3>Como reportar um resultado</h3>
+<p>O valor de qualquer medição está sempre afetado por uma incerteza: \(c = \bar{c} \pm \Delta c\).</p>
+<ul>
+<li><strong>Erros de leitura</strong> — limitação do instrumento.
+    <ul>
+<li>Escala digital: o erro é uma divisão da escala.</li>
+<li>Escala contínua: o erro é metade da menor divisão.</li>
+</ul>
+</li>
+<li><strong>Erros de observação</strong> — limitações em observar o fenómeno, variação aleatória do
+  processo, erro humano.</li>
+</ul>
+<div class="box exa">
+<span class="t">Exemplo</span>
+<p>Ao medir o comprimento de um lápis, se temos a certeza que \(4.0\,\text{cm} &lt; c &lt; 4.5\,\text{cm}\),
+então: melhor estimativa \(\bar c = 4.25\) cm e incerteza \(\Delta c = 0.25\) cm. Reporta-se
+\( c = 4.3 \pm 0.3 \) cm — a melhor estimativa arredondada à mesma casa decimal da incerteza, e a
+incerteza com 1 algarismo significativo.</p>
+</div>
+<h3>Precisão vs. Exatidão</h3>
+\[ \text{erro absoluto} = \Delta c \qquad \text{erro relativo} = \frac{\Delta c}{\bar c} \]
+<ul>
+<li><strong>Precisão</strong>: grau de variação da medição — maior precisão ⇔ erro relativo menor.</li>
+<li><strong>Exatidão</strong>: proximidade do valor medido ao valor correto.</li>
+</ul>
+<p>São conceitos <em>diferentes</em>: é possível ter alta precisão mas baixa exatidão se houver um erro
+sistemático (os valores medidos não refletem corretamente o valor real, embora sejam consistentes entre si).</p>
+<h3>Erros numéricos (em cálculo computacional)</h3>
+<p>Surgem porque: as operações têm precisão limitada; o algoritmo pode ser apenas aproximado; pode haver
+erros de implementação (bugs). Estes erros acumulam-se ao longo do cálculo.</p>
+
+</section>
+<section id="c1-erros" data-nav="Propagação de erros" data-grp="Cap. 1 · Física: Medição e Modelação" data-track>
+<h2>2. Combinação / propagação de erros<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="box teo">
+<span class="t">Regras de propagação</span>
+<p><strong>Soma ou subtração</strong> — somam-se os erros <em>absolutos</em>:</p>
+\[ S = L + P \quad\Rightarrow\quad \Delta S = \Delta L + \Delta P \]
+\[ D = L - P \quad\Rightarrow\quad \Delta D = \Delta L + \Delta P \]
+<p><strong>Produto ou divisão</strong> — somam-se os erros <em>relativos</em>:</p>
+\[ A = L \times P \quad\Rightarrow\quad \frac{\Delta A}{A} = \frac{\Delta L}{L} + \frac{\Delta P}{P} \]
+<p><strong>Caso geral</strong> — \(F = F(x,y,\ldots)\):</p>
+\[ \Delta F = \left|\frac{\partial F}{\partial x}\right|\Delta x + \left|\frac{\partial F}{\partial y}\right|\Delta y + \cdots \]
+</div>
+<h3>Medições repetidas</h3>
+<p>Em geral o erro em cada medição é aleatório. Repetindo a medição podemos melhorar a precisão:</p>
+<ul>
+<li>A melhor estimativa é a <strong>média</strong> das medições.</li>
+<li>O <strong>desvio padrão</strong> \(\sigma\) indica a variação em cada medição individual.</li>
+<li>O erro na média <strong>diminui</strong> com o número de medições: \( s = \sigma/\sqrt{N} \).</li>
+</ul>
+
+</section>
+<section id="c1-regressao" data-nav="Regressão linear" data-grp="Cap. 1 · Física: Medição e Modelação" data-track>
+<h2>3. Modelação e regressão linear<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p><strong>Modelar</strong> significa construir um conjunto de equações matemáticas capazes de representar
+com exatidão os fenómenos em estudo — para codificar leis observadas, prever comportamento em condições não
+observadas, e simular fenómenos não observados.</p>
+<div class="box exa">
+<span class="t">Exemplo motivador — difração</span>
+<p>Numa experiência de difração, mede-se a distância \(L\) (fenda ao alvo) e \(X\) (distância entre
+máximos). Os dados, colocados num gráfico, parecem indicar uma relação <strong>linear</strong> entre \(L\) e \(X\).
+Como extrair a reta que melhor representa os dados?</p>
+</div>
+<h3>Método dos mínimos quadrados</h3>
+<p>Dados experimentais \((x_i, y_i)\); pontos da reta-modelo \((x_i, p_i)\) com \(p_i = mx_i + b\) (não se
+conhecem \(m\) e \(b\)). Minimiza-se a soma dos quadrados dos desvios:</p>
+\[ S(m,b) = \sum_{i=1}^{N} (y_i - p_i)^2 \]
+<p>Impondo \(\partial S/\partial m = 0\) e \(\partial S/\partial b = 0\) obtém-se:</p>
+\[ m = \frac{N\sum x_i y_i - \sum x_i \sum y_i}{N\sum x_i^2 - \left(\sum x_i\right)^2}
+\qquad
+b = \frac{\sum x_i^2 \sum y_i - \sum x_i \sum x_i y_i}{N\sum x_i^2 - \left(\sum x_i\right)^2} \]
+
+<p>O <strong>coeficiente de determinação</strong> \(r^2\) avalia a qualidade do ajuste (\(r^2 \approx 1\):
+ótimo ajuste; \(r^2 \approx 0\): modelo não é linear). Os erros associados a \(m\) e \(b\) também podem ser
+calculados a partir de \(r^2\), \(N\) e dos \(x_i\).</p>
+
+</section>
+<section id="c1-linearizacao" data-nav="Linearização e polinómios" data-grp="Cap. 1 · Física: Medição e Modelação" data-track>
+<h2>4. Linearização, leis de potência, exponenciais e polinómios<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="cols">
+<div class="box teo">
+<span class="t">Lei de potência \(y = c\,x^n\)</span>
+<p>Aplicando logaritmos:</p>
+\[ \log_b y = \log_b c + n \log_b x \]
+<p>É uma reta no gráfico \(\log y\) vs \(\log x\): declive = \(n\) (a potência).</p>
+</div>
+<div class="box teo">
+<span class="t">Lei exponencial \(y = y_0 e^{\lambda t}\)</span>
+\[ \log_b y = \log_b y_0 + \lambda t \]
+<p>Reta no gráfico \(\log y\) vs \(t\): declive = \(\lambda\) (pode ser positivo ou negativo).</p>
+</div>
+</div>
+<p><strong>Linearização geral:</strong> se conhecermos a forma \(y^m = cx^n + b\), fazendo
+\(Y = y^m\) e \(X = x^n\), obtém-se \(Y = cX + b\), uma reta (com \(m, n\) possivelmente negativos).</p>
+<h3>Interpolação vs. extrapolação</h3>
+<ul>
+<li><strong>Interpolação</strong> — prever dentro do intervalo medido. Maior confiança.</li>
+<li><strong>Extrapolação</strong> — prever fora do intervalo medido. Menor confiança: o modelo pode não
+  ser válido nessa região (não há medições próximas que confirmem).</li>
+</ul>
+<h3>Polinómios e a escolha do modelo</h3>
+<p>Python: <code>np.polyfit(x,y,n)</code> ajusta um polinómio de grau \(n\) (com \(n=1\) é
+o ajuste linear); desvantagem: não calcula diretamente \(r^2\) nem os erros dos coeficientes.</p>
+<div class="box ex">
+<span class="t">Cuidado conceptual</span>
+<p>Um polinómio de grau \(n\) ajusta-se <em>perfeitamente</em> ao mesmo número \(n\) de pontos
+experimentais — isso não o torna automaticamente um bom modelo! Se a relação for realmente linear, o
+afastamento dos pontos da reta deve-se a erro de medição. Um polinómio de grau elevado pode parecer melhor
+na interpolação mas dar resultados completamente diferentes (e absurdos) na extrapolação.
+<strong>Usa sempre o grau mínimo necessário.</strong></p>
+</div>
+<p>Casos mais complexos (funções periódicas, distribuições "estranhas" como a radiação do corpo negro de
+Planck) exigem modelos não lineares específicos, vistos mais tarde na disciplina.</p>
+<div class="box met">
+<span class="t">Sumário do Capítulo 1</span>
+<ul>
+<li>Toda a medição tem incerteza: \(c = \bar c \pm \Delta c\); erro absoluto vs. relativo.</li>
+<li>Soma/subtração → somar erros absolutos; produto/divisão → somar erros relativos.</li>
+<li>Médias de medições repetidas reduzem o erro como \(1/\sqrt{N}\).</li>
+<li>Regressão linear (mínimos quadrados) extrai \(m\), \(b\) e o ajuste \(r^2\) de dados experimentais.</li>
+<li>Leis de potência e exponenciais linearizam-se com logaritmos.</li>
+<li>Polinómios de grau elevado ajustam bem mas extrapolam mal — usar o grau mínimo necessário.</li>
+</ul>
+</div>
+
+
+</section>
+<section id="c2-cinematica" data-nav="Posição, velocidade, aceleração" data-grp="Cap. 2 · Movimento a uma dimensão" data-track>
+<h2>1. Posição, velocidade e aceleração<span class="done-tag" hidden>estudado ✓</span></h2>
+<span id="cap2"></span><p class="lead">Cinemática, integração numérica, método de Euler</p>
+<div class="box teo">
+<span class="t">Definições</span>
+\[ v(t) = \frac{dx}{dt} \qquad a(t) = \frac{dv}{dt} = \frac{d^2x}{dt^2} \]
+<p>Velocidade média: \(\bar v = \dfrac{\Delta x}{\Delta t}\). Velocidade instantânea é o limite quando
+\(\Delta t \to 0\) — o declive da tangente ao gráfico \(x(t)\). Aceleração é o declive da tangente a \(v(t)\).</p>
+</div>
+<p>Em sentido inverso: dada \(a(t)\), integrando obtemos \(v(t)\); integrando \(v(t)\) obtemos \(x(t)\).</p>
+
+</section>
+<section id="c2-acel-const" data-nav="Aceleração constante" data-grp="Cap. 2 · Movimento a uma dimensão" data-track>
+<h2>2. Movimento com aceleração constante<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="box teo">
+<span class="t">Equações do movimento uniformemente acelerado</span>
+\[ v(t) = v_0 + at \]
+\[ x(t) = x_0 + v_0 t + \tfrac{1}{2}at^2 \]
+\[ v^2 = v_0^2 + 2a(x-x_0) \]
+</div>
+<p>Caso particular importante: <strong>queda livre</strong>, \(a = -g \approx -9.8\ \text{m/s}^2\) (eixo
+positivo para cima).</p>
+
+</section>
+<section id="c2-acel-naoconst" data-nav="Aceleração não constante" data-grp="Cap. 2 · Movimento a uma dimensão" data-track>
+<h2>3. Movimento com aceleração não constante<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Quando \(a(t)\) não é constante (ex: força dependente da velocidade, como resistência do ar), as fórmulas
+anteriores deixam de ser válidas — é necessário <strong>integrar</strong>:</p>
+\[ v(t) = v_0 + \int_0^t a(t')\,dt' \qquad x(t) = x_0 + \int_0^t v(t')\,dt' \]
+<p>Nem sempre estes integrais têm solução analítica simples — daí a necessidade de métodos
+<strong>numéricos</strong>.</p>
+
+</section>
+<section id="c2-euler" data-nav="Método de Euler" data-grp="Cap. 2 · Movimento a uma dimensão" data-track>
+<h2>4. Método de Euler<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Ideia: discretizar o tempo em passos pequenos \(\Delta t = h\), e aproximar a derivada pela diferença
+finita:</p>
+\[ \frac{dx}{dt} \approx \frac{x(t+h)-x(t)}{h} \quad\Rightarrow\quad x(t+h) \approx x(t) + h\,v(t) \]
+<div class="box teo">
+<span class="t">Algoritmo de Euler (atualização passo a passo)</span>
+\[ v_{i+1} = v_i + a_i\,h \]
+\[ x_{i+1} = x_i + v_i\,h \]
+<p>Repete-se a partir de condições iniciais \(x_0, v_0\), calculando \(a_i\) em cada passo a partir da
+física do problema (segunda lei de Newton: \(a_i = F(x_i,v_i,t_i)/m\)).</p>
+</div>
+<div class="box exa">
+<span class="t">Pseudocódigo / Python</span>
+<pre><code>x = x0; v = v0; t = 0
+while t &lt; t_final:
+    a = calcula_aceleracao(x, v, t)
+    v = v + a*h
+    x = x + v*h
+    t = t + h</code></pre>
+<p><strong>Nota importante:</strong> a ordem importa — no Euler "simples" (Euler-Cromer, ver Cap. 3) o uso da
+velocidade <em>já atualizada</em> \(v_{i+1}\) para atualizar \(x\) costuma dar melhores resultados que o
+Euler "puro" (que usa \(v_i\)).</p>
+</div>
+
+</section>
+<section id="c2-erro" data-nav="Erro de truncatura" data-grp="Cap. 2 · Movimento a uma dimensão" data-track>
+<h2>5. Erro de truncatura e escolha do passo \(h\)<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>O método de Euler é uma aproximação de 1ª ordem: o erro local por passo é proporcional a \(h^2\)
+(da expansão em série de Taylor), e o erro acumulado ao longo da simulação é proporcional a \(h\).</p>
+<div class="box ex">
+<span class="t">Compromisso (trade-off)</span>
+<ul>
+<li><strong>\(h\) pequeno</strong> → menor erro de truncatura, mas mais passos → mais tempo de cálculo e
+  maior acumulação de erros de arredondamento (numéricos).</li>
+<li><strong>\(h\) grande</strong> → cálculo mais rápido, mas erro de truncatura maior — a simulação pode
+  divergir do comportamento físico real.</li>
+</ul>
+<p>Na prática, testa-se a convergência da solução: diminui-se \(h\) sucessivamente e compara-se o resultado;
+quando deixa de mudar significativamente, \(h\) é suficientemente pequeno.</p>
+</div>
+<div class="box met">
+<span class="t">Sumário do Capítulo 2</span>
+<ul>
+<li>\(v = dx/dt\), \(a = dv/dt\): a cinemática é um problema de derivadas/integrais.</li>
+<li>Com \(a\) constante usam-se as equações clássicas do MRUA.</li>
+<li>Com \(a\) variável é necessário integrar numericamente — Método de Euler.</li>
+<li>Euler: \(v_{i+1}=v_i+a_i h\), \(x_{i+1}=x_i+v_i h\) (ou \(v_{i+1}\) no caso de Euler-Cromer).</li>
+<li>Erro de truncatura \(\propto h\); passo menor = mais exato mas mais lento.</li>
+</ul>
+</div>
+
+
+</section>
+<section id="c3-vetores" data-nav="Álgebra de vetores" data-grp="Cap. 3 · Movimento no plano e no espaço: forças e vetores" data-track>
+<h2>1. Álgebra de vetores<span class="done-tag" hidden>estudado ✓</span></h2>
+<span id="cap3"></span><p class="lead">Vetores, tipos de força, Leis de Newton, Euler-Cromer em 2D/3D</p>
+<p>Em 2D/3D as quantidades cinemáticas são vetores: posição \(\vec r\), velocidade \(\vec v = d\vec r/dt\),
+aceleração \(\vec a = d\vec v/dt\). Cada componente (x, y, z) pode ser tratada independentemente.</p>
+<div class="box teo">
+<span class="t">Operações fundamentais</span>
+\[ \vec A + \vec B = (A_x+B_x,\, A_y+B_y,\, A_z+B_z) \]
+\[ |\vec A| = \sqrt{A_x^2+A_y^2+A_z^2} \]
+\[ \vec A \cdot \vec B = A_xB_x+A_yB_y+A_zB_z = |\vec A||\vec B|\cos\theta \]
+\[ \hat A = \frac{\vec A}{|\vec A|}\ \ \text{(vetor unitário, direção de } \vec A\text{)} \]
+</div>
+<p>O <strong>produto escalar</strong> é usado para projeções e trabalho (Cap. 4); o
+<strong>produto vetorial</strong> \(\vec A \times \vec B\) é usado para torque/momento angular (perpendicular
+ao plano de \(\vec A,\vec B\), módulo \(|\vec A||\vec B|\sin\theta\)).</p>
+
+</section>
+<section id="c3-forcas" data-nav="Tipos de força" data-grp="Cap. 3 · Movimento no plano e no espaço: forças e vetores" data-track>
+<h2>2. Tipos de força<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="tw"><table>
+<tr><th>Força</th><th>Expressão</th><th>Notas</th></tr>
+<tr><td>Peso (gravítica perto da superfície)</td><td>\(\vec F = m\vec g\)</td><td>\(g\approx 9.8\ \text{m/s}^2\), aponta para baixo</td></tr>
+<tr><td>Gravitação universal</td><td>\(\vec F = -G\dfrac{m_1 m_2}{r^2}\hat r\)</td><td>\(G = 6.674\times10^{-11}\ \text{N m}^2/\text{kg}^2\); atrativa, ao longo da linha que une as massas</td></tr>
+<tr><td>Normal</td><td>\(N\) (perpendicular à superfície)</td><td>reação à compressão da superfície</td></tr>
+<tr><td>Atrito estático/cinético</td><td>\(f \le \mu_s N\) / \(f = \mu_k N\)</td><td>opõe-se ao movimento (ou tendência de movimento)</td></tr>
+<tr><td>Tensão</td><td>\(T\)</td><td>ao longo do fio/corda, igual nos dois extremos (fio ideal)</td></tr>
+<tr><td>Elástica (mola)</td><td>\(F = -kx\)</td><td>Lei de Hooke, restauradora</td></tr>
+<tr><td>Resistência do ar / arrasto</td><td>\(F \propto -v\) ou \(-v^2\)</td><td>opõe-se à velocidade; não-constante → exige Euler</td></tr>
+</table></div>
+
+</section>
+<section id="c3-newton" data-nav="Leis de Newton" data-grp="Cap. 3 · Movimento no plano e no espaço: forças e vetores" data-track>
+<h2>3. Leis de Newton<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="box def">
+<span class="t">1ª Lei (Inércia)</span>
+<p>Um corpo permanece em repouso ou em movimento retilíneo uniforme a não ser que uma força resultante atue
+sobre ele. Válida em referenciais inerciais.</p>
+</div>
+<div class="box def">
+<span class="t">2ª Lei (Fundamental da Dinâmica)</span>
+\[ \sum \vec F = m\vec a \quad\Leftrightarrow\quad \vec a = \frac{\sum \vec F}{m} \]
+<p>Relaciona a força resultante com a aceleração — é a equação central usada para construir simulações
+numéricas: a partir de \(\sum\vec F\) calculamos \(\vec a\), e depois integramos (Euler/Euler-Cromer) para
+obter \(\vec v(t)\) e \(\vec r(t)\).</p>
+</div>
+<div class="box def">
+<span class="t">3ª Lei (Ação-Reação)</span>
+\[ \vec F_{A\to B} = -\vec F_{B\to A} \]
+<p>Forças surgem sempre em pares: se A exerce uma força sobre B, B exerce uma força igual e oposta sobre A
+(atuam em corpos <em>diferentes</em>, por isso não se anulam).</p>
+</div>
+<h3>Diagrama de corpo livre</h3>
+<p>Estratégia geral para resolver problemas: isolar o corpo, desenhar todas as forças que atuam sobre ele,
+escolher um referencial conveniente (eixos), decompor cada força nas componentes desse referencial, e aplicar
+\(\sum F_x = ma_x\), \(\sum F_y = ma_y\) separadamente.</p>
+
+</section>
+<section id="c3-2d3d" data-nav="Movimento 2D/3D" data-grp="Cap. 3 · Movimento no plano e no espaço: forças e vetores" data-track>
+<h2>4. Movimento em 2D/3D — exemplos clássicos<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="box exa">
+<span class="t">Movimento de projétil (sem resistência do ar)</span>
+<p>Aceleração constante \(\vec a = (0,-g)\). As componentes \(x\) e \(y\) são independentes:</p>
+\[ x(t) = x_0 + v_{0x}t \qquad y(t) = y_0 + v_{0y}t - \tfrac12 g t^2 \]
+<p>Trajetória parabólica. Com resistência do ar (dependente de \(v\)), as componentes deixam de ser
+independentes (o módulo de \(\vec v\) entra nas duas equações) → necessário recorrer a Euler-Cromer.</p>
+</div>
+<div class="box exa">
+<span class="t">Sistema Terra-Sol (órbitas, gravitação universal)</span>
+<p>Força gravítica como função vetorial da posição relativa:</p>
+\[ \vec a = -\frac{GM}{r^2}\hat r \]
+<p>É um problema clássico de simulação: não existe solução analítica trivial em coordenadas cartesianas
+para o caso geral, por isso recorre-se à integração numérica passo a passo. Permite obter órbitas elípticas
+(Leis de Kepler) a partir da 2ª Lei de Newton + Lei da Gravitação.</p>
+</div>
+
+</section>
+<section id="c3-eulercromer" data-nav="Euler-Cromer" data-grp="Cap. 3 · Movimento no plano e no espaço: forças e vetores" data-track>
+<h2>5. Método de Euler-Cromer (2D/3D)<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Generalização vetorial do método de Euler do Cap. 2, aplicado a cada componente:</p>
+<div class="box teo">
+<span class="t">Algoritmo de Euler-Cromer</span>
+\[ \vec a_i = \frac{\sum \vec F(\vec r_i,\vec v_i,t_i)}{m} \]
+\[ \vec v_{i+1} = \vec v_i + \vec a_i\,h \]
+\[ \vec r_{i+1} = \vec r_i + \vec v_{i+1}\,h \quad \text{(usa-se a velocidade já atualizada!)} \]
+</div>
+<div class="box ex">
+<span class="t">Porquê "Cromer" e não Euler puro?</span>
+<p>O Euler-Cromer (usar \(v_{i+1}\) em vez de \(v_i\) para atualizar a posição) conserva muito melhor a
+energia em sistemas oscilatórios/orbitais ao longo de muitos passos — o Euler puro tende a "ganhar" energia
+artificialmente e a órbita diverge (espiral para fora). É por isso o método preferido nestas simulações.</p>
+</div>
+<div class="box met">
+<span class="t">Sumário do Capítulo 3</span>
+<ul>
+<li>Vetores: soma, produto escalar (\(\to\) trabalho), produto vetorial (\(\to\) torque).</li>
+<li>Tipos de força: peso, gravitação universal, normal, atrito, tensão, elástica, arrasto.</li>
+<li>1ª Lei: inércia; 2ª Lei: \(\sum\vec F = m\vec a\); 3ª Lei: ação-reação.</li>
+<li>Diagramas de corpo livre + decomposição em componentes resolvem problemas estáticos/dinâmicos.</li>
+<li>Projétil: componentes x,y independentes sem resistência do ar; dependentes com arrasto.</li>
+<li>Euler-Cromer generaliza Euler a vetores e conserva melhor a energia em órbitas/oscilações.</li>
+</ul>
+</div>
+
+
+</section>
+<section id="c4-trabalho" data-nav="Trabalho-Energia" data-grp="Cap. 4 · Leis de Conservação" data-track>
+<h2>1. Trabalho e Teorema Trabalho-Energia<span class="done-tag" hidden>estudado ✓</span></h2>
+<span id="cap4"></span><p class="lead">Trabalho, energia, forças conservativas, integração numérica, momento linear, colisões</p>
+<div class="box teo">
+<span class="t">Trabalho de uma força</span>
+\[ W = \int_{\vec r_1}^{\vec r_2} \vec F \cdot d\vec r \]
+<p>Para força constante e deslocamento retilíneo: \(W = \vec F\cdot\vec d = Fd\cos\theta\).</p>
+</div>
+<div class="box def">
+<span class="t">Teorema Trabalho-Energia Cinética</span>
+\[ W_{\text{total}} = \Delta K = K_f - K_i \qquad K = \tfrac12 mv^2 \]
+<p>O trabalho realizado pela força resultante é igual à variação de energia cinética.</p>
+</div>
+
+</section>
+<section id="c4-conservativas" data-nav="Forças conservativas" data-grp="Cap. 4 · Leis de Conservação" data-track>
+<h2>2. Forças conservativas e energia potencial<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Uma força é <strong>conservativa</strong> se o trabalho que realiza entre dois pontos não depende do
+caminho percorrido (só dos pontos inicial e final). Para essas forças define-se uma energia potencial \(U\):</p>
+\[ W_{\text{cons}} = -\Delta U \qquad F = -\frac{dU}{dx} \]
+<div class="tw"><table>
+<tr><th>Força</th><th>Energia potencial</th></tr>
+<tr><td>Gravítica (perto da superfície): \(F=-mg\)</td><td>\(U = mgy\)</td></tr>
+<tr><td>Gravitação universal: \(F=-GMm/r^2\)</td><td>\(U = -GMm/r\)</td></tr>
+<tr><td>Elástica (mola): \(F=-kx\)</td><td>\(U = \tfrac12 kx^2\)</td></tr>
+</table></div>
+<div class="box def">
+<span class="t">Conservação da Energia Mecânica</span>
+\[ E = K + U = \text{constante} \quad \text{(quando só atuam forças conservativas)} \]
+<p>Forças não-conservativas (atrito, resistência do ar) <strong>dissipam</strong> energia mecânica
+(transformam-na em calor): \(\Delta E = W_{\text{não-cons}}\).</p>
+</div>
+
+</section>
+<section id="c4-integracao" data-nav="Integração numérica" data-grp="Cap. 4 · Leis de Conservação" data-track>
+<h2>3. Integração numérica do trabalho<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Quando \(\vec F\) não é constante (ex: mola, gravitação, arrasto), calcular \(W=\int \vec F\cdot d\vec r\)
+analiticamente pode ser difícil ou impossível — usa-se integração numérica.</p>
+<div class="box teo">
+<span class="t">Regra do trapézio (e Simpson)</span>
+\[ \int_a^b f(x)\,dx \approx \sum_{i} \frac{f(x_i)+f(x_{i+1})}{2}\,\Delta x \]
+<p>Aproxima a área sob a curva por uma soma de trapézios (em vez de retângulos, como no Euler simples) — dá
+maior precisão. Existem regras de ordem ainda mais alta (Simpson) usadas no cálculo computacional da
+disciplina.</p>
+</div>
+<p>Em simulações de dinâmica (Euler-Cromer), a energia pode ser calculada a cada passo somando \(K_i\) e
+\(U_i\); isto serve como teste de validação: se \(E\) se mantém aproximadamente constante (sem forças
+dissipativas), a simulação está correta.</p>
+
+</section>
+<section id="c4-potencia" data-nav="Potência" data-grp="Cap. 4 · Leis de Conservação" data-track>
+<h2>4. Potência<span class="done-tag" hidden>estudado ✓</span></h2>
+
+\[ P = \frac{dW}{dt} = \vec F\cdot\vec v \qquad \text{(unidade SI: watt, W = J/s)} \]
+<p>Mede a taxa a que o trabalho é realizado (ou energia transferida) por unidade de tempo.</p>
+
+</section>
+<section id="c4-momento" data-nav="Momento e colisões" data-grp="Cap. 4 · Leis de Conservação" data-track>
+<h2>5. Momento linear e colisões<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="box def">
+<span class="t">Momento linear e 2ª Lei de Newton (forma geral)</span>
+\[ \vec p = m\vec v \qquad \sum \vec F = \frac{d\vec p}{dt} \]
+<p>Para sistemas de partículas: o momento total \(\vec P = \sum_i m_i \vec v_i\) só muda devido a forças
+<em>externas</em> ao sistema — forças internas (entre partículas do sistema) cancelam-se aos pares (3ª Lei
+de Newton).</p>
+</div>
+<div class="box def">
+<span class="t">Conservação do Momento Linear</span>
+\[ \text{se } \sum \vec F_{\text{ext}} = 0 \quad\Rightarrow\quad \vec P = \text{constante} \]
+<p>Aplica-se tipicamente a <strong>colisões</strong> (a duração é curta, as forças internas dominam): o
+momento total antes = momento total depois.</p>
+</div>
+<div class="tw"><table>
+<tr><th>Tipo de colisão</th><th>Momento</th><th>Energia cinética</th></tr>
+<tr><td>Elástica</td><td>conservado</td><td>conservada</td></tr>
+<tr><td>Inelástica</td><td>conservado</td><td><strong>não</strong> conservada (parte → calor/deformação)</td></tr>
+<tr><td>Perfeitamente inelástica</td><td>conservado</td><td>perda máxima; corpos ficam juntos após colisão</td></tr>
+</table></div>
+<div class="box exa">
+<span class="t">Colisão 1D elástica — equações resultantes</span>
+<p>Com massas \(m_1,m_2\) e velocidades iniciais \(v_{1i}, v_{2i}\), resolvendo simultaneamente conservação
+do momento e da energia cinética obtém-se:</p>
+\[ v_{1f} = \frac{m_1-m_2}{m_1+m_2}v_{1i} + \frac{2m_2}{m_1+m_2}v_{2i} \]
+\[ v_{2f} = \frac{2m_1}{m_1+m_2}v_{1i} + \frac{m_2-m_1}{m_1+m_2}v_{2i} \]
+</div>
+<h3>Centro de massa</h3>
+\[ \vec r_{cm} = \frac{\sum_i m_i \vec r_i}{\sum_i m_i} \qquad \vec v_{cm} = \frac{\vec P}{M_{\text{total}}} \]
+<p>O centro de massa de um sistema isolado move-se com velocidade constante (consequência direta da
+conservação do momento), mesmo que as partículas individuais colidam ou interajam entre si.</p>
+<div class="box met">
+<span class="t">Sumário do Capítulo 4</span>
+<ul>
+<li>Trabalho \(W=\int \vec F\cdot d\vec r\); Teorema Trabalho-Energia: \(W_{\text{total}}=\Delta K\).</li>
+<li>Forças conservativas → energia potencial \(U\); \(F=-dU/dx\); energia mecânica \(E=K+U\) conserva-se sem dissipação.</li>
+<li>Integração numérica (trapézios/Simpson) calcula trabalho quando \(F\) não é constante.</li>
+<li>Potência: \(P = \vec F\cdot\vec v\).</li>
+<li>Momento \(\vec p=m\vec v\); sem forças externas, \(\vec P\) total conserva-se (chave para colisões).</li>
+<li>Colisões: elásticas conservam \(K\); inelásticas não; centro de massa move-se a velocidade constante.</li>
+</ul>
+</div>
+
+
+</section>
+<section id="c5-ohs" data-nav="Oscilador Harmónico Simples" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>1. Oscilador Harmónico Simples (OHS)<span class="done-tag" hidden>estudado ✓</span></h2>
+<span id="cap5"></span><p class="lead">Oscilador Harmónico Simples, amortecido, forçado, ressonância, circuitos RLC, caos, Runge-Kutta</p>
+<p>Sistema clássico: massa \(m\) presa a uma mola de constante \(k\) (Lei de Hooke), sem atrito. A força
+restauradora é proporcional ao deslocamento e de sentido oposto:</p>
+<div class="box def">
+<span class="t">Equação de movimento</span>
+\[ F = -kx = ma = m\ddot x \quad\Rightarrow\quad \ddot x + \omega_0^2 x = 0, \qquad \omega_0 = \sqrt{\frac{k}{m}} \]
+</div>
+<div class="box teo">
+<span class="t">Solução geral</span>
+\[ x(t) = A\cos(\omega_0 t + \phi) \]
+<p>\(A\) — amplitude (determinada pelas condições iniciais); \(\omega_0\) — frequência angular natural
+(rad/s), depende apenas de \(k\) e \(m\) (não da amplitude!); \(\phi\) — fase inicial.</p>
+\[ T = \frac{2\pi}{\omega_0} \qquad f = \frac{1}{T} = \frac{\omega_0}{2\pi} \]
+<p>\(T\) — período (s); \(f\) — frequência (Hz).</p>
+</div>
+<p>Velocidade e aceleração: \(v(t) = -A\omega_0\sin(\omega_0 t+\phi)\), \(a(t) = -A\omega_0^2\cos(\omega_0 t+\phi) = -\omega_0^2 x(t)\).</p>
+<h3>Outros exemplos de OHS</h3>
+<div class="tw"><table>
+<tr><th>Sistema</th><th>\(\omega_0\)</th></tr>
+<tr><td>Massa-mola</td><td>\(\sqrt{k/m}\)</td></tr>
+<tr><td>Pêndulo simples (oscilações pequenas, \(\sin\theta\approx\theta\))</td><td>\(\sqrt{g/L}\)</td></tr>
+<tr><td>Circuito LC</td><td>\(1/\sqrt{LC}\)</td></tr>
+</table></div>
+
+</section>
+<section id="c5-energia" data-nav="Energia e espaço de fase" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>2. Energia e espaço de fase<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<div class="box teo">
+<span class="t">Energia do OHS</span>
+\[ E = K+U = \tfrac12 mv^2 + \tfrac12 kx^2 = \tfrac12 kA^2 = \text{constante} \]
+<p>A energia total é constante e proporcional ao quadrado da amplitude — oscila entre cinética (máxima no
+centro, \(x=0\)) e potencial (máxima nos extremos, \(x=\pm A\)).</p>
+</div>
+<p><strong>Espaço de fase</strong> (\(x\) vs. \(v\)): para o OHS sem atrito, a trajetória no espaço de fase é
+uma <strong>elipse fechada</strong> (ou círculo, com escalas adequadas) — reflete a conservação de energia.
+À medida que o sistema perde energia (amortecimento), a trajetória espirala para dentro.</p>
+
+</section>
+<section id="c5-lagrange" data-nav="Interpolação de Lagrange" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>3. Interpolação de Lagrange<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Ferramenta matemática usada para estimar o valor de uma função entre pontos conhecidos (por exemplo, para
+encontrar com precisão o instante em que \(x(t)=0\) numa simulação numérica, sem precisar de \(h\) extremamente
+pequeno). Dado um conjunto de pontos \((x_i,y_i)\), o polinómio interpolador de Lagrange é:</p>
+\[ P(x) = \sum_{i} y_i \prod_{j\ne i} \frac{x-x_j}{x_i-x_j} \]
+<p>Para 3 pontos (interpolação quadrática) é o caso mais usado nesta disciplina, por exemplo para refinar a
+estimativa do período de oscilação a partir de pontos discretos da simulação.</p>
+
+</section>
+<section id="c5-amortecido" data-nav="Amortecido" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>4. Oscilador Harmónico Amortecido<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Adiciona-se uma força de amortecimento proporcional à velocidade (ex: atrito viscoso): \(F_{\text{am}} = -b\dot x\).</p>
+<div class="box def">
+<span class="t">Equação de movimento</span>
+\[ m\ddot x + b\dot x + kx = 0 \quad\Leftrightarrow\quad \ddot x + 2\beta\dot x + \omega_0^2 x = 0,\qquad \beta=\frac{b}{2m} \]
+</div>
+<div class="tw"><table>
+<tr><th>Regime</th><th>Condição</th><th>Comportamento</th></tr>
+<tr><td>Sub-amortecido</td><td>\(\beta &lt; \omega_0\)</td><td>oscila com amplitude decrescente: \(x(t)=Ae^{-\beta t}\cos(\omega_1 t+\phi)\), \(\omega_1=\sqrt{\omega_0^2-\beta^2}\)</td></tr>
+<tr><td>Criticamente amortecido</td><td>\(\beta = \omega_0\)</td><td>regressa ao equilíbrio o mais rápido possível, sem oscilar</td></tr>
+<tr><td>Sobre-amortecido</td><td>\(\beta &gt; \omega_0\)</td><td>regressa lentamente ao equilíbrio, sem oscilar</td></tr>
+</table></div>
+<p>A energia decai exponencialmente: \(E(t) \propto e^{-2\beta t}\). O <strong>fator de qualidade</strong>
+\(Q = \omega_0/(2\beta)\) mede quão pouco amortecido é o sistema (Q alto = oscila muitas vezes antes de parar).</p>
+
+</section>
+<section id="c5-forcado" data-nav="Forçado e Ressonância" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>5. Oscilador Forçado e Ressonância<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Adiciona-se uma força externa periódica: \(F_{\text{ext}}(t) = F_0\cos(\omega t)\), com \(\omega\) a
+frequência de excitação (pode ser diferente de \(\omega_0\)).</p>
+<div class="box def">
+<span class="t">Equação de movimento</span>
+\[ m\ddot x + b\dot x + kx = F_0\cos(\omega t) \]
+</div>
+<p>A solução tem duas partes: o <strong>transitório</strong> (decai com o tempo, depende das condições
+iniciais, igual à solução do amortecido livre) e o <strong>regime estacionário</strong> (sobrevive, oscila
+à frequência de excitação \(\omega\), não \(\omega_0\)):</p>
+\[ x_{\text{est}}(t) = A(\omega)\cos(\omega t - \delta) \]
+\[ A(\omega) = \frac{F_0/m}{\sqrt{(\omega_0^2-\omega^2)^2 + (2\beta\omega)^2}} \]
+<div class="box teo">
+<span class="t">Ressonância</span>
+<p>A amplitude \(A(\omega)\) é máxima quando \(\omega\) está próximo de \(\omega_0\) (a frequência natural do
+sistema) — fenómeno de <strong>ressonância</strong>. Quanto menor o amortecimento \(\beta\), mais estreito e
+mais alto é o pico de ressonância (maior amplitude máxima).</p>
+\[ \omega_{\text{res}} = \sqrt{\omega_0^2 - 2\beta^2} \]
+</div>
+<p>Exemplos físicos: ponte de Tacoma Narrows, copo de cristal partido por uma nota musical, sintonização de
+rádio (circuito RLC ressonante), absorção de luz por átomos/moléculas.</p>
+
+</section>
+<section id="c5-rlc" data-nav="Circuitos RLC" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>6. Analogia elétrica — Circuitos RLC<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>O circuito RLC em série é matematicamente <strong>idêntico</strong> ao oscilador massa-mola amortecido
+forçado — útil porque a mesma equação descreve sistemas mecânicos e elétricos.</p>
+<div class="tw"><table>
+<tr><th>Mecânico</th><th>Elétrico</th></tr>
+<tr><td>posição \(x\)</td><td>carga \(q\)</td></tr>
+<tr><td>velocidade \(v=\dot x\)</td><td>corrente \(I=\dot q\)</td></tr>
+<tr><td>massa \(m\)</td><td>indutância \(L\)</td></tr>
+<tr><td>amortecimento \(b\)</td><td>resistência \(R\)</td></tr>
+<tr><td>constante elástica \(k\)</td><td>inverso da capacidade \(1/C\)</td></tr>
+<tr><td>força externa \(F_0\cos\omega t\)</td><td>f.e.m. \(V_0\cos\omega t\)</td></tr>
+</table></div>
+\[ L\ddot q + R\dot q + \frac{q}{C} = V_0\cos(\omega t) \qquad \omega_0 = \frac{1}{\sqrt{LC}} \]
+
+
+</section>
+<section id="c5-naoharmonico" data-nav="Não harmónicos e Caos" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>7. Osciladores não-harmónicos e Caos<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Quando a força restauradora não é exatamente linear (ex: pêndulo para amplitudes grandes, onde
+\(\sin\theta \ne \theta\)), o sistema deixa de ser um OHS perfeito:</p>
+<ul>
+<li>O período passa a depender da amplitude (ao contrário do OHS, onde \(T\) é independente de \(A\)).</li>
+<li>A forma de onda \(x(t)\) deixa de ser uma sinusoide pura (contém harmónicos — ver Fourier, Cap. 6).</li>
+</ul>
+<div class="box ex">
+<span class="t">Caos determinístico</span>
+<p>Certos osciladores não-lineares forçados e amortecidos (ex: pêndulo forçado com amplitude grande) exibem
+<strong>comportamento caótico</strong>: apesar de o sistema ser completamente determinístico (sem
+aleatoriedade nas equações), o movimento torna-se imprevisível a longo prazo, e é extremamente sensível às
+condições iniciais — duas trajetórias com condições iniciais quase idênticas divergem exponencialmente
+("efeito borboleta"). Visualiza-se através de diagramas de espaço de fase e secções de Poincaré, onde
+trajetórias caóticas preenchem regiões em vez de seguirem curvas fechadas simples.</p>
+</div>
+
+</section>
+<section id="c5-rk4" data-nav="Runge-Kutta 4ª ordem" data-grp="Cap. 5 · Oscilações" data-track>
+<h2>8. Método de Runge-Kutta de 4ª ordem (RK4)<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>O método de Euler tem erro de truncatura \(\propto h\) (1ª ordem) — para simulações longas ou que exigem
+maior precisão (oscilações ao longo de muitos períodos, sistemas caóticos sensíveis), usa-se o
+<strong>Runge-Kutta de 4ª ordem</strong>, com erro \(\propto h^4\) — muito mais preciso para o mesmo \(h\).</p>
+<div class="box teo">
+<span class="t">Ideia do RK4 (para \(\dot y = f(y,t)\))</span>
+\[ k_1 = f(y_i, t_i) \]
+\[ k_2 = f(y_i + \tfrac{h}{2}k_1,\ t_i+\tfrac{h}{2}) \]
+\[ k_3 = f(y_i + \tfrac{h}{2}k_2,\ t_i+\tfrac{h}{2}) \]
+\[ k_4 = f(y_i + h k_3,\ t_i+h) \]
+\[ y_{i+1} = y_i + \frac{h}{6}(k_1+2k_2+2k_3+k_4) \]
+</div>
+<p>Em vez de usar só o declive no início do intervalo (Euler), o RK4 calcula 4 estimativas do declive (início,
+duas no meio, fim) e faz uma média ponderada — daí a precisão muito maior. Em Python normalmente usa-se
+<code>scipy.integrate.odeint</code> ou <code>solve_ivp</code>, que implementam
+RK4/RK45 internamente.</p>
+<div class="box met">
+<span class="t">Sumário do Capítulo 5</span>
+<ul>
+<li>OHS: \(\ddot x+\omega_0^2x=0\), \(x(t)=A\cos(\omega_0t+\phi)\), \(\omega_0=\sqrt{k/m}\) — independente da amplitude.</li>
+<li>Energia do OHS é constante: \(E=\tfrac12kA^2\); espaço de fase é uma elipse fechada.</li>
+<li>Amortecido: \(\ddot x+2\beta\dot x+\omega_0^2x=0\) — regimes sub/crítico/sobre-amortecido; energia decai exponencialmente.</li>
+<li>Forçado: regime estacionário oscila à frequência de excitação \(\omega\); amplitude máxima perto de \(\omega\approx\omega_0\) → ressonância.</li>
+<li>Circuito RLC é matematicamente análogo ao oscilador mecânico amortecido forçado.</li>
+<li>Não-linearidades alteram o período com a amplitude e podem gerar caos determinístico.</li>
+<li>RK4 tem erro \(\propto h^4\), muito mais preciso que Euler (\(\propto h\)) para simulações longas.</li>
+</ul>
+</div>
+
+
+</section>
+<section id="c6-2osc" data-nav="osciladores acoplados" data-grp="Cap. 6 · Osciladores Acoplados e Ondas" data-track>
+<h2>1. Dois osciladores acoplados<span class="done-tag" hidden>estudado ✓</span></h2>
+<span id="cap6"></span><p class="lead">2 e 3 osciladores acoplados, modos normais (método matricial), batimento, série de Fourier, N osciladores, equação de onda, sinais e digitalização</p>
+<p>Dois corpos A e B, cada um ligado a uma parede por uma mola de constante \(k\), e ligados entre si por
+uma mola de acoplamento de constante \(k'\). Definindo os desvios às posições de equilíbrio
+\(u_A = x_A-x_{Aeq}\) e \(u_B = x_B-x_{Beq}\), a 2ª Lei de Newton dá um sistema de equações
+<strong>acopladas</strong> (a equação de A contém \(u_B\) e vice-versa):</p>
+<div class="box def">
+<span class="t">Equações de movimento</span>
+\[ m\ddot u_A = -k\,u_A - k'(u_A-u_B) \]
+\[ m\ddot u_B = -k\,u_B + k'(u_A-u_B) \]
+</div>
+<p>Resolvendo numericamente (Euler-Cromer), o movimento geral não é periódico de forma simples — mas para
+certas condições iniciais especiais aparecem soluções sinusoidais puras, os <strong>modos normais</strong>:</p>
+<div class="tw"><table>
+<tr><th>Modo</th><th>Condição inicial</th><th>Frequência</th><th>Padrão de movimento</th></tr>
+<tr><td>Modo normal 1</td><td>\(u_A=u_B\) (mesmo lado)</td><td>\(\omega_1=\sqrt{k/m}\)</td><td>A mola de acoplamento não se deforma; os dois corpos oscilam em fase</td></tr>
+<tr><td>Modo normal 2</td><td>\(u_A=-u_B\) (espelho)</td><td>\(\omega_2=\sqrt{(k+2k')/m}\)</td><td>Os corpos oscilam em oposição de fase</td></tr>
+</table></div>
+<div class="box teo">
+<span class="t">Solução geral (sobreposição dos modos normais)</span>
+\[ x_A(t) = x_{Aeq} + A_1\cos(\omega_1 t+\phi_1) + A_2\cos(\omega_2 t+\phi_2) \]
+\[ x_B(t) = x_{Beq} + A_1\cos(\omega_1 t+\phi_1) - A_2\cos(\omega_2 t+\phi_2) \]
+<p>As constantes \(A_1,A_2,\phi_1,\phi_2\) determinam-se a partir das 4 condições iniciais
+(\(x_{A0},x_{B0},v_{A0},v_{B0}\)), resolvendo um sistema de 4 equações a 4 incógnitas.</p>
+</div>
+<div class="box met">
+<span class="t">Ideia central</span>
+<p>Qualquer movimento de 2 corpos acoplados por interação elástica é uma <strong>sobreposição dos modos
+normais</strong>. Um movimento aparentemente não periódico é, na realidade, a soma de dois movimentos
+harmónicos simples de frequências diferentes \(\omega_1\) e \(\omega_2\).</p>
+</div>
+<h3>Acoplamento fraco e batimento</h3>
+<p>Quando \(k'\ll k\), as frequências \(\omega_1\) e \(\omega_2\) ficam muito próximas. A solução pode
+escrever-se como produto de cossenos de frequência "rápida" (média) e "lenta" (diferença) — fenómeno de
+<strong>batimento</strong>:</p>
+\[ x_A(t) = x_{Aeq} + 2A_1\cos(\omega_{\text{rap.}}t)\cos(\omega_{\text{lent.}}t), \qquad
+\omega_{\text{rap.}}=\frac{\omega_1+\omega_2}{2},\quad \omega_{\text{lent.}}=\frac{\omega_2-\omega_1}{2} \]
+<p>Visualmente: uma oscilação rápida cuja amplitude é modulada lentamente. A energia transfere-se
+alternadamente de um oscilador para o outro.</p>
+<h3>Acoplados, amortecidos e forçados</h3>
+<p>Adicionando amortecimento (\(-b v\)) os dois osciladores tendem para o equilíbrio. Adicionando uma força
+externa periódica num dos corpos, cada oscilador tende para um regime estacionário harmónico simples, com
+<strong>ressonância</strong> sempre que a frequência da força externa coincide com uma das frequências dos
+modos normais (\(\omega_1\) ou \(\omega_2\)) — generalização do conceito de ressonância do Cap. 5 a sistemas
+com vários graus de liberdade.</p>
+
+</section>
+<section id="c6-fourier" data-nav="Série de Fourier" data-grp="Cap. 6 · Osciladores Acoplados e Ondas" data-track>
+<h2>2. Série de Fourier<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Ferramenta de <strong>análise de frequências</strong>: qualquer função periódica \(f(t)\), de período \(T\)
+e frequência angular \(\omega=2\pi/T\), pode ser decomposta numa soma de senos e cossenos de frequência
+múltipla de \(\omega\):</p>
+<div class="box def">
+<span class="t">Série de Fourier</span>
+\[ f(t) = \frac{a_0}{2} + \sum_{n=1}^{\infty} \big(a_n\cos\omega_n t + b_n\sin\omega_n t\big), \qquad \omega_n = n\omega \]
+\[ a_n = \frac{2}{T}\int_0^T f(t)\cos\omega_n t \,dt \qquad b_n = \frac{2}{T}\int_0^T f(t)\sin\omega_n t \,dt \]
+</div>
+<p>Quando os dados estão representados por pontos discretos (como numa simulação numérica), os integrais
+calculam-se por <strong>integração numérica trapezoidal</strong>, varrendo um intervalo de um período
+completo entre dois índices de tempo \(it_0\) e \(it_1\).</p>
+<div class="box exa">
+<span class="t">Aplicação: identificar modos normais</span>
+<p>Calculando os coeficientes de Fourier do movimento simulado de um sistema de osciladores acoplados,
+aparecem <strong>picos nítidos</strong> exatamente nas frequências dos modos normais (\(\omega_1\) e
+\(\omega_2\)). Isto confirma, por análise espectral, que qualquer movimento do sistema é de facto uma
+sobreposição desses modos — mesmo quando, no domínio do tempo, o movimento não parece periódico.</p>
+<p>Para um oscilador não-harmónico (ex: potencial quártico \(E_p=\alpha x^4\)) forçado, o espectro de Fourier
+não apresenta uma frequência característica única, refletindo a ausência de periodicidade simples típica de
+sistemas não-lineares.</p>
+</div>
+
+</section>
+<section id="c6-modosnormais" data-nav="Modos normais (matriz)" data-grp="Cap. 6 · Osciladores Acoplados e Ondas" data-track>
+<h2>3. Modos normais — método matricial (N corpos)<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Para sistemas com mais de 2 corpos (ex: 3 osciladores acoplados A–B–C por molas \(k,k',k'\)), procurar os
+modos normais por tentativa-e-erro deixa de ser prático. Usa-se um <strong>método geral baseado em valores e
+vetores próprios</strong>.</p>
+<p>Experimentando uma solução sinusoidal \(u_i(t)=A_i\cos(\omega t+\alpha)\) para cada corpo \(i\) e
+substituindo nas equações de Newton (\(\ddot u_i \to -\omega^2 u_i\)), obtém-se um sistema linear homogéneo que,
+em forma matricial, é um <strong>problema de valores próprios</strong>:</p>
+<div class="box teo">
+<span class="t">Problema de valores próprios</span>
+\[ \mathbf{M}\,\vec u = \omega^2\,\vec u \]
+<p>onde \(\mathbf{M}\) é a "matriz dinâmica" do sistema (construída a partir de \(k,k',m\)). Os
+<strong>valores próprios</strong> \(\omega_i^2\) são os quadrados das frequências dos modos normais; os
+<strong>vetores próprios</strong> correspondentes indicam o padrão relativo de deslocamento de cada corpo
+nesse modo (e são ortogonais entre si).</p>
+</div>
+<div class="box exa">
+<span class="t">Python</span>
+<pre><code>import numpy as np
+w, v = np.linalg.eig(matdyn)   # w: valores próprios (= omega^2)
+                                # v: vetores próprios (colunas)
+# frequências: np.sqrt(w)</code></pre>
+</div>
+<p>Para 3 osciladores acoplados (\(k=1\), \(k'=0.5\), \(m=1\,\text{kg}\)) obtêm-se 3 modos normais:</p>
+<div class="tw"><table>
+<tr><th>Modo</th><th>\(\omega\) (rad/s)</th><th>Padrão (vetor próprio)</th><th>Descrição</th></tr>
+<tr><td>1</td><td>1.225</td><td>(−1, 0, +1)</td><td>A e C em oposição de fase; B parado (não participa)</td></tr>
+<tr><td>2</td><td>1.414</td><td>(+1, −1, +1)</td><td>A e C em fase, B em oposição (modo de maior frequência)</td></tr>
+<tr><td>3</td><td>0.707</td><td>(+1, +2, +1)</td><td>Todos em fase, B com o dobro da amplitude (modo de menor frequência)</td></tr>
+</table></div>
+<p>Princípio geral: o <strong>número de modos normais é igual ao número de massas</strong> (graus de
+liberdade) do sistema. Qualquer dinâmica do sistema é uma sobreposição dos seus modos normais, com a
+combinação específica (amplitudes e fases) determinada pelas condições iniciais — confirmável por análise de
+Fourier do movimento simulado.</p>
+<p>Aplicação física: os modos normais descrevem vibrações de moléculas, cristais e sólidos. Excitando a
+matéria com luz laser (que exerce força elétrica sobre núcleos atómicos carregados), obtém-se ressonância
+quando a frequência do laser coincide com um modo normal — técnica usada para determinar a constituição
+química e estrutural de materiais e gases.</p>
+
+</section>
+<section id="c6-nosc" data-nav="N osciladores" data-grp="Cap. 6 · Osciladores Acoplados e Ondas" data-track>
+<h2>4. N osciladores acoplados<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Generalização a uma cadeia de \(N\) massas iguais \(m\) ligadas por molas idênticas de constante \(k\). A
+equação de Newton para a massa \(i\) envolve apenas os vizinhos imediatos:</p>
+<div class="box def">
+<span class="t">Equação de movimento da massa \(i\)</span>
+\[ m\ddot u_i = k(u_{i+1}-u_i) - k(u_i-u_{i-1}) = k(u_{i+1}-2u_i+u_{i-1}) \]
+</div>
+<p>Os modos normais de uma cadeia de N osciladores formam, no espaço (posições de equilíbrio das massas),
+um padrão <strong>sinusoidal</strong>: representando os desvios iniciais de cada massa em função da sua
+posição de equilíbrio, os pontos caem sobre uma curva \(\cos\), com um "comprimento de onda" espacial
+inversamente proporcional ao número do modo. Este padrão mantém-se para qualquer N.</p>
+<div class="box teo">
+<span class="t">Movimento geral (modo \(n\))</span>
+\[ u_i = A_n\cos(\omega_n t+\phi_{i,n}), \qquad \phi_{i,n} = -c_n x_{i,\text{eq}} \]
+<p>\(\omega_n\) — frequência angular do modo \(n\); \(c_n\) — "frequência espacial" do modo (depende de
+\(k\), \(m\) e da distância entre massas). Cada massa oscila com a mesma frequência \(\omega_n\), mas com uma
+fase diferente que varia linearmente com a sua posição — o movimento é periódico tanto no tempo como no
+espaço. O movimento geral é a sobreposição \(u_i=\sum_n A_n\cos(\omega_n t+\phi_{i,n})\); as posições
+iniciais formam uma série de Fourier parcial no índice espacial \(i\).</p>
+</div>
+<p>Numa cadeia de osciladores acoplados, uma perturbação introduzida numa extremidade propaga-se ao longo da
+cadeia com <strong>velocidade finita</strong> (a transmissão de energia e informação não é instantânea) — esta
+observação motiva diretamente a passagem ao contínuo e à equação de onda.</p>
+
+</section>
+<section id="c6-ondas" data-nav="Equação de onda" data-grp="Cap. 6 · Osciladores Acoplados e Ondas" data-track>
+<h2>5. Equação de onda<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Tomando o limite de um número muito grande de osciladores acoplados (\(N\to\infty\)), com posições de
+equilíbrio espaçadas de \(\delta x\to 0\), massa por unidade de comprimento \(M\) (\(m=M\,\delta x\)) e
+constante elástica por unidade de comprimento \(K\) (\(k=K/\delta x\)), e expandindo \(u_{i\pm1}\) em série de
+Taylor em torno de \(u_i\), a equação discreta \(m\ddot u_i = k(u_{i+1}-2u_i+u_{i-1})\) transforma-se, no
+limite contínuo, na <strong>equação de onda</strong>:</p>
+<div class="box def">
+<span class="t">Equação de onda</span>
+\[ \frac{\partial^2 u}{\partial t^2} = v^2\frac{\partial^2 u}{\partial x^2}, \qquad v^2=\frac{K}{M}\quad\text{(1D)} \]
+\[ \frac{\partial^2 u}{\partial t^2} = v^2\left(\frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2}+\frac{\partial^2 u}{\partial z^2}\right)\quad\text{(3D)} \]
+<p>\(u(x,t)\) — desvio da posição de equilíbrio no ponto \(x\) e instante \(t\) (longitudinal ou transversal);
+\(v\) — velocidade de propagação. Aplica-se à propagação do som, ondas no oceano, vibração de uma corda,
+ondas eletromagnéticas, entre outras.</p>
+</div>
+<p>Cada modo normal de uma cadeia de osciladores corresponde, no limite contínuo, a uma <strong>onda
+sinusoidal</strong> \(u(x,t)=A\cos(\omega t - cx)\), que oscila simultaneamente no espaço e no tempo, com
+\(v=\omega/c\).</p>
+<div class="tw"><table>
+<tr><th>Tipo de onda</th><th>Direção da perturbação vs. propagação</th></tr>
+<tr><td>Longitudinal</td><td>mesma direção (ex: som)</td></tr>
+<tr><td>Transversal</td><td>perpendicular (ex: corda, onda eletromagnética)</td></tr>
+</table></div>
+<div class="box teo">
+<span class="t">Características de uma onda</span>
+\[ T=\text{período},\quad \lambda=\text{comprimento de onda},\quad v=\lambda f=\frac{\lambda}{T} \]
+\[ \omega = 2\pi f = \frac{2\pi}{T} \qquad c = \frac{2\pi}{\lambda}\ \text{(número de onda)} \]
+</div>
+<h3>Solução geral — meio infinito</h3>
+<p>Para um meio infinito (ex: corda muito comprida), com condição inicial \(u(x,0)=f(x)\), a equação de onda
+admite como soluções qualquer função da forma \(f(x\mp vt)\) — um perfil que se propaga sem deformar, para a
+direita ou para a esquerda com velocidade \(v\):</p>
+\[ u(x,t) = \tfrac12\big[f(x-vt) + f(x+vt)\big] \]
+<p><strong>Princípio de sobreposição</strong>: se \(u_1(x,t)\) e \(u_2(x,t)\) são soluções da equação de onda
+(linear), então \(u_1+u_2\) também é solução — por exemplo, dois pulsos que se cruzam em sentidos opostos
+somam-se e voltam a separar-se inalterados.</p>
+<h3>Meio finito — corda fixa nas extremidades</h3>
+<p>Para uma corda de comprimento \(L\) fixa em ambas as extremidades, \(u(0,t)=u(L,t)=0\). Testando
+\(u(x,t)=A\sin(kx)\cos(\omega t)\) e substituindo na equação de onda obtém-se \(\omega=kv\); a condição de
+fronteira em \(x=L\) restringe \(k\) a valores discretos:</p>
+<div class="box teo">
+<span class="t">Modos normais de vibração de uma corda</span>
+\[ k = \frac{n\pi}{L} \quad\Rightarrow\quad u_n(x,t) = A\sin\!\Big(\frac{n\pi}{L}x\Big)\cos\!\Big(\frac{n\pi v}{L}t\Big), \qquad n=1,2,3,\dots \]
+<p>A solução geral é uma sobreposição de todos os modos normais — formalmente análoga a uma série de
+Fourier no espaço:</p>
+\[ u(x,t) = \sum_{n=1}^{\infty} A_n\sin\!\Big(\frac{n\pi}{L}x\Big)\cos\!\Big(\frac{n\pi v}{L}t\Big) \]
+</div>
+
+</section>
+<section id="c6-sinais" data-nav="Sinais e digitalização" data-grp="Cap. 6 · Osciladores Acoplados e Ondas" data-track>
+<h2>6. Sinais e digitalização<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p>Um <strong>sinal</strong> é uma função que varia no espaço e/ou no tempo, usada para transmitir informação
+(sinal elétrico, ótico, eletromagnético, áudio, etc). Qualquer sinal \(f(t)\) pode ser representado como
+sobreposição de funções sinusoidais — a série de Fourier — ou, de forma equivalente, em notação complexa:</p>
+\[ f(t) = \sum_{n=-\infty}^{\infty} c_n \exp(i\omega_n t), \qquad c_n = \frac{1}{T}\int_0^T f(t)\exp(-i\omega_n t)\,dt \]
+<p>Um sinal pode então ser representado de duas formas equivalentes, contendo a mesma informação: no
+<strong>domínio do tempo</strong> (a forma de onda \(f(t)\)) ou no <strong>domínio da frequência</strong> (o
+espectro \(c(\omega)\)). No limite \(T\to\infty\), os valores discretos \(\omega_n\) tornam-se contínuos —
+dando origem à <strong>Transformada de Fourier</strong>.</p>
+<div class="box def">
+<span class="t">Teorema de Nyquist (amostragem)</span>
+<p>Para representar exatamente um sinal contínuo seriam precisos infinitos coeficientes de Fourier; mas se o
+sinal não contém frequências acima de \(f\) (ou \(\omega\)), basta amostrá-lo em pontos espaçados de menos de
+\(\delta t = \pi/\omega\) para o reconstruir completamente:</p>
+\[ \delta t &lt; \frac{\pi}{\omega} \qquad\Longleftrightarrow\qquad \omega_{\max} = \frac{\pi}{\delta t} \]
+</div>
+<div class="box exa">
+<span class="t">Aplicação: áudio digital</span>
+<p>O ouvido humano percebe frequências entre 20 Hz e 20000 Hz. Pelo critério de Nyquist, uma frequência
+máxima de 20000 Hz exige uma taxa de amostragem de \(\delta t=1/40000\,\text{s}\) — por isso os CDs de áudio e
+o formato MP3 usam 44100 amostras por segundo, suficiente para capturar o sinal sem perda percetível.</p>
+<p>Algoritmo de compressão MP3 (simplificado): (1) amostragem do sinal a 44100 valores/s, com 16–24 bits por
+canal; (2) Transformada Discreta de Fourier, passando para o domínio das frequências; (3) modelo
+psicoacústico, eliminando sons inaudíveis e reduzindo seletivamente a resolução; (4) compressão final dos
+dados. Princípios semelhantes aplicam-se ao processamento e compressão de vídeo e imagem, telecomunicações,
+reconhecimento de fala e extração de características (<em>feature extraction</em>) em aprendizagem
+automática.</p>
+</div>
+<div class="box met">
+<span class="t">Sumário do Capítulo 6</span>
+<ul>
+<li>2 osciladores acoplados: equações acopladas via \(k'\); modos normais com \(\omega_1=\sqrt{k/m}\) (em fase) e \(\omega_2=\sqrt{(k+2k')/m}\) (oposição de fase); qualquer movimento é sobreposição dos dois.</li>
+<li>Acoplamento fraco (\(k'\ll k\)) → fenómeno de batimento: oscilação rápida modulada por envolvente lenta, com transferência periódica de energia entre osciladores.</li>
+<li>Série de Fourier decompõe um sinal periódico em harmónicas; calculada numericamente por integração trapezoidal; os picos do espectro revelam as frequências dos modos normais.</li>
+<li>Para N corpos, os modos normais resolvem-se como problema de valores/vetores próprios de uma matriz dinâmica: \(\mathbf{M}\vec u=\omega^2\vec u\); nº de modos = nº de massas.</li>
+<li>N osciladores acoplados: modos formam padrão sinusoidal no espaço; perturbações propagam-se com velocidade finita ao longo da cadeia.</li>
+<li>No limite contínuo (N→∞) obtém-se a equação de onda \(\partial^2u/\partial t^2=v^2\,\partial^2u/\partial x^2\); soluções \(f(x\mp vt)\) em meio infinito, modos normais \(\sin(n\pi x/L)\cos(n\pi vt/L)\) numa corda fixa.</li>
+<li>Sinais representam-se no domínio do tempo ou da frequência (espectro de Fourier); o Teorema de Nyquist define a taxa de amostragem mínima — base da digitalização de áudio, vídeo e telecomunicações.</li>
+</ul>
+</div>
+
+
+</section>
+<section id="t-msf-t1" data-nav="Teste 1 — 2023" data-grp="Testes Resolvidos 2023 e 2024" data-track>
+<h2>Teste 1 — 22 de março de 2023<span class="done-tag" hidden>estudado ✓</span></h2>
+<span id="testes"></span><p class="lead">Cada teste tem uma parte analítica (30 min, papel) e uma parte computacional (1 h, Python no portátil). Resolvidos: Teste 1 2023, Teste 2 2023, Teste 2 2024 e Teste 3 2023. Os resultados numéricos foram obtidos com RK4 e passo pequeno; no futebol (T2 2024) batem com os valores oficiais.</p><div class="box met"><b>Atenção a três pontos das soluções oficiais que circulam:</b> no T2 2023 (III) usaram \(F = +\frac{dE_p}{dx}\) e chegaram a \(v = 1\) m/s — com o sinal certo o corpo nem chega a \(x = 0\) (ver abaixo). No T2 2024 (II d) a conta intermédia está escrita mal, embora o resultado final esteja certo. No T2 2023 computacional, a alínea (d) do carro não tem solução com o modelo dado (o carro pára antes dos 2 km).</div><div class="box teo">
+<span class="t">Modelo base para todos os problemas computacionais</span>
+<pre><code>import numpy as np
+g = 9.8
+
+def rk4(acel, r0, v0, dt, tmax, parar=None):
+    """Integra r'' = acel(r, v, t) com Runge-Kutta 4. r, v são vetores numpy."""
+    r, v, t = np.array(r0, float), np.array(v0, float), 0.0
+    T, R, V = [t], [r.copy()], [v.copy()]
+    while t &lt; tmax:
+        k1r, k1v = v,             acel(r, v, t)
+        k2r, k2v = v + dt/2*k1v,  acel(r + dt/2*k1r, v + dt/2*k1v, t + dt/2)
+        k3r, k3v = v + dt/2*k2v,  acel(r + dt/2*k2r, v + dt/2*k2v, t + dt/2)
+        k4r, k4v = v + dt*k3v,    acel(r + dt*k3r,   v + dt*k3v,   t + dt)
+        r = r + dt/6*(k1r + 2*k2r + 2*k3r + k4r)
+        v = v + dt/6*(k1v + 2*k2v + 2*k3v + k4v)
+        t += dt
+        T.append(t); R.append(r.copy()); V.append(v.copy())
+        if parar and parar(r, v, t): break
+    return np.array(T), np.array(R), np.array(V)
+
+# resistência do ar: a_res = -D |v| v, com D = g / vT**2
+# Magnus: F = 0.5 * A * rho * r * np.cross(w, v)</code></pre>
+</div>
+<p class="lead">Analítico 30 min (I 3 + II 4 + III 3 valores) · Computacional 1 h (I 5 + II 5 valores)</p>
+<h3>Analítico I — Propagação de erros</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+P = 1.2 ± 0.1 mm, Q = 9.6 ± 0.5 mm, R = 3.2 ± 0.2 mm. Calcule (a) S = P + Q + R; (b) D = Q − P; (c) F = R × Q.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Somas e diferenças: somam-se os <strong>erros absolutos</strong>. Produtos: somam-se os <strong>erros relativos</strong>.</p>
+\[ S = 14.0\ \text{mm},\quad \Delta S = 0.1+0.5+0.2 = 0.8 \;\Rightarrow\; S = 14.0 \pm 0.8\ \text{mm} \]
+\[ D = 8.4\ \text{mm},\quad \Delta D = 0.5 + 0.1 = 0.6 \;\Rightarrow\; D = 8.4 \pm 0.6\ \text{mm} \]
+\[ F = 30.72\ \text{mm}^2,\quad \frac{\Delta F}{F} = \frac{0.2}{3.2}+\frac{0.5}{9.6} = 0.1146 \;\Rightarrow\; \Delta F = 3.5 \]
+<p>Erro com 1 algarismo significativo e valor arredondado à mesma casa: <span class="ans">F = 31 ± 4 mm²</span></p>
+</div></details>
+<h3>Analítico II — Vetores</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+\(\vec a\) está no plano OXY, tem comprimento 2 m e faz 135° com o eixo XX. (a) Componentes de \(\vec a\). (b) Ângulo entre \(\vec a\) e \(\vec b = (0, 1, -1)\). (c) Vetor unitário perpendicular a \(\vec a\) e \(\vec b\).</div>
+<details><summary>Ver resolução</summary><div class="in">
+\[ \vec a = (2\cos 135°,\ 2\sin 135°,\ 0) = (-\sqrt2,\ \sqrt2,\ 0) \]
+\[ \vec a\cdot\vec b = 0 + \sqrt2 + 0 = \sqrt2,\quad |\vec a| = 2,\ |\vec b| = \sqrt2 \;\Rightarrow\; \cos\theta = \frac{\sqrt2}{2\sqrt2} = \frac12 \;\Rightarrow\; \theta = 60° \]
+<p>O produto vetorial é perpendicular aos dois:</p>
+\[ \vec c = \vec a\times\vec b = \begin{vmatrix}\hat\imath &amp; \hat\jmath &amp; \hat k\\ -\sqrt2 &amp; \sqrt2 &amp; 0\\ 0 &amp; 1 &amp; -1\end{vmatrix} = (-\sqrt2,\ -\sqrt2,\ -\sqrt2),\qquad |\vec c| = \sqrt6 \]
+\[ \hat c = \frac{\vec c}{|\vec c|} = -\frac{1}{\sqrt3}(1,1,1) \quad(\text{ou o simétrico}) \]
+</div></details>
+<h3>Analítico III — Força proporcional à velocidade</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+\(\vec F = -mC\vec v\). (a) Componentes de \(\vec F\) e da aceleração. (b) Mostre que \(\vec v(t) = \vec v_0 e^{-Ct}\).</div>
+<details><summary>Ver resolução</summary><div class="in">
+\[ F_x = -mCv_x,\ F_y = -mCv_y,\ F_z = -mCv_z \;\Rightarrow\; \vec a = \vec F/m:\ a_x = -Cv_x,\ a_y = -Cv_y,\ a_z = -Cv_z \]
+<p>(b) Derivando a proposta: \(\frac{d\vec v}{dt} = -C\vec v_0 e^{-Ct} = -C\vec v = \vec F/m\) ✓, e em \(t=0\) dá \(\vec v_0\) ✓. Satisfaz a equação do movimento e a condição inicial.</p>
+</div></details>
+<h3>Computacional I — Decaimento do Rádon-222</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+Atividade medida de 48 em 48 h: t = 0, 48, …, 384 h; A = 10.03, 7.06, 4.88, 3.38, 2.26, 1.66, 1.14, 0.79, 0.58 mBq. (a) Gráfico e ajuste linear; r²; é linear? (b) Gráfico de ln A; declive, erro e r². (c) \(t_{1/2} = -\ln 2/m\) e o seu erro.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<pre><code>t = np.array([0, 48, 96, 144, 192, 240, 288, 336, 384.])
+A = np.array([10.03, 7.06, 4.88, 3.38, 2.26, 1.66, 1.14, 0.79, 0.58])
+
+def regressao(x, y):           # mínimos quadrados, fórmulas das aulas
+    N = len(x)
+    sx, sy, sxx, sxy, syy = x.sum(), y.sum(), (x*x).sum(), (x*y).sum(), (y*y).sum()
+    m  = (N*sxy - sx*sy) / (N*sxx - sx**2)
+    b  = (sxx*sy - sx*sxy) / (N*sxx - sx**2)
+    r2 = (N*sxy - sx*sy)**2 / ((N*sxx - sx**2) * (N*syy - sy**2))
+    dm = abs(m) * np.sqrt((1/r2 - 1) / (N - 2))
+    db = dm * np.sqrt(sxx / N)
+    return m, b, r2, dm, db
+
+print(regressao(t, A))           # (a)
+m, b, r2, dm, db = regressao(t, np.log(A))   # (b)
+t12 = -np.log(2) / m;  dt12 = t12 * dm / abs(m)   # (c)</code></pre>
+<div class="tw"><table>
+<tr><th></th><th>Declive m</th><th>r²</th><th>Conclusão</th></tr>
+<tr><td>(a) A vs t</td><td>−0.0229 mBq/h</td><td>0.864</td><td>Não é linear: os pontos fazem uma curva (decaimento exponencial) e os resíduos têm padrão sistemático.</td></tr>
+<tr><td>(b) ln A vs t</td><td>(−7.50 ± 0.06)×10⁻³ h⁻¹</td><td>0.9995</td><td>Reta quase perfeita ⟹ \(A = A_0 e^{mt}\).</td></tr>
+</table></div>
+<p>(c) Erro relativo de \(t_{1/2}\) igual ao de \(m\):</p>
+\[ t_{1/2} = \frac{-\ln 2}{-7.497\times10^{-3}} = 92.5\ \text{h},\qquad \Delta t_{1/2} = t_{1/2}\frac{\Delta m}{|m|} = 0.8\ \text{h} \]
+<p><span class="ans">t½ = 92.5 ± 0.8 h ≈ 3.85 dias</span> (o valor tabelado do ²²²Rn é 3.82 dias).</p>
+</div></details>
+<h3>Computacional II — Bola de basquete com resistência do ar</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+Lançada de 2 m de altura a 15 m/s, 30° acima da horizontal, velocidade terminal 20 m/s. (a) Trajetória y(x). (b) A que distância passa a 3 m de altura a descer? Em que instante?</div>
+<details><summary>Ver resolução</summary><div class="in">
+<pre><code>D = g / 20**2                                  # da velocidade terminal
+th = np.radians(30)
+acel = lambda r, v, t: np.array([0, -g, 0]) - D*np.linalg.norm(v)*v
+T, R, V = rk4(acel, [0, 2, 0], [15*np.cos(th), 15*np.sin(th), 0],
+              dt=1e-4, tmax=5, parar=lambda r, v, t: r[1] &lt; 0)
+# (a) plt.plot(R[:,0], R[:,1])
+i = np.where((R[:,1] &lt;= 3) &amp; (V[:,1] &lt; 0))[0][0]  # 1.º ponto abaixo de 3 m, a descer
+print(R[i,0], T[i])</code></pre>
+<p>Altura máxima ≈ 4.46 m; a bola cai no chão a ≈ 17.3 m.</p>
+<p><span class="ans">Passa a 3 m a descer em x ≈ 13.5 m, no instante t ≈ 1.24 s</span></p>
+</div></details>
+ ─────────── TESTE 2 2023 ─────────── 
+
+</section>
+<section id="t-msf-t2-23" data-nav="Teste 2 — 2023" data-grp="Testes Resolvidos 2023 e 2024" data-track>
+<h2>Teste 2 — 10 de maio de 2023<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p class="lead">Analítico 30 min (I 4 + II 3 + III 3) · Computacional 1 h (I 5 + II 5)</p>
+<h3>Analítico I — Sistema mola-corpo</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+\(F = -kx\), k = 1 N/m, m = 1 kg. (a) Mostre que \(x(t) = A\cos(\sqrt{k/m}\,t+\phi)\) é solução. (b) Lei da velocidade. (c) A e φ se \(v(0) = +1\) m/s e \(x(0) = 0\).</div>
+<details><summary>Ver resolução</summary><div class="in">
+\[ \ddot x = -\frac{k}{m}A\cos\!\Big(\sqrt{\tfrac km}\,t+\phi\Big) = -\frac km\,x \;\Rightarrow\; m\ddot x = -kx \ ✓ \]
+\[ v_x(t) = -\sqrt{\tfrac km}\,A\sin\!\Big(\sqrt{\tfrac km}\,t+\phi\Big) \]
+<p>(c) \(x(0) = A\cos\phi = 0 \Rightarrow \phi = \pi/2\) (ou \(3\pi/2\)). Com \(\phi = \pi/2\): \(v(0) = -\sqrt{k/m}\,A = 1 \Rightarrow A = -\sqrt{m/k} = -1\) m. Equivalente, e mais natural: <span class="ans">φ = 3π/2, A = +1 m</span>, isto é, \(x(t) = \sin t\).</p>
+</div></details>
+<h3>Analítico II — Erro da aproximação retangular</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+\(\int_{x_i}^{x_{i+1}} f\,dx \approx f(x_i)\,\delta x\). Como varia o erro global de \(\int_a^b f\,dx\) com δx?</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Taylor em torno de \(x_i\) e integrar termo a termo:</p>
+\[ \int_{x_i}^{x_{i+1}} f\,dx = f(x_i)\delta x + \tfrac12 f'(x_i)\delta x^2 + O(\delta x^3) \]
+\[ \text{erro local} = \tfrac12 f'(x_i)\,\delta x^2 + \ldots = O(\delta x^2) \]
+\[ \text{erro global} \approx n \cdot O(\delta x^2) = \frac{b-a}{\delta x}\,O(\delta x^2) = O(\delta x) \]
+<p><span class="ans">Global O(δx)</span> — método de 1.ª ordem (o trapézio é O(δx²)).</p>
+</div></details>
+<h3>Analítico III — Energia potencial</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+m = 0.25 kg, \(F = -3\alpha x^2 + kx\). (a) \(E_p(x)\). (b) k = 2 N/m, α = 1 N/m², parte de x = 0.5 m em repouso: energia mecânica. (c) Velocidade em x = 0.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>(a) Com \(F = -dE_p/dx\) (formulário!) e \(E_p(0) = 0\):</p>
+\[ E_p(x) = -\int_0^x F\,dx = \alpha x^3 - \tfrac12 k x^2 \]
+<p>(b) \(E = E_p(0.5) + 0 = 0.125 - 0.25 = -\tfrac18\) J. <span class="ans">E = −0.125 J</span></p>
+<p>(c) Em x = 0, \(E_p = 0 &gt; E\): precisaria de \(E_c = -1/8\) J &lt; 0, impossível. <span class="ans">O corpo nunca chega a x = 0</span>. Em x = 0.5 a força é \(F = -0.75 + 1 = +0.25\) N, para a direita; o corpo oscila entre 0.5 m e o outro ponto de retorno \(x^3 - x^2 = -1/8 \Rightarrow x \approx 0.81\) m.</p>
+<div class="box exa"><span class="t">Atenção à solução oficial</span>A resolução que circula usa \(F = +dE_p/dx\), obtém \(E_p = -\alpha x^3 + \frac12 kx^2\), E = +1/8 J e v = 1 m/s em x = 0. Está errada no sinal. Se o professor considerar essa versão, o raciocínio é o mesmo: \(E_c(0) = E - E_p(0)\) e \(v = \sqrt{2E_c/m}\).</div>
+</div></details>
+<h3>Computacional I — Serviço de ténis com efeito de Magnus</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+Bola lançada de (0, 3 m, 0) com \(\vec v = (30, 0, 0)\) m/s; rede em x = 12 m com 1 m de altura; área de serviço de 12 a 18.4 m. r = 0.034 m, m = 0.057 kg, \(v_T\) = 20 m/s, ρ = 1.225 kg/m³. (a) Sem rotação: onde cai? É válido? (b) Com \(\vec\omega = (0, 0, -60)\) rad/s e Magnus.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<pre><code>D = g / 20**2;  r, m, rho = 0.034, 0.057, 1.225;  A = np.pi*r**2
+for w in ([0, 0, 0], [0, 0, -60]):
+    w = np.array(w, float)
+    acel = lambda R, v, t: (np.array([0, -g, 0]) - D*np.linalg.norm(v)*v
+                            + 0.5*A*rho*r*np.cross(w, v)/m)
+    T, R, V = rk4(acel, [0, 3, 0], [30, 0, 0], 1e-4, 5,
+                  parar=lambda R, v, t: R[1] &lt; 0)
+    j = np.argmin(abs(R[:,0] - 12))
+    print("cai em x =", R[-1,0], " altura na rede =", R[j,1])</code></pre>
+<p>Com \(\vec\omega = (0,0,-60)\): \(\vec\omega\times\vec v = (60v_y, -60v_x, 0)\) — com \(v_x &gt; 0\) a força de Magnus aponta para baixo (top-spin).</p>
+<div class="tw"><table>
+<tr><th></th><th>Altura na rede</th><th>Cai em</th><th>Serviço</th></tr>
+<tr><td>(a) sem rotação</td><td>2.04 m</td><td>x ≈ 19.7 m</td><td>Não válido (passa dos 18.4 m)</td></tr>
+<tr><td>(b) com ω = −60 k̂</td><td>1.82 m</td><td>x ≈ 18.1 m</td><td><strong>Válido</strong></td></tr>
+</table></div>
+</div></details>
+<h3>Computacional II — Carro elétrico numa rampa</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+m = 2000 kg, rampa 5°, potência constante 40 kW, \(v_0\) = 1 m/s; μ = 0.04, \(C_{res}\) = 0.25, A = 2 m². \(F_{res} = -\frac{C_{res}}{2}A\rho v^2\), \(F_{rol} = -\mu mg\). (a) x(t), v(t). (b) Tempo para 2 km. (c) Trabalho do motor. (d) Descida a partir de 20 m/s com −30 kW. (e) Balanço da bateria.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>A força do motor a potência constante é \(F = P/v\). Na subida:</p>
+\[ m\dot v = \frac{P}{v} - mg\sin5° - \mu mg - \tfrac{C_{res}}2 A\rho v^2 \]
+<pre><code>m, mu, C, Af, rho, th = 2000, 0.04, 0.25, 2, 1.225, np.radians(5)
+def viagem(P, v0, sobe):
+    x, v, t, W, dt = 0, v0, 0, 0, 1e-3
+    while x &lt; 2000:
+        F = P/v - (1 if sobe else -1)*m*g*np.sin(th) - mu*m*g - C/2*Af*rho*v**2
+        v += F/m*dt;  x += v*dt;  t += dt;  W += P*dt
+        if v &lt;= 0.05: return "parou", x, t, W
+    return x, t, W, v
+print(viagem(40e3, 1, True))      # subida
+print(viagem(-30e3, 20, False))   # descida</code></pre>
+<p>(a)–(c) <span class="ans">2 km em t ≈ 134 s</span>; velocidade final ≈ 15.6 m/s (quase a velocidade limite); <span class="ans">W = P·t ≈ 5.37 MJ</span>.</p>
+<p>(d) Na descida a força "a favor" é \(mg\sin5° - \mu mg \approx 1708 - 784 = 924\) N, mas a travagem a −30 kW dá −1500 N logo a 20 m/s e cresce quando v diminui (\(F = P/v\)). O carro trava continuamente e <strong>pára ao fim de ≈ 315 m (≈ 22 s)</strong>, com o motor a fazer ≈ −0.67 MJ. Com estes dados não percorre os 2 km: travar a potência constante até v → 0 exigiria força infinita.</p>
+<p>(e) Fica dependente de (d). O método seria: energia final da bateria = \(-W_{subida} + 0.5\,|W_{descida}|\). Com os números de (d), \(-5.37 + 0.33 \approx -5.0\) MJ. No teste, explica a limitação do modelo; é isso que dá cotação.</p>
+</div></details>
+ ─────────── TESTE 2 2024 ─────────── 
+
+</section>
+<section id="t-msf-t2-24" data-nav="Teste 2 — 2024" data-grp="Testes Resolvidos 2023 e 2024" data-track>
+<h2>Teste 2 — 8 de maio de 2024<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p class="lead">Analítico 30 min (I 3 + II 4 + III 3) · Computacional 1 h (I 5 + II 5)</p>
+<h3>Analítico I — Trenó num telhado com atrito</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+Telhado a 30°, M = 500 kg, renas puxam 2000 N para cima ao longo do telhado, atrito μN com μ = 0.05. Aceleração e sentido.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Eixo x ao longo do telhado, positivo para cima:</p>
+\[ P_x = -Mg\sin30° = -2450\ \text{N},\quad N = Mg\cos30° = 4243.5\ \text{N},\quad |A| = \mu N = 212.2\ \text{N} \]
+<p>O atrito opõe-se ao movimento, por isso testa-se o sentido. Sem atrito, \(-2450 + 2000 = -450\) N: tende a <strong>descer</strong>, logo o atrito aponta para cima (+212.2 N):</p>
+\[ F_x = -2450 + 2000 + 212.2 = -237.8\ \text{N} \;\Rightarrow\; a_x = \frac{-237.8}{500} = -0.48\ \text{m/s}^2 \]
+<p><span class="ans">a = 0.48 m/s², a descer o telhado</span></p>
+</div></details>
+<h3>Analítico II — Energia potencial cúbica</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+m = 0.5 kg, \(E_p = 6x - 2x^3 + 4\) (J). (a) \(F(x)\). (b) Pontos com F = 0. (c) \(x_0 = 0\), \(v_0 = -4\) m/s: energia total. (d) Velocidade em x = −1 m.</div>
+<details><summary>Ver resolução</summary><div class="in">
+\[ F_x = -\frac{dE_p}{dx} = -(6 - 6x^2) = 6x^2 - 6\ \text{N} \qquad F = 0 \iff x = \pm1\ \text{m} \]
+\[ E = E_p(0) + \tfrac12 m v_0^2 = 4 + \tfrac12(0.5)(16) = 8\ \text{J} \]
+\[ E_p(-1) = -6 + 2 + 4 = 0 \;\Rightarrow\; E_c = 8\ \text{J} \;\Rightarrow\; v = \sqrt{\tfrac{2\cdot 8}{0.5}} = 4\sqrt2 \approx 5.66\ \text{m/s} \]
+<p>(Como vai para x negativo, \(v = -5.66\) m/s.) A solução oficial escreve \(E_p(-1)\) com um sinal trocado na conta intermédia, mas o resultado final coincide.</p>
+</div></details>
+<h3>Analítico III — Erro local e global (retangular)</h3>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Igual ao T2 2023 II: <span class="ans">(a) erro local O(δx²); (b) erro global O(δx)</span>.</p>
+</div></details>
+<h3>Computacional I — Livre de futebol com efeito</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+Baliza a 20 m; remate a 100 km/h, 16° acima da horizontal. \(\vec F_{res} = -mD|\vec v|\vec v\), D = 0.0127 m⁻¹; r = 0.11 m, m = 0.45 kg. Golo se em x = 20 m: 0 &lt; y &lt; 2.4 m e |z| &lt; 3.75 m. (a) Sem rotação. (b) \(\vec\omega = (0, 0, -10)\) rad/s.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<pre><code>D, r, m, rho = 0.0127, 0.11, 0.45, 1.225;  A = np.pi*r**2
+v0, th = 100/3.6, np.radians(16)
+for w in ([0, 0, 0], [0, 0, -10]):
+    w = np.array(w, float)
+    acel = lambda R, v, t: (np.array([0, -g, 0]) - D*np.linalg.norm(v)*v
+                            + 0.5*A*rho*r*np.cross(w, v)/m)
+    T, R, V = rk4(acel, [0, 0, 0], [v0*np.cos(th), v0*np.sin(th), 0], 1e-5, 3,
+                  parar=lambda R, v, t: R[0] &gt;= 20)
+    print("y na baliza =", R[-1,1])</code></pre>
+<p><span class="ans">(a) y ≈ 2.44 m &gt; 2.4 m: não é golo</span> <span class="ans">(b) y ≈ 1.98 m: é golo</span> (o efeito empurra a bola para baixo).</p>
+</div></details>
+<h3>Computacional II — Oscilador quártico</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+m = 0.5 kg, \(E_p = k(x-0.5)^2(x+0.5)^2\), k = 2 J/m⁴, \(F_x = -4kx^3 + kx\). (a) Diagrama de energia; movimento se E &lt; 0.25 J. (b) Lei do movimento com \(x_0 = 1\) m, \(v_0 = 0\). (c) \(E_c, E_p, E\) vs t. (d) Velocidade em x = 0.5 m.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>(a) Poço duplo: mínimos \(E_p = 0\) em x = ±0.5 m, barreira \(E_p(0) = k/16 = 0.125\) J.</p>
+<ul>
+<li>E &lt; 0.125 J: oscila só num dos poços (à volta de −0.5 ou de +0.5 m, o do lado onde começou).</li>
+<li>0.125 J &lt; E &lt; 0.25 J: passa a barreira e oscila sobre os dois poços, mais devagar ao atravessar x = 0.</li>
+</ul>
+<pre><code>k, m = 2, 0.5
+acel = lambda R, v, t: np.array([(-4*k*R[0]**3 + k*R[0]) / m, 0, 0])
+T, R, V = rk4(acel, [1, 0, 0], [0, 0, 0], 1e-4, 10)
+x, v = R[:,0], V[:,0]
+Ec = 0.5*m*v**2;  Ep = k*(x - 0.5)**2*(x + 0.5)**2;  E = Ec + Ep   # (c)</code></pre>
+<p>(b)/(c) \(E = E_p(1) = 2(0.25)(2.25) = 1.125\) J, bem acima da barreira: oscila entre −1 e 1 m (período ≈ 2.34 s). E fica constante (1.1250 J com RK4), enquanto \(E_c\) e \(E_p\) trocam energia.</p>
+<p>(d) Em x = 0.5, \(E_p = 0\): \(\tfrac12(0.5)v^2 = 1.125 \Rightarrow\) <span class="ans">v = ±2.12 m/s</span></p>
+</div></details>
+ ─────────── TESTE 3 2023 ─────────── 
+
+</section>
+<section id="t-msf-t3" data-nav="Teste 3 — 2023" data-grp="Testes Resolvidos 2023 e 2024" data-track>
+<h2>Teste 3 — 23 de junho de 2023<span class="done-tag" hidden>estudado ✓</span></h2>
+
+<p class="lead">Analítico 30 min (I 4 + II 4 + III 2) · Computacional 1 h (I 5 + II 5)</p>
+<h3>Analítico I — Oscilador forçado e ressonância</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+m = 0.2 kg, k = 5 N/m, b = 0.5 kg/s, \(F_0\) = 1 N. (a) \(\omega_f\) aproximada de ressonância e amplitude. (b) Muda-se m para 0.8 kg sem mudar \(\omega_f\): nova amplitude.</div>
+<details><summary>Ver resolução</summary><div class="in">
+\[ \omega_0 = \sqrt{k/m} = \sqrt{25} = 5\ \text{rad/s} \;\Rightarrow\; \omega_f \approx 5\ \text{rad/s} \]
+\[ A = \frac{F_0/m}{\sqrt{(\omega_0^2-\omega_f^2)^2 + (b\omega_f/m)^2}} \;\xrightarrow{\ \omega_f=\omega_0\ }\; \frac{F_0}{b\,\omega_f} = \frac{1}{0.5\cdot5} = 0.40\ \text{m} \]
+<p>(b) Agora \(\omega_0^2 = 5/0.8 = 6.25\):</p>
+\[ A = \frac{1/0.8}{\sqrt{(6.25 - 25)^2 + (0.5\cdot5/0.8)^2}} = \frac{1.25}{\sqrt{351.6 + 9.8}} = \frac{1.25}{19.0} \approx 0.066\ \text{m} \]
+<p>Fora de ressonância, a amplitude cai cerca de 6 vezes.</p>
+</div></details>
+<h3>Analítico II — Dois osciladores acoplados</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+Corpos A e B (massa m) ligados entre si por uma mola k′ e cada um a uma parede por uma mola k. (a) Forças e equações de Newton. (b) Movimento se forem deslocados a mesma distância em sentidos opostos, a partir do repouso.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>(a) Com \(x_A, x_B\) os deslocamentos a partir do equilíbrio, a mola do meio estica \(x_B - x_A\):</p>
+\[ m\ddot x_A = -k x_A + k'(x_B - x_A),\qquad m\ddot x_B = -k x_B - k'(x_B - x_A) \]
+<p>(b) Com \(x_A(0) = -x_B(0) = x_0\) excita-se só o <strong>modo antissimétrico</strong>. Fazendo \(x_B = -x_A\):</p>
+\[ m\ddot x_A = -(k + 2k')x_A \;\Rightarrow\; x_A(t) = x_0\cos(\omega_2 t),\ x_B(t) = -x_0\cos(\omega_2 t),\quad \omega_2 = \sqrt{\tfrac{k+2k'}{m}} \]
+<p>Os dois oscilam sempre em oposição, com a mesma amplitude e uma única frequência (o modo simétrico, com \(\omega_1 = \sqrt{k/m}\), não aparece).</p>
+</div></details>
+<h3>Analítico III — Modos normais e ondas</h3>
+<details><summary>Ver resolução</summary><div class="in">
+<p>(a) N osciladores acoplados ⟹ N modos normais: <span class="ans">5 modos</span></p>
+<p>(b) A distância de um máximo ao mínimo mais próximo é λ/2 = 0.2 m ⟹ λ = 0.4 m. <span class="ans">v = fλ = 10 × 0.4 = 4 m/s</span></p>
+</div></details>
+<h3>Computacional I — Oscilador cúbico e análise de Fourier</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+m = 1 kg, \(E_p = \frac12kx^2 + \alpha x^3\), k = 1 N/m, α = 0.05 N/m². (a) Diagrama de energia para x ∈ [−8, 4]; movimento se E &lt; 7 J; e se E &gt; 8 J? (b) Lei do movimento com \(x_0\) = 2.2 m, \(v_0 = 0\); energia mecânica. (c) Análise de Fourier.</div>
+<details><summary>Ver resolução</summary><div class="in">
+<p>(a) \(E_p' = x + 0.15x^2 = 0\) ⟹ mínimo em x = 0 e máximo em \(x = -k/(3\alpha) = -6.67\) m, com \(E_p = 7.41\) J.</p>
+<ul>
+<li>E &lt; 7 J (abaixo do máximo): movimento <strong>limitado e periódico</strong> à volta de x = 0, mas assimétrico (mais longe do lado negativo, onde o poço é mais "aberto").</li>
+<li>E &gt; 8 J (acima de 7.41 J): o corpo passa por cima do máximo e <strong>foge para x → −∞</strong>; deixa de oscilar.</li>
+</ul>
+<pre><code>k, al, m = 1, 0.05, 1
+acel = lambda R, v, t: np.array([(-k*R[0] - 3*al*R[0]**2) / m, 0, 0])
+T, R, V = rk4(acel, [2.2, 0, 0], [0, 0, 0], 1e-3, 200)
+x = R[:,0]
+# período: tempo entre passagens consecutivas por x = 0 a subir
+s = np.where((x[:-1] &lt; 0) &amp; (x[1:] &gt;= 0))[0]
+P = np.diff(T[s]).mean();  w = 2*np.pi/P
+# (c) coeficientes de Fourier num período
+i0, i1 = s[0], s[1];  ts, xs = T[i0:i1], x[i0:i1]
+for n in range(5):
+    a = 2/P*np.trapezoid(xs*np.cos(n*w*ts), ts)   # np.trapz em numpy &lt; 2
+    b = 2/P*np.trapezoid(xs*np.sin(n*w*ts), ts)
+    print(n, np.hypot(a, b))</code></pre>
+<p>(b) \(E = \frac12(2.2)^2 + 0.05(2.2)^3 = 2.95\) J (constante). O corpo oscila entre 2.2 m e −2.88 m, com período T ≈ 6.73 s (ω ≈ 0.933 rad/s, menor que \(\omega_0\) = 1 do harmónico puro).</p>
+<p>(c) Amplitudes: \(a_0/2\) ≈ 0.52 (valor médio ≠ 0, porque o movimento é assimétrico), n = 1: 2.53, n = 2: 0.18, n = 3: 0.010, n = 4: 0.0004. <strong>Domina a fundamental</strong>; aparecem harmónicos (2ω, 3ω…) que decrescem depressa — assinatura de um oscilador não linear.</p>
+</div></details>
+<h3>Computacional II — Oscilador quártico forçado (sensibilidade às condições iniciais)</h3>
+<div class="box ex"><span class="t">Enunciado</span>
+m = 1 kg, \(F = -4\alpha x^3 - bv + F_0\cos(\omega_f t)\), α = 0.15, b = 0.02, \(F_0\) = 7.5 N, \(\omega_f\) = 1 rad/s. (a) Lei do movimento com RK4, \(x_0\) = 2 m, \(v_0\) = 0. (b) Até que instante a lei é única se \(x_0\) = 2.000 ± 0.001 m?</div>
+<details><summary>Ver resolução</summary><div class="in">
+<pre><code>al, b, F0, wf, m = 0.15, 0.02, 7.5, 1.0, 1
+acel = lambda R, v, t: np.array([(-4*al*R[0]**3 - b*v[0] + F0*np.cos(wf*t)) / m, 0, 0])
+sol = [rk4(acel, [x0, 0, 0], [0, 0, 0], 1e-3, 200) for x0 in (2.000, 1.999, 2.001)]
+x = [s[1][:,0] for s in sol];  T = sol[0][0]
+dif = np.maximum(abs(x[0] - x[1]), abs(x[0] - x[2]))
+print(T[np.argmax(dif &gt; 0.1)])     # 1.º instante em que se afastam mais de 0.1 m</code></pre>
+<p>(b) Corre-se com \(x_0\) = 1.999, 2.000 e 2.001 m e vê-se quando as três curvas se separam. A diferença passa 0.01 m em t ≈ 11 s, 0.1 m em t ≈ 35 s e 0.5 m em t ≈ 53 s. <span class="ans">A lei do movimento só é determinada univocamente até t ≈ 30–35 s</span>; depois disso a incerteza de 1 mm em \(x_0\) amplifica-se (comportamento caótico) e as soluções divergem por completo.</p>
+</div></details>
+
+
+</section>
+</main>
+</div>
+<script>
+(function(){
+  var KEY='guia-msf', state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('.chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var tag=document.querySelector('#'+id+' .done-tag'); if(tag) tag.hidden=!on;
+    });
+    pbar.style.width=(secBoxes.length?100*n/secBoxes.length:0)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){ cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); }); });
+  var rst=document.getElementById('rst'), cf=document.getElementById('cf');
+  rst.addEventListener('click',function(){
+    if(cf.hidden){ cf.hidden=false; rst.textContent='Confirmar limpeza'; return; }
+    state={}; save(); refresh(); cf.hidden=true; rst.textContent='Limpar progresso';
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+        if(links[en.target.id]) links[en.target.id].classList.add('on'); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>

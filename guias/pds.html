@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PDS — guia de estudo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB; --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC; --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8; --ex:#475569; --ex-bg:#EEF1F5;
+  --code-bg:#F0F2F7; --kw:#7A2BB0; --str:#1C7A3A; --cm:#7A8494; --num:#9A5700;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.confirm{font-size:12.5px;color:var(--muted);margin-top:8px}
+.mnav{display:none}
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:940px;width:100%;min-width:0}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em;text-wrap:balance}
+.hero p{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;text-wrap:balance}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);margin-left:10px}
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0;min-width:0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:12px 0;max-width:100%}
+pre code{background:none;padding:0;font-size:inherit}
+.box pre{background:var(--card)}
+pre .k{color:var(--kw);font-weight:500} pre .s{color:var(--str)} pre .c{color:var(--cm);font-style:italic} pre .n{color:var(--num)}
+.out{border-left:3px solid var(--teo)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+td code,th code{white-space:nowrap}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px;min-width:0}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px;min-width:0}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+.ov{text-decoration:overline;text-decoration-thickness:1px}
+.bits td{font-family:var(--mono);text-align:center;font-size:13px}
+.fig{margin:16px 0;overflow-x:auto}
+.fig svg{display:block;max-width:100%;height:auto}
+.fig figcaption{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:6px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details>summary{display:none}
+  .box,pre{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>PDS — guia de estudo</h1>
+  <p class="sub">Padrões e Desenho de Software · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 13 capítulos estudados</div>
+  <nav id="nav">
+<a href="#intro">Antes de começar</a>
+<div class="grp">Princípios</div>
+<a href="#clean"><input type="checkbox" data-sec="clean" aria-label="Marcar 1 · Clean code como estudado"><span>1 · Clean code</span></a>
+<a href="#solid"><input type="checkbox" data-sec="solid" aria-label="Marcar 2 · SOLID, DRY, refactoring como estudado"><span>2 · SOLID, DRY, refactoring</span></a>
+<a href="#design"><input type="checkbox" data-sec="design" aria-label="Marcar 3 · O que é desenho de software como estudado"><span>3 · O que é desenho de software</span></a>
+<a href="#grasp"><input type="checkbox" data-sec="grasp" aria-label="Marcar 4 · GRASP como estudado"><span>4 · GRASP</span></a>
+<div class="grp">Padrões</div>
+<a href="#gof"><input type="checkbox" data-sec="gof" aria-label="Marcar 5 · Padrões GoF: visão geral como estudado"><span>5 · Padrões GoF: visão geral</span></a>
+<a href="#criacionais"><input type="checkbox" data-sec="criacionais" aria-label="Marcar 6 · Criacionais como estudado"><span>6 · Criacionais</span></a>
+<a href="#estruturais"><input type="checkbox" data-sec="estruturais" aria-label="Marcar 7 · Estruturais como estudado"><span>7 · Estruturais</span></a>
+<a href="#comport"><input type="checkbox" data-sec="comport" aria-label="Marcar 8 · Comportamentais como estudado"><span>8 · Comportamentais</span></a>
+<a href="#arq"><input type="checkbox" data-sec="arq" aria-label="Marcar 9 · Arquiteturas como estudado"><span>9 · Arquiteturas</span></a>
+<div class="grp">Testes resolvidos</div>
+<a href="#t1"><input type="checkbox" data-sec="t1" aria-label="Marcar ATP1 2024/25 resolvido como estudado"><span>ATP1 2024/25 resolvido</span></a>
+<a href="#t2"><input type="checkbox" data-sec="t2" aria-label="Marcar ATP2 2024/25 e 2022/23 resolvidos como estudado"><span>ATP2 2024/25 e 2022/23 resolvidos</span></a>
+<a href="#pratico"><input type="checkbox" data-sec="pratico" aria-label="Marcar Exame prático 2024/25 como estudado"><span>Exame prático 2024/25</span></a>
+<a href="#esp"><input type="checkbox" data-sec="esp" aria-label="Marcar Exame especial 2021/22 como estudado"><span>Exame especial 2021/22</span></a>
+<a href="#rev">Revisão final</a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+  <div class="confirm" id="cf" hidden>Carrega outra vez para apagar o progresso guardado neste navegador.</div>
+</aside>
+<main>
+<div class="hero" id="top">
+<h1>PDS: princípios, padrões e desenho de software</h1>
+<p>As aulas 1 a 4 de 2026/27 (clean code, SOLID, desenho, GRASP e classificação dos padrões), o catálogo de padrões GoF que os testes pedem com UML e código Java, as arquiteturas que saem nas perguntas abertas, os testes teóricos de 2022/23 e 2024/25 resolvidos e o exame prático de 2024/25 resolvido, compilado e testado.</p>
+</div>
+
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<div class="tw"><table>
+<thead><tr><th>Componente</th><th>Peso</th><th>Regime de IA</th></tr></thead>
+<tbody>
+<tr><td>TP: quizzes e atividades nas aulas</td><td>20 %</td><td>IA integrada</td></tr>
+<tr><td>TP: teste escrito individual (última aula TP)</td><td>20 %</td><td><strong>Sem IA</strong></td></tr>
+<tr><td>P: trabalho prático, repositórios, code review</td><td>20 %</td><td>IA integrada</td></tr>
+<tr><td>P: exame prático final (janeiro 2027)</td><td>40 %</td><td><strong>Sem IA</strong></td></tr>
+</tbody></table></div>
+<p>Mínimo de 7 valores em cada componente (TP e P). O que se valoriza: perceber (não só saber nomes de padrões), justificar decisões, qualidade de código, pensamento crítico e comunicação.</p>
+<div class="box exa"><span class="t">Como são os testes teóricos (50 min, 4 a 6 perguntas)</span>
+<ul>
+<li>Descrever princípios (GRASP: Low Coupling, High Cohesion, Information Expert).</li>
+<li>Reescrever código para depender de abstrações (DIP / "program to an interface").</li>
+<li>Reconhecer um padrão a partir de <strong>código</strong> ou de um <strong>diagrama UML</strong> (Singleton, Adapter, Strategy, Chain of Responsibility, Template Method, Iterator).</li>
+<li>Desenhar o UML e um exemplo de uso de um padrão (Decorator, Mediator, Observer, Proxy vs Decorator).</li>
+<li>Explicar uma arquitetura (microkernel, camadas): modelo, vantagens, desvantagens, exemplo.</li>
+</ul></div>
+</section>
+
+<section id="clean" data-nav="1 · Clean code" data-grp="Princípios" data-track>
+<h2>1 · Clean code<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="box def"><span class="t">Definição de trabalho</span>Código fácil de <strong>perceber, alterar e verificar</strong> por outro programador. Não quer dizer "esperto", curto ou perfeito. Código que funciona não é necessariamente bom código, seja escrito por pessoas ou por IA.</div>
+<div class="tw"><table><thead><tr><th>Elemento</th><th>Regras</th></tr></thead><tbody>
+<tr><td>Nomes</td><td>Revelam a intenção, pesquisáveis, pronunciáveis; sem letras soltas (mapeamento mental). Métodos com verbos (<code>postPayment</code>, <code>getX</code>, <code>isY</code>); classes com substantivos (<code>Customer</code>, <code>AddressParser</code>), sem ruído (<code>Manager</code>, <code>Data</code>, <code>Info</code>)</td></tr>
+<tr><td>Funções</td><td>Pequenas (raramente &gt; 20 linhas), fazem <strong>uma coisa</strong>, um nível de abstração por função; poucos argumentos (0 é ideal, depois 1, 2); evitar argumentos de saída (<code>report.appendFooter()</code> em vez de <code>appendFooter(report)</code>); o chamador fica acima do chamado</td></tr>
+<tr><td>Comentários</td><td>Explicar o <em>porquê</em> quando o código não chega. Aceitáveis: legais, informativos, intenção, avisos, TODO, Javadoc. Inaceitáveis: redundantes, enganadores, histórico de versões, ruído, código comentado</td></tr>
+<tr><td>Classes</td><td>Pequenas, medidas em <strong>responsabilidades</strong>; nome descreve a responsabilidade (nome vago ⇒ demasiadas responsabilidades)</td></tr>
+<tr><td>Outras</td><td>Substituir números mágicos por constantes; encapsular condições (<code>if (shouldBeDeleted(timer))</code>); evitar condições negativas; preferir <code>enum</code> a constantes <code>static final int</code></td></tr>
+</tbody></table></div>
+<pre><code><span class="c">// Pior: o leitor tem de decifrar</span>
+List&lt;<span class="k">int</span>[]&gt; getThem() {
+    List&lt;<span class="k">int</span>[]&gt; list1 = <span class="k">new</span> ArrayList&lt;&gt;();
+    <span class="k">for</span> (<span class="k">int</span>[] x : theList) <span class="k">if</span> (x[<span class="n">0</span>] == <span class="n">4</span>) list1.add(x);
+    <span class="k">return</span> list1;
+}
+<span class="c">// Melhor: a mesma computação, intenção visível</span>
+List&lt;Cell&gt; getFlaggedCells() {
+    List&lt;Cell&gt; flagged = <span class="k">new</span> ArrayList&lt;&gt;();
+    <span class="k">for</span> (Cell cell : gameBoard) <span class="k">if</span> (cell.isFlagged()) flagged.add(cell);
+    <span class="k">return</span> flagged;
+}</code></pre>
+<h3>Lente de code review</h3>
+<ol><li>Percebo a intenção?</li><li>As responsabilidades são coerentes?</li><li>Há conhecimento duplicado?</li><li>As dependências são necessárias?</li><li>Até onde se propaga uma alteração provável?</li></ol>
+<p>Não contar "violações": explicar as consequências. Mais classes e mais abstração não é automaticamente melhor.</p>
+</section>
+
+<section id="solid" data-nav="2 · SOLID, DRY, refactoring" data-grp="Princípios" data-track>
+<h2>2 · SOLID, DRY, Boy Scout e refactoring<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table><thead><tr><th>Princípio</th><th>Enunciado</th><th>Sintoma de violação</th></tr></thead><tbody>
+<tr><td><strong>S</strong>RP Single Responsibility</td><td>Um módulo deve ter <strong>uma razão para mudar</strong></td><td><code>Report</code> que calcula, gera PDF, guarda e envia email</td></tr>
+<tr><td><strong>O</strong>CP Open/Closed</td><td>Aberto a extensão, fechado a modificação: novas variantes sem editar lógica estável</td><td><code>if (type.equals("CARD")) … else if ("PAYPAL") …</code> a crescer</td></tr>
+<tr><td><strong>L</strong>SP Liskov Substitution</td><td>Um subtipo tem de poder substituir o tipo base sem quebrar o comportamento esperado</td><td><code>Penguin extends Bird</code> com <code>fly()</code> a lançar exceção</td></tr>
+<tr><td><strong>I</strong>SP Interface Segregation</td><td>Clientes não dependem de operações de que não precisam</td><td><code>Shape</code> com <code>volume()</code> obriga <code>Square</code> a implementá-lo</td></tr>
+<tr><td><strong>D</strong>IP Dependency Inversion</td><td>Módulos de alto nível dependem de <strong>abstrações</strong>, não de detalhes concretos</td><td><code>Checkout</code> que cria <code>new CardPayment()</code> em vez de receber <code>PaymentMethod</code></td></tr>
+<tr><td>DRY</td><td>Não duplicar o mesmo <em>conhecimento</em> (regra)</td><td>Fórmula de conversão copiada em vários sítios. Cuidado com abstrações prematuras</td></tr>
+<tr><td>Boy Scout</td><td>Deixar o código um pouco melhor do que o encontraste</td><td></td></tr>
+<tr><td>Refactoring</td><td>Melhorar a estrutura interna <strong>sem alterar o comportamento</strong> observável</td><td></td></tr>
+</tbody></table></div>
+<pre><code><span class="c">// OCP + DIP: nova forma de pagamento = nova classe, Checkout não muda</span>
+<span class="k">interface</span> PaymentMethod { <span class="k">double</span> fee(<span class="k">double</span> amount); }
+<span class="k">class</span> CardPayment <span class="k">implements</span> PaymentMethod { <span class="k">public</span> <span class="k">double</span> fee(<span class="k">double</span> a) { <span class="k">return</span> a * <span class="n">0.02</span>; } }
+<span class="k">class</span> MbWayPayment <span class="k">implements</span> PaymentMethod { <span class="k">public</span> <span class="k">double</span> fee(<span class="k">double</span> a) { <span class="k">return</span> <span class="n">0.10</span>; } }
+<span class="k">class</span> Checkout {
+    <span class="k">private</span> <span class="k">final</span> PaymentMethod payment;                  <span class="c">// depende da abstração</span>
+    Checkout(PaymentMethod payment) { <span class="k">this</span>.payment = payment; }   <span class="c">// injeção de dependência</span>
+    <span class="k">double</span> total(<span class="k">double</span> amount) { <span class="k">return</span> amount + payment.fee(amount); }
+}</code></pre>
+<p>Um mesmo objeto, dois tipos: em <code>Animal a = new Dog();</code> o tipo <strong>declarado</strong> (estático) decide que métodos se podem chamar (<code>a.fetch()</code> não compila) e o tipo <strong>dinâmico</strong> decide que implementação corre (<code>a.sound()</code> executa a de Dog).</p>
+</section>
+
+<section id="design" data-nav="3 · O que é desenho de software" data-grp="Princípios" data-track>
+<h2>3 · Desenho de software<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>O desenho liga os requisitos (o quê) à construção (o código). É <strong>heurístico, não determinístico</strong> (dois designers produzem soluções diferentes), <strong>emergente</strong> (iterativo e incremental) e um <em>wicked problem</em> (só fica bem definido ao resolvê-lo).</p>
+<div class="cols">
+<div><h4>Complexidade</h4><p><strong>Essencial:</strong> inerente ao problema. <strong>Acidental:</strong> criada pela solução. Objetivo: gerir a essencial sem acrescentar acidental.</p></div>
+<div><h4>Ferramentas</h4><p>Modularidade, abstração, ocultação de informação, herança, composição.</p></div>
+</div>
+<h3>Processo genérico</h3>
+<p>Perceber o problema → modelo "caixa preta" (casos de uso) → procurar soluções existentes (arquiteturas e padrões) → protótipos → documentar e rever → iterar (refactor).</p>
+<div class="tw"><table><thead><tr><th>Boas características</th><th>Sintomas de mau desenho</th></tr></thead><tbody>
+<tr><td>Complexidade mínima; <strong>baixo acoplamento</strong>; fácil manutenção; extensibilidade (pode chocar com simplicidade); reutilização; portabilidade; <strong>fan-in alto</strong> em utilitários e fan-out baixo a médio; leanness ("na dúvida, deixa de fora"); estratificação em camadas; técnicas padrão</td><td><strong>Rigidez</strong> (cada mudança afeta muitas partes); <strong>fragilidade</strong> (partes inesperadas partem); <strong>imobilidade</strong> (difícil reutilizar); <strong>viscosidade</strong> (o "hack" é mais fácil que manter o desenho, ou o ambiente é lento)</td></tr>
+</tbody></table></div>
+<p>Níveis de abstração: estilos/padrões de <strong>arquitetura</strong> → padrões de <strong>desenho</strong> → <strong>idiomas</strong> de programação, tudo apoiado em <strong>princípios</strong> (SOLID, DRY…).</p>
+</section>
+
+<section id="grasp" data-nav="4 · GRASP" data-grp="Princípios" data-track>
+<h2>4 · GRASP: onde pôr cada responsabilidade<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>General Responsibility Assignment Software Patterns: orientações (não regras rígidas) para atribuir responsabilidades a classes, com vista a <strong>alta coesão e baixo acoplamento</strong>.</p>
+<div class="tw"><table><thead><tr><th>Princípio</th><th>Regra</th><th>Exemplo (loja online)</th></tr></thead><tbody>
+<tr><td><strong>Information Expert</strong></td><td>Dar a responsabilidade à classe que tem a informação necessária para a cumprir</td><td><code>Product</code> sabe o seu preço e disponibilidade; <code>Order</code> calcula o total das suas linhas. Risco: classes demasiado complexas (quem guarda na BD?)</td></tr>
+<tr><td><strong>Creator</strong></td><td>B cria A se B contém/agrega A, usa A de perto ou tem os dados para o inicializar</td><td><code>Order</code> cria as suas <code>OrderLine</code></td></tr>
+<tr><td><strong>Controller</strong></td><td>Uma classe intermediária recebe os eventos da interface e coordena os objetos de domínio</td><td><code>ShoppingCartController</code></td></tr>
+<tr><td><strong>Low Coupling</strong></td><td>Minimizar dependências entre classes; comunicar por interfaces bem definidas</td><td><code>ShoppingCart</code> não mexe nos internos de <code>Product</code></td></tr>
+<tr><td><strong>High Cohesion</strong></td><td>As responsabilidades de uma classe estão relacionadas e focadas num propósito</td><td><code>ShoppingCart</code> não trata de pagamentos nem de autenticação</td></tr>
+<tr><td><strong>Polymorphism</strong></td><td>Variações de comportamento por tipo ⇒ métodos polimórficos, não <code>if</code>/<code>switch</code></td><td>Interface <code>PaymentProcessor</code> com várias implementações</td></tr>
+<tr><td><strong>Pure Fabrication</strong></td><td>Inventar uma classe sem correspondência no domínio para manter coesão/acoplamento</td><td><code>ShoppingCartValidator</code></td></tr>
+<tr><td>Indirection / Protected Variations</td><td>Intermediário para desacoplar; proteger contra variações atrás de interfaces estáveis</td><td>Adapter, Facade</td></tr>
+</tbody></table></div>
+<h3>Tipos de acoplamento (do pior para o melhor)</h3>
+<p><strong>Conteúdo</strong> (acede aos internos de outra) &gt; <strong>comum</strong> (variáveis globais partilhadas) &gt; <strong>externo</strong> (bibliotecas, APIs) &gt; <strong>controlo</strong> (passa flags que controlam o fluxo da outra) &gt; <strong>dados</strong> (só passa dados por parâmetros: o desejável). Há ainda o <strong>temporal</strong> (ordem de chamadas importa).</p>
+</section>
+
+<section id="gof" data-nav="5 · Padrões GoF: visão geral" data-grp="Padrões" data-track>
+<h2>5 · Padrões de desenho: classificação<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Um padrão é uma solução reutilizável para um problema recorrente: descreve problema, contexto, estrutura e consequências, <strong>não é código para copiar</strong>. Dá vocabulário comum. Usar um padrão tem sempre custos (trade-offs). O livro do <strong>Gang of Four</strong> (Gamma, Helm, Johnson, Vlissides) cataloga <strong>23</strong> padrões em 3 categorias:</p>
+<div class="tw"><table><thead><tr><th>Categoria</th><th>Preocupação</th><th>Padrões</th></tr></thead><tbody>
+<tr><td><strong>Criacionais</strong></td><td>Como criar objetos, escondendo a lógica de criação</td><td>Singleton, Builder, Factory Method, Abstract Factory, Prototype</td></tr>
+<tr><td><strong>Estruturais</strong></td><td>Como compor classes e objetos em estruturas maiores</td><td>Adapter, Decorator, Proxy, Composite, Facade, Bridge, Flyweight</td></tr>
+<tr><td><strong>Comportamentais</strong></td><td>Como os objetos comunicam e distribuem responsabilidades</td><td>Strategy, Observer, Chain of Responsibility, Mediator, Template Method, Iterator, Command, State, Visitor, Memento, Interpreter</td></tr>
+</tbody></table></div>
+<div class="box met"><span class="t">Reconhecer o padrão pelo código</span>
+<ul>
+<li>Construtor <code>private</code> + <code>static getInstance()</code> → <strong>Singleton</strong>.</li>
+<li><code>X.instance().a(…).b(…).build()</code> → <strong>Builder</strong>.</li>
+<li>Classe que chama métodos de outra com interface diferente (<code>doThis()</code> chama <code>doThat()</code>) → <strong>Adapter</strong>.</li>
+<li><code>new A(new B(new C(obj)))</code> com a mesma interface e comportamento acumulado → <strong>Decorator</strong> (ou cadeia de responsabilidade se cada um decide se trata ou passa).</li>
+<li>Objeto que se passa ao sucessor quando não consegue tratar o pedido → <strong>Chain of Responsibility</strong>.</li>
+<li>Algoritmo escolhido em execução através de uma interface (Comparator) → <strong>Strategy</strong>.</li>
+<li>Método concreto na classe abstrata que só usa métodos abstratos → <strong>Template Method</strong>.</li>
+<li><code>hasNext()/next()</code> sem expor a estrutura interna → <strong>Iterator</strong>.</li>
+<li>Objetos que não se conhecem e falam através de um central → <strong>Mediator</strong>.</li>
+<li>Lista de "listeners" notificados quando o estado muda → <strong>Observer</strong>.</li>
+</ul></div>
+</section>
+
+<section id="criacionais" data-nav="6 · Criacionais" data-grp="Padrões" data-track>
+<h2>6 · Padrões criacionais<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Singleton</h3>
+<p>Garante <strong>uma única instância</strong> e um ponto de acesso global. A instância só é criada quando é pedida pela primeira vez (<strong>lazy initialization</strong>: atrasar a criação até ser precisa, poupando recursos). Em multithreading: <code>synchronized</code> ou instância criada logo na declaração (eager).</p>
+<pre><code><span class="k">public</span> <span class="k">final</span> <span class="k">class</span> Logger {
+    <span class="k">private</span> <span class="k">static</span> Logger instance;                 <span class="c">// null até ser precisa</span>
+    <span class="k">private</span> Logger() { }                            <span class="c">// ninguém faz new de fora</span>
+    <span class="k">public</span> <span class="k">static</span> synchronized Logger getInstance() {
+        <span class="k">if</span> (instance == <span class="k">null</span>) instance = <span class="k">new</span> Logger();   <span class="c">// lazy initialization</span>
+        <span class="k">return</span> instance;
+    }
+}</code></pre>
+<h3>Builder</h3>
+<p>Constrói objetos complexos passo a passo com uma interface fluente, evitando construtores com muitos parâmetros.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> Employee {
+    <span class="k">private</span> <span class="k">final</span> String name;
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> department;
+    <span class="k">private</span> Employee(Builder b) { name = b.name; department = b.department; }
+    <span class="k">public</span> <span class="k">static</span> Builder instance() { <span class="k">return</span> <span class="k">new</span> Builder(); }
+    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> Builder {
+        <span class="k">private</span> String name; <span class="k">private</span> <span class="k">int</span> department;
+        <span class="k">public</span> Builder name(String n)    { name = n; <span class="k">return</span> <span class="k">this</span>; }   <span class="c">// devolve this: encadear</span>
+        <span class="k">public</span> Builder department(<span class="k">int</span> d) { department = d; <span class="k">return</span> <span class="k">this</span>; }
+        <span class="k">public</span> Employee build()          { <span class="k">return</span> <span class="k">new</span> Employee(<span class="k">this</span>); }   <span class="c">// objeto novo e imutável</span>
+    }
+}
+Employee e = Employee.instance().name(<span class="s">"Henrique"</span>).department(<span class="n">3</span>).build();</code></pre>
+<h3>Factory Method e Abstract Factory</h3>
+<ul>
+<li><strong>Factory Method:</strong> um método (muitas vezes abstrato) decide que subclasse instanciar; o cliente pede um <code>Product</code> sem saber a classe concreta.</li>
+<li><strong>Abstract Factory:</strong> interface para criar <strong>famílias</strong> de objetos relacionados (ex.: <code>GUIFactory</code> com <code>createButton()</code> e <code>createCheckbox()</code> para Windows e Mac).</li>
+<li><strong>Prototype:</strong> criar cópias de um objeto existente (<code>clone()</code>).</li>
+</ul>
+</section>
+
+<section id="estruturais" data-nav="7 · Estruturais" data-grp="Padrões" data-track>
+<h2>7 · Padrões estruturais<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Adapter</h3>
+<pre><code>NewApplication ──► «Wrapper / Adapter»  +doThis()  ──► LegacyComponent  +doThat()
+                        doThis() { theWrappedOne.doThat(); }</code></pre>
+<p>Converte a interface de uma classe noutra que o cliente espera, permitindo usar componentes incompatíveis (legados, bibliotecas externas). <strong>Dois tipos de implementação:</strong></p>
+<ul>
+<li><strong>Object adapter</strong> (composição): o adapter <em>tem</em> uma referência para o adaptado e delega. Mais flexível; funciona com subclasses do adaptado.</li>
+<li><strong>Class adapter</strong> (herança): o adapter <em>estende</em> o adaptado e implementa a interface alvo. Em Java só com herança simples (estende a classe e implementa a interface).</li>
+</ul>
+<h3>Decorator</h3>
+<pre><code>        «interface» Component  +operation()
+           ▲                     ▲
+ ConcreteComponent      «abstract» Decorator ◇── component : Component
+                           ▲              ▲
+                    DecoratorA       DecoratorB      operation(){ component.operation(); + extra }</code></pre>
+<pre><code><span class="k">interface</span> IJogador { String joga(); }
+<span class="k">class</span> Jogador <span class="k">implements</span> IJogador {
+    <span class="k">private</span> <span class="k">final</span> String nome; Jogador(String n) { nome = n; }
+    <span class="k">public</span> String joga() { <span class="k">return</span> nome + <span class="s">" joga"</span>; }
+}
+<span class="k">abstract</span> <span class="k">class</span> JogadorDecorator <span class="k">implements</span> IJogador {
+    <span class="k">protected</span> <span class="k">final</span> IJogador j;
+    JogadorDecorator(IJogador j) { <span class="k">this</span>.j = j; }
+}
+<span class="k">class</span> Tenista <span class="k">extends</span> JogadorDecorator {
+    Tenista(IJogador j) { <span class="k">super</span>(j); }
+    <span class="k">public</span> String joga() { <span class="k">return</span> j.joga() + <span class="s">" tenis"</span>; }
+}
+<span class="k">class</span> Xadrezista <span class="k">extends</span> JogadorDecorator {
+    Xadrezista(IJogador j) { <span class="k">super</span>(j); }
+    <span class="k">public</span> String joga() { <span class="k">return</span> j.joga() + <span class="s">" xadrez"</span>; }
+}
+<span class="c">// new Xadrezista(new Tenista(new Jogador("Maria"))).joga()  →  "Maria joga tenis xadrez"</span></code></pre>
+<p><strong>Vantagens:</strong> acrescenta comportamento <strong>em tempo de execução</strong> sem alterar a classe; evita a explosão de subclasses (Tenista, Xadrezista, TenistaXadrezista…); combinações livres; respeita OCP e SRP. <strong>Desvantagens:</strong> muitos objetos pequenos; a ordem dos decoradores pode importar; difícil remover um decorador do meio.</p>
+<h3>Proxy</h3>
+<p>Substituto com a <strong>mesma interface</strong> do objeto real que <strong>controla o acesso</strong> a ele: proteção (permissões), virtual (criação preguiçosa de objeto caro), remoto, cache, logging.</p>
+<div class="box teo"><span class="t">Proxy vs Decorator (exame especial 2021/22)</span>Estrutura quase igual (ambos implementam a interface e guardam uma referência). <strong>Intenção diferente:</strong> o Decorator <strong>acrescenta</strong> responsabilidades e é composto pelo cliente, muitas vezes em camadas; o Proxy <strong>controla o acesso</strong> e normalmente gere o ciclo de vida do objeto real, de forma transparente para o cliente. Ex.: <code>BufferedReader(new FileReader(f))</code> é decorator; um <code>GestorReduzido</code> que impede eliminar é proxy.</div>
+<h3>Composite, Facade, Bridge, Flyweight</h3>
+<ul>
+<li><strong>Composite:</strong> trata objetos individuais e composições da mesma forma (árvore parte-todo). Ex.: um <code>Pacote</code> que é um <code>Servico</code> feito de <code>Servicos</code>; pastas e ficheiros.</li>
+<li><strong>Facade:</strong> interface simplificada para um subsistema complexo.</li>
+<li><strong>Bridge:</strong> separa abstração e implementação para variarem de forma independente.</li>
+<li><strong>Flyweight:</strong> partilha estado comum entre muitos objetos para poupar memória.</li>
+</ul>
+</section>
+
+<section id="comport" data-nav="8 · Comportamentais" data-grp="Padrões" data-track>
+<h2>8 · Padrões comportamentais<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Strategy</h3>
+<pre><code>Client ──► Context ◇── strategy : «interface» Strategy  +algorithm()
+                                          ▲          ▲          ▲
+                              ConcreteStrategyA     B          C</code></pre>
+<p>Família de algoritmos intermutáveis encapsulados atrás de uma interface; o contexto escolhe em execução. Ex.: algoritmos de ordenação para a lista de telemóveis (escolher o mais rápido ou o que gasta menos memória); <code>Comparator</code> em <code>Collections.sort</code>. <strong>Vantagens:</strong> trocar o algoritmo sem alterar o contexto (OCP), elimina <code>if/switch</code>, cada algoritmo testável isoladamente.</p>
+<pre><code>Context ctx = <span class="k">new</span> Context(<span class="k">new</span> QuickSortStrategy());
+ctx.sort(phones);
+ctx.setStrategy(<span class="k">new</span> MergeSortStrategy());   <span class="c">// troca em execução</span>
+ctx.sort(phones);</code></pre>
+<h3>Chain of Responsibility</h3>
+<p>O pedido percorre uma cadeia de handlers; cada um trata-o ou passa-o ao seguinte. O emissor não sabe quem vai tratar.</p>
+<pre><code><span class="k">abstract</span> <span class="k">class</span> Handler {
+    <span class="k">private</span> Handler next;
+    <span class="k">public</span> Handler setNext(Handler n) { next = n; <span class="k">return</span> n; }
+    <span class="k">public</span> <span class="k">void</span> handle(String food) {
+        <span class="k">if</span> (canHandle(food)) cook(food);
+        <span class="k">else</span> <span class="k">if</span> (next != <span class="k">null</span>) next.handle(food);
+        <span class="k">else</span> System.out.println(<span class="s">"No chef can prepare this food."</span>);
+    }
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="k">boolean</span> canHandle(String food);
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="k">void</span> cook(String food);
+}
+<span class="k">class</span> PastaChef <span class="k">extends</span> Handler {
+    <span class="k">protected</span> <span class="k">boolean</span> canHandle(String f) { <span class="k">return</span> f.contains(<span class="s">"pasta"</span>); }
+    <span class="k">protected</span> <span class="k">void</span> cook(String f) { System.out.println(<span class="s">"Cooking a pasta."</span>); }
+}
+<span class="c">// h0 = Sushi → Pasta → Burger → Pizza;  order("I'd like a pizza", h0) → "Cooking a pizza."</span></code></pre>
+<h3>Mediator</h3>
+<p>Um objeto central encapsula a forma como vários objetos ("colegas") interagem; eles não se referem diretamente uns aos outros (de N×N ligações para N). Ex.: torre de controlo e aeronaves; chat room; formulário que coordena os seus componentes.</p>
+<pre><code>«interface» Mediator ◄───── «abstract» Colleague (tem referência ao mediator)
+       ▲                         ▲              ▲
+   ATCTower ──conhece──►      Airplane      Helicopter</code></pre>
+<pre><code>TorreControlo torre = <span class="k">new</span> ATCTower();
+Aviao a = <span class="k">new</span> Aviao(<span class="s">"TP101"</span>, torre);
+Helicoptero h = <span class="k">new</span> Helicoptero(<span class="s">"INEM1"</span>, torre);
+a.aterrar();   <span class="c">// TP101: autorizado a aterrar</span>
+h.aterrar();   <span class="c">// INEM1: aguarde, pista ocupada por TP101</span>
+a.sair();      <span class="c">// TP101: pista livre</span>
+h.aterrar();   <span class="c">// INEM1: autorizado a aterrar</span></code></pre>
+<h3>Observer</h3>
+<pre><code>«interface» Subject  +attach(o) +detach(o) +notify()  ◇──*  «interface» Observer +update()
+        ▲                                                         ▲
+  ConcreteSubject (estado)                                 ConcreteObserver</code></pre>
+<p>Dependência um-para-muitos: quando o sujeito muda, todos os observadores são notificados. <strong>Vantagens:</strong> baixo acoplamento entre sujeito e observadores, registo dinâmico, broadcast. <strong>Desvantagens:</strong> ordem de notificação imprevisível, atualizações em cascata, fugas de memória se não se fizer detach. Exemplos: listeners de GUI, subscrições de notícias, MVC (modelo notifica vistas).</p>
+<h3>Template Method</h3>
+<p>Uma classe abstrata define o <strong>esqueleto</strong> de um algoritmo num método concreto que chama passos abstratos ("hooks"); as subclasses implementam os passos sem mudar a estrutura. É o caso de <code>AbstractList.lastIndexOf</code>, que só usa <code>listIterator()</code> e <code>size()</code>, implementados pelas subclasses.</p>
+<h3>Iterator</h3>
+<p>Percorre os elementos de uma coleção sequencialmente <strong>sem expor a representação interna</strong> (<code>hasNext/next</code>, e <code>hasPrevious/previous</code> no <code>ListIterator</code>).</p>
+<h3>Outros que convém reconhecer</h3>
+<ul>
+<li><strong>Command:</strong> encapsula um pedido num objeto (undo/redo, filas de tarefas).</li>
+<li><strong>State:</strong> o objeto muda de comportamento quando muda o estado interno (uma classe por estado).</li>
+<li><strong>Visitor:</strong> acrescenta operações a uma estrutura de objetos sem alterar as classes.</li>
+<li><strong>Memento:</strong> guarda e restaura o estado de um objeto sem violar o encapsulamento.</li>
+</ul>
+</section>
+
+<section id="arq" data-nav="9 · Arquiteturas" data-grp="Padrões" data-track>
+<h2>9 · Arquiteturas de software<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table><thead><tr><th>Arquitetura</th><th>Modelo</th><th>Vantagens</th><th>Desvantagens</th><th>Exemplo</th></tr></thead><tbody>
+<tr><td><strong>Microkernel</strong> (plug-in)</td><td>Núcleo mínimo (registo de plug-ins, ciclo de vida, comunicação) + plug-ins independentes que acrescentam funcionalidades através de contratos</td><td>Extensibilidade e personalização, agilidade, plug-ins testáveis isoladamente, núcleo estável</td><td>Escalabilidade limitada pelo núcleo, contratos difíceis de mudar, gestão de versões e dependências entre plug-ins</td><td>VS Code e Eclipse (extensões), browsers, Jenkins</td></tr>
+<tr><td><strong>Camadas</strong> (n-tier)</td><td>Apresentação → processos → negócio → dados; cada camada só usa a de baixo</td><td>Separação de responsabilidades, testabilidade, substituir uma camada</td><td>Desempenho (atravessar camadas), mudanças transversais, risco de monólito</td><td>Aplicação empresarial: portais → processos de utilizador → modelos de negócio → ERP/BD (exame especial 2021/22)</td></tr>
+<tr><td>MVC</td><td>Modelo (dados), Vista (apresentação), Controlador (entrada)</td><td>Várias vistas do mesmo modelo</td><td>Mais classes</td><td>Frameworks web e GUI</td></tr>
+<tr><td>Microserviços</td><td>Serviços pequenos, independentes, comunicam por rede</td><td>Escalar e implantar separadamente</td><td>Complexidade distribuída, consistência</td><td>Plataformas de streaming</td></tr>
+<tr><td>Event-driven</td><td>Produtores e consumidores de eventos via broker</td><td>Desacoplamento, assíncrono</td><td>Difícil depurar e garantir ordem</td><td>Sistemas IoT</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="t1" data-nav="ATP1 2024/25 resolvido" data-grp="Testes resolvidos" data-track>
+<h2>ATP1 2024/25 (2 de abril de 2025)<span class="done-tag" hidden>estudado ✓</span></h2>
+<details><summary>1. Low Coupling e Information Expert</summary><div class="in"><p><strong>Low Coupling:</strong> distribuir responsabilidades de forma a minimizar as dependências entre classes, para que uma mudança numa não obrigue a mudar as outras; facilita manutenção, reutilização e testes. <strong>Information Expert:</strong> atribuir uma responsabilidade à classe que tem a informação necessária para a cumprir (ex.: <code>Order.getTotal()</code> soma as suas linhas); melhora o encapsulamento e a coesão.</p></div></details>
+<details><summary>2. Copiar ficheiros entre dispositivos (program to an interface / DIP)</summary><div class="in">
+<pre><code><span class="k">public</span> <span class="k">interface</span> Storage {
+    <span class="k">byte</span>[] read(File file);
+    <span class="k">boolean</span> write(File file, <span class="k">byte</span>[] data);
+}
+<span class="k">public</span> <span class="k">class</span> UsbStorage <span class="k">implements</span> Storage {
+    <span class="k">public</span> <span class="k">byte</span>[] read(File fn) { /* ... */ }
+    <span class="k">public</span> <span class="k">boolean</span> write(File fn, <span class="k">byte</span>[] data) { /* ... */ }
+}
+<span class="k">public</span> <span class="k">class</span> CloudStorage <span class="k">implements</span> Storage {
+    <span class="k">public</span> <span class="k">byte</span>[] read(File fn) { /* ... */ }
+    <span class="k">public</span> <span class="k">boolean</span> write(File fn, <span class="k">byte</span>[] data) { /* ... */ }
+}
+<span class="k">public</span> <span class="k">class</span> TransferUtils {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> copyFile(Storage from, File orig, Storage to, File dest) {   <span class="c">// abstrações!</span>
+        <span class="k">byte</span>[] data = from.read(orig);
+        <span class="c">// transformar, comprimir, cifrar...</span>
+        to.write(dest, data);
+    }
+}</code></pre>
+<div class="box bad"><span class="t">A resolução que circula fica a meio</span>Cria a interface e a classe abstrata mas mantém <code>copyFile(UsbStorage usb, …, CloudStorage ssd, …)</code>. O módulo de alto nível continua a depender das classes concretas: é precisamente o que o exercício pede para mudar. Com <code>Storage</code> nos parâmetros, copia-se entre quaisquer dois dispositivos, incluindo novos, sem alterar <code>TransferUtils</code>.</div></div></details>
+<details><summary>3. SomeClass com getInstance()</summary><div class="in"><p>a) <strong>Singleton</strong>. b) <strong>Lazy initialization:</strong> a instância só é criada na primeira chamada a <code>getInstance()</code> (enquanto não é precisa, <code>instance</code> fica a <code>null</code>), poupando recursos se nunca for usada. Nota: esta versão não é thread-safe; usar <code>synchronized</code> ou inicialização na declaração.</p></div></details>
+<details><summary>4. Employee.instance()<wbr>.name(…)<wbr>.department(…)<wbr>.build()</summary><div class="in"><p><strong>Builder</strong>: código na secção 6. A resolução que circula guarda um único <code>Employee</code> dentro do builder e devolve-o em <code>build()</code>; funciona neste main, mas o objeto continua alterável através do builder depois de construído. A versão da secção 6 cria um objeto novo e imutável em cada <code>build()</code>.</p></div></details>
+<details><summary>5. NewApplication → Wrapper → LegacyComponent</summary><div class="in"><p>a) <strong>Adapter</strong> (wrapper). b) Os dois tipos de implementação são o <strong>object adapter</strong> (composição: o adapter tem uma referência ao <code>LegacyComponent</code> e delega, como no diagrama) e o <strong>class adapter</strong> (herança: o adapter estende <code>LegacyComponent</code> e implementa a interface que a aplicação espera). A resolução que circula dá exemplos de uso em vez de tipos de implementação.</p></div></details>
+<details><summary>6. Decorator: UML, exemplo e vantagens</summary><div class="in"><p>UML, código (Jogador/Tenista/Xadrezista) e vantagens na secção 7. Saída testada: <code>Maria joga tenis xadrez</code>.</p></div></details>
+</section>
+
+<section id="t2" data-nav="ATP2 2024/25 e 2022/23 resolvidos" data-grp="Testes resolvidos" data-track>
+<h2>ATP2 2024/25 (4 de junho de 2025) e 2022/23<span class="done-tag" hidden>estudado ✓</span></h2>
+<details><summary>1. Chefs (SushiChef, PastaChef, …) — 2022/23: tradutores</summary><div class="in"><p>a) <strong>Chain of Responsibility.</strong> O pedido (os últimos 7 caracteres) entra no 1.º handler; cada chef verifica se sabe preparar a comida; se sim prepara, senão passa ao sucessor; se nenhum souber, o último responde "No chef can prepare this food.". b) UML: <code>Handler</code> abstrato com <code>-next: Handler</code> (auto-associação) e <code>handle()</code>; subclasses <code>SushiChef</code>, <code>PastaChef</code>, <code>BurgerChef</code>, <code>PizzaChef</code>; o cliente conhece só o 1.º handler. Código na secção 8; a execução produz exatamente as 5 linhas do enunciado.</p>
+<p>Em 2022/23 a mesma pergunta usava <code>new TranslatorEN(new TranslatorES(new TranslatorPT(new TranslatorUK())))</code>: também é <strong>Chain of Responsibility</strong> (cada tradutor trata a sua língua ou passa ao seguinte; FR não tem ninguém). Não é Strategy.</p></div></details>
+<details><summary>2. Mediator: problema, diagrama e main</summary><div class="in"><p>Problema: num aeroporto, aviões e helicópteros querem aterrar mas não se conhecem; pedem à torre de controlo, que decide quem usa a pista. Diagrama e main na secção 8 (testado).</p></div></details>
+<details><summary>3. Collections.sort(list) → list.sort(null)</summary><div class="in"><p>a) <strong>Strategy</strong>: o critério de comparação é uma estratégia injetável (<code>Comparator</code>; com <code>null</code> usa a ordem natural, <code>Comparable</code>), e o algoritmo de ordenação pode variar sem mudar o código cliente. <code>Collections.sort</code> também delega no método da própria lista (cada <code>List</code> pode ter a sua implementação). Vantagens: trocar o critério/algoritmo sem modificar o contexto, reutilização, OCP. b) UML: <code>List</code> (contexto) ── <code>Comparator&lt;T&gt;</code> «interface» com <code>compare()</code>, implementado por comparadores concretos.</p></div></details>
+<details><summary>4. AbstractList.lastIndexOf</summary><div class="in"><p>a) <strong>Template Method</strong> e <strong>Iterator</strong>. b) <code>lastIndexOf</code> é um método concreto (esqueleto) que só usa operações abstratas: <code>listIterator(size())</code> e <code>size()</code> são implementadas por cada subclasse (ArrayList, LinkedList…). O <code>ListIterator</code> percorre a lista do fim para o início com <code>hasPrevious()/previous()</code> sem expor a estrutura interna; quando encontra o elemento devolve <code>nextIndex()</code>, que é o índice do elemento acabado de visitar.</p></div></details>
+<details><summary>5. Arquitetura microkernel</summary><div class="in"><p>Ver a tabela da secção 9. Resposta-tipo: núcleo com a funcionalidade mínima e um registo de plug-ins; cada plug-in é independente e liga-se ao núcleo por um contrato. Vantagens: extensibilidade, personalização, isolamento e testabilidade dos plug-ins. Desvantagens: escalabilidade e desempenho limitados pelo núcleo, contratos difíceis de evoluir. Exemplo: VS Code ou Eclipse (o editor é o núcleo; Java e Python são extensões).</p></div></details>
+<details><summary>2022/23 — 3. Revista de telemóveis com vários algoritmos de ordenação</summary><div class="in"><p><strong>Strategy</strong>: interface <code>SortStrategy</code> com <code>sort(List&lt;Phone&gt;, Comparator)</code>, implementada por <code>QuickSort</code>, <code>MergeSort</code>, <code>InsertionSort</code>…; o contexto (<code>PhoneCatalog</code>) recebe a estratégia e pode trocá-la conforme o desempenho pretendido (tempo ou memória). O atributo de ordenação pode ser outra estratégia (<code>Comparator</code> por preço, memória…).</p></div></details>
+</section>
+
+<section id="pratico" data-nav="Exame prático 2024/25" data-grp="Testes resolvidos" data-track>
+<h2>Exame prático 2024/25 (4 de junho de 2025, 1h45)<span class="done-tag" hidden>estudado ✓</span></h2>
+<p class="lead">Gestor de serviços de uma empresa online. O enunciado tinha ficheiros base no desktop que não estão no material; esta solução escreve tudo de raiz e reproduz exatamente a saída esperada (preços 34.0 e 100.0 dos pacotes, linhas indentadas, ordem das chaves). Compilada e executada com Java 21.</p>
+<div class="tw"><table><thead><tr><th>Alínea</th><th>Pedido</th><th>Padrão</th></tr></thead><tbody>
+<tr><td>a)</td><td>Completar <code>GestorServicosStandard</code> (registar substitui, existe, obter, eliminar)</td><td>Interface + <code>TreeMap</code> (chaves ordenadas)</td></tr>
+<tr><td>b)</td><td>Pacotes de serviços com 20 % de desconto e meses de fidelização</td><td><strong>Composite</strong></td></tr>
+<tr><td>c)</td><td>Gestor onde não se pode registar nem eliminar</td><td><strong>Proxy</strong> (de proteção)</td></tr>
+<tr><td>d)</td><td>Registo único de ações + gestor que regista no histórico</td><td><strong>Singleton</strong> (Logger) + <strong>Decorator</strong> (GestorServicosHistorico)</td></tr>
+</tbody></table></div>
+<pre><code><span class="k">interface</span> Servico { String getNome(); String getDescricao(); <span class="k">double</span> getPreco(); }
+
+<span class="k">abstract</span> <span class="k">class</span> ServicoBase <span class="k">implements</span> Servico {
+    <span class="k">private</span> <span class="k">final</span> String nome, descricao;
+    <span class="k">private</span> <span class="k">final</span> <span class="k">double</span> preco;
+    <span class="k">protected</span> ServicoBase(String nome, String descricao, <span class="k">double</span> preco) {
+        <span class="k">this</span>.nome = nome; <span class="k">this</span>.descricao = descricao; <span class="k">this</span>.preco = preco;
+    }
+    <span class="k">public</span> String getNome() { <span class="k">return</span> nome; }
+    <span class="k">public</span> String getDescricao() { <span class="k">return</span> descricao; }
+    <span class="k">public</span> <span class="k">double</span> getPreco() { <span class="k">return</span> preco; }
+    <span class="k">protected</span> <span class="k">abstract</span> String tipo();
+    @Override <span class="k">public</span> String toString() {
+        <span class="k">return</span> tipo() + <span class="s">" com nome="</span> + nome + <span class="s">", descricao="</span> + descricao + <span class="s">", preco="</span> + getPreco();
+    }
+}
+<span class="k">class</span> Internet <span class="k">extends</span> ServicoBase {
+    Internet(String n, String d, <span class="k">double</span> p) { <span class="k">super</span>(n, d, p); }
+    <span class="k">protected</span> String tipo() { <span class="k">return</span> <span class="s">"Internet"</span>; }
+}
+<span class="k">class</span> Telefone <span class="k">extends</span> ServicoBase {
+    Telefone(String n, String d, <span class="k">double</span> p) { <span class="k">super</span>(n, d, p); }
+    <span class="k">protected</span> String tipo() { <span class="k">return</span> <span class="s">"Telefone"</span>; }
+}
+<span class="k">class</span> Televisao <span class="k">extends</span> ServicoBase {
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> canais;
+    Televisao(String n, String d, <span class="k">double</span> p, <span class="k">int</span> canais) { <span class="k">super</span>(n, d, p); <span class="k">this</span>.canais = canais; }
+    <span class="k">protected</span> String tipo() { <span class="k">return</span> <span class="s">"Televisao"</span>; }
+    @Override <span class="k">public</span> String toString() { <span class="k">return</span> <span class="k">super</span>.toString() + <span class="s">", canais="</span> + canais; }
+}
+
+/* b) Composite: um pacote É um Servico feito de Servicos */
+<span class="k">class</span> Pacote <span class="k">implements</span> Servico {
+    <span class="k">private</span> <span class="k">static</span> <span class="k">final</span> <span class="k">double</span> DESCONTO = <span class="n">0.20</span>;
+    <span class="k">private</span> <span class="k">final</span> String nome, descricao;
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> mesesFidelizacao;
+    <span class="k">private</span> <span class="k">final</span> List&lt;Servico&gt; servicos = <span class="k">new</span> ArrayList&lt;&gt;();
+    Pacote(String nome, String descricao, <span class="k">int</span> meses) {
+        <span class="k">this</span>.nome = nome; <span class="k">this</span>.descricao = descricao; <span class="k">this</span>.mesesFidelizacao = meses;
+    }
+    <span class="k">public</span> Pacote adicionar(Servico s) { servicos.add(s); <span class="k">return</span> <span class="k">this</span>; }
+    <span class="k">public</span> String getNome() { <span class="k">return</span> nome; }
+    <span class="k">public</span> String getDescricao() { <span class="k">return</span> descricao; }
+    <span class="k">public</span> <span class="k">double</span> getPreco() {
+        <span class="k">double</span> total = <span class="n">0</span>;
+        <span class="k">for</span> (Servico s : servicos) total += s.getPreco();
+        <span class="k">return</span> total * (<span class="n">1</span> - DESCONTO);
+    }
+    @Override <span class="k">public</span> String toString() {
+        StringBuilder sb = <span class="k">new</span> StringBuilder(<span class="s">"Pacote com nome="</span> + nome + <span class="s">", descricao="</span> + descricao
+                + <span class="s">", preco="</span> + getPreco() + <span class="s">" com fidelizacao de "</span> + mesesFidelizacao + <span class="s">" meses"</span>);
+        <span class="k">for</span> (Servico s : servicos) sb.append(<span class="s">"\n\t"</span>).append(s);
+        <span class="k">return</span> sb.toString();
+    }
+}
+
+<span class="k">interface</span> GestorServicos {
+    <span class="k">void</span> registarServico(String chave, Servico servico);
+    <span class="k">boolean</span> existeServico(String chave);
+    Servico obterServico(String chave);
+    Servico eliminarServico(String chave);
+    Map&lt;String, Servico&gt; listar();
+}
+
+/* a) */
+<span class="k">class</span> GestorServicosStandard <span class="k">implements</span> GestorServicos {
+    <span class="k">private</span> <span class="k">final</span> Map&lt;String, Servico&gt; servicos = <span class="k">new</span> TreeMap&lt;&gt;();
+    <span class="k">public</span> <span class="k">void</span> registarServico(String chave, Servico s) { servicos.put(chave, s); }  <span class="c">// put substitui</span>
+    <span class="k">public</span> <span class="k">boolean</span> existeServico(String chave) { <span class="k">return</span> servicos.containsKey(chave); }
+    <span class="k">public</span> Servico obterServico(String chave) { <span class="k">return</span> servicos.get(chave); }
+    <span class="k">public</span> Servico eliminarServico(String chave) { <span class="k">return</span> servicos.remove(chave); }
+    <span class="k">public</span> Map&lt;String, Servico&gt; listar() { <span class="k">return</span> Collections.unmodifiableMap(servicos); }
+}
+
+/* c) Proxy de proteção */
+<span class="k">class</span> GestorServicosReduzidos <span class="k">implements</span> GestorServicos {
+    <span class="k">private</span> <span class="k">final</span> GestorServicos real;
+    GestorServicosReduzidos(GestorServicos real) { <span class="k">this</span>.real = real; }
+    <span class="k">public</span> <span class="k">void</span> registarServico(String c, Servico s) {
+        <span class="k">throw</span> <span class="k">new</span> UnsupportedOperationException(<span class="s">"Registar nao permitido neste gestor"</span>);
+    }
+    <span class="k">public</span> Servico eliminarServico(String c) {
+        <span class="k">throw</span> <span class="k">new</span> UnsupportedOperationException(<span class="s">"Eliminar nao permitido neste gestor"</span>);
+    }
+    <span class="k">public</span> <span class="k">boolean</span> existeServico(String c) { <span class="k">return</span> real.existeServico(c); }
+    <span class="k">public</span> Servico obterServico(String c) { <span class="k">return</span> real.obterServico(c); }
+    <span class="k">public</span> Map&lt;String, Servico&gt; listar() { <span class="k">return</span> real.listar(); }
+}
+
+/* d) Singleton */
+<span class="k">final</span> <span class="k">class</span> Logger {
+    <span class="k">private</span> <span class="k">static</span> Logger instancia;
+    <span class="k">private</span> <span class="k">final</span> List&lt;String&gt; historico = <span class="k">new</span> ArrayList&lt;&gt;();
+    <span class="k">private</span> Logger() { }
+    <span class="k">public</span> <span class="k">static</span> synchronized Logger getInstance() {
+        <span class="k">if</span> (instancia == <span class="k">null</span>) instancia = <span class="k">new</span> Logger();
+        <span class="k">return</span> instancia;
+    }
+    <span class="k">public</span> <span class="k">void</span> registar(String mensagem) { historico.add(mensagem); }
+    <span class="k">public</span> List&lt;String&gt; getHistorico() { <span class="k">return</span> Collections.unmodifiableList(historico); }
+}
+
+/* d) Decorator: acrescenta histórico a QUALQUER gestor */
+<span class="k">class</span> GestorServicosHistorico <span class="k">implements</span> GestorServicos {
+    <span class="k">private</span> <span class="k">final</span> GestorServicos gestor;
+    GestorServicosHistorico(GestorServicos gestor) { <span class="k">this</span>.gestor = gestor; }
+    <span class="k">public</span> <span class="k">void</span> registarServico(String c, Servico s) {
+        gestor.registarServico(c, s);
+        Logger.getInstance().registar(<span class="s">"registarServico("</span> + c + <span class="s">") -&gt; "</span> + s.getNome());
+    }
+    <span class="k">public</span> Servico eliminarServico(String c) {
+        Servico s = gestor.eliminarServico(c);
+        Logger.getInstance().registar(<span class="s">"eliminarServico("</span> + c + <span class="s">") -&gt; "</span> + (s == <span class="k">null</span> ? <span class="s">"inexistente"</span> : s.getNome()));
+        <span class="k">return</span> s;
+    }
+    <span class="k">public</span> <span class="k">boolean</span> existeServico(String c) { <span class="k">return</span> gestor.existeServico(c); }
+    <span class="k">public</span> Servico obterServico(String c) { <span class="k">return</span> gestor.obterServico(c); }
+    <span class="k">public</span> Map&lt;String, Servico&gt; listar() { <span class="k">return</span> gestor.listar(); }
+}</code></pre>
+<details><summary>Saída obtida (alínea b)</summary><div class="in">
+<pre><code>Ref: S_I1 - Internet com nome=100Mbps, descricao=Para uso domestico, preco=19.0
+Ref: S_I2 - Internet com nome=500Mbps, descricao=Para uso empresarial, preco=39.0
+Ref: S_I3 - Internet com nome=1Gbps, descricao=Para uso itensivo, preco=55.0
+Ref: S_P1 - Pacote com nome=FullBasic, descricao=Pacote standard, preco=34.0 com fidelizacao de 12 meses
+	Televisao com nome=Base, descricao=Canais essenciais, preco=15.5, canais=20
+	Internet com nome=100Mbps, descricao=Para uso domestico, preco=19.0
+	Telefone com nome=Nacional, descricao=Chamadas gratis para todas as redes nacionais, preco=8.0
+Ref: S_P2 - Pacote com nome=FullPlus, descricao=Pacote economico, preco=100.0 com fidelizacao de 12 meses
+	...
+Alinea c)  Bloqueado: Eliminar nao permitido neste gestor
+Alinea d)  LOG registarServico(X1) -&gt; 1Gbps
+           LOG eliminarServico(S_T2) -&gt; Gold</code></pre>
+<p>FullBasic: (15,5 + 19 + 8) × 0,8 = 34,0. FullPlus: (45 + 55 + 25) × 0,8 = 100,0.</p></div></details>
+</section>
+
+<section id="esp" data-nav="Exame especial 2021/22" data-grp="Testes resolvidos" data-track>
+<h2>Exame de época especial 2021/22<span class="done-tag" hidden>estudado ✓</span></h2>
+<ol>
+<li><strong>Low Coupling e High Cohesion</strong>: ver secção 4.</li>
+<li><strong>PenDrive/NetDrive</strong>: igual ao ATP1 2024/25, pergunta 2 (interface <code>Storage</code> e <code>copyFile(Storage, File, Storage, File)</code>).</li>
+<li><strong>Diagrama Client → Context → interface algorithm() ← ImplementationOne/Two</strong>: <strong>Strategy</strong>. Vantagens: algoritmos intermutáveis em execução, sem condicionais, OCP. Código do ponto de vista do cliente: <code>Context c = new Context(new ImplementationOne()); c.execute(); c.setStrategy(new ImplementationTwo()); c.execute();</code></li>
+<li><strong>Proxy vs Decorator</strong>: ver a caixa da secção 7.</li>
+<li><strong>Observer</strong>: modelo, vantagens e exemplo na secção 8.</li>
+<li><strong>Figura com Orchestration Portals / User Processes / Business Models / Utilities and Storage</strong>: arquitetura <strong>em camadas</strong> (layered). Vantagens: separação de responsabilidades, cada camada substituível e testável. Desvantagens: desempenho, alterações que atravessam todas as camadas.</li>
+</ol>
+</section>
+
+<section id="rev" data-nav="Revisão final" data-grp="Testes resolvidos">
+<h2>Revisão final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="p1"> Explicar SRP, OCP, LSP, ISP, DIP e DRY com um exemplo de cada</label></li>
+<li><label><input type="checkbox" data-k="p2"> Descrever os princípios GRASP e os tipos de acoplamento</label></li>
+<li><label><input type="checkbox" data-k="p3"> Reescrever código para depender de interfaces</label></li>
+<li><label><input type="checkbox" data-k="p4"> Reconhecer Singleton, Builder, Adapter, Decorator, Proxy, Composite, Strategy, Chain, Mediator, Observer, Template Method e Iterator pelo código ou pelo UML</label></li>
+<li><label><input type="checkbox" data-k="p5"> Desenhar o UML e escrever o main de Decorator, Mediator, Observer e Strategy</label></li>
+<li><label><input type="checkbox" data-k="p6"> Explicar microkernel e camadas (modelo, vantagens, desvantagens, exemplo)</label></li>
+<li><label><input type="checkbox" data-k="p7"> Fazer o exame prático 2024/25 sem olhar para a solução</label></li>
+</ul>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var KEY='guia-pds', state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('.chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var tag=document.querySelector('#'+id+' .done-tag'); if(tag) tag.hidden=!on;
+    });
+    pbar.style.width=(secBoxes.length?100*n/secBoxes.length:0)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){ cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); }); });
+  var rst=document.getElementById('rst'), cf=document.getElementById('cf');
+  rst.addEventListener('click',function(){
+    if(cf.hidden){ cf.hidden=false; rst.textContent='Confirmar limpeza'; return; }
+    state={}; save(); refresh(); cf.hidden=true; rst.textContent='Limpar progresso';
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+        if(links[en.target.id]) links[en.target.id].classList.add('on'); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AC — guia de estudo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB; --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC; --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8; --ex:#475569; --ex-bg:#EEF1F5;
+  --code-bg:#F0F2F7; --kw:#7A2BB0; --str:#1C7A3A; --cm:#7A8494; --num:#9A5700;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.confirm{font-size:12.5px;color:var(--muted);margin-top:8px}
+.mnav{display:none}
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:940px;width:100%;min-width:0}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em;text-wrap:balance}
+.hero p{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;text-wrap:balance}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);margin-left:10px}
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0;min-width:0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:12px 0;max-width:100%}
+pre code{background:none;padding:0;font-size:inherit}
+.box pre{background:var(--card)}
+pre .k{color:var(--kw);font-weight:500} pre .s{color:var(--str)} pre .c{color:var(--cm);font-style:italic} pre .n{color:var(--num)}
+.out{border-left:3px solid var(--teo)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+td code,th code{white-space:nowrap}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px;min-width:0}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px;min-width:0}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+.ov{text-decoration:overline;text-decoration-thickness:1px}
+.bits td{font-family:var(--mono);text-align:center;font-size:13px}
+.fig{margin:16px 0;overflow-x:auto}
+.fig svg{display:block;max-width:100%;height:auto}
+.fig figcaption{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:6px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details>summary{display:none}
+  .box,pre{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>AC — guia de estudo</h1>
+  <p class="sub">Arquitetura de Computadores · MIPS · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 11 capítulos estudados</div>
+  <nav id="nav">
+<a href="#intro">Antes de começar</a>
+<div class="grp">Teórica 1</div>
+<a href="#repr"><input type="checkbox" data-sec="repr" aria-label="Marcar 1 · Representação de números como estudado"><span>1 · Representação de números</span></a>
+<a href="#boole"><input type="checkbox" data-sec="boole" aria-label="Marcar 2 · Lógica e Álgebra de Boole como estudado"><span>2 · Lógica e Álgebra de Boole</span></a>
+<a href="#comb"><input type="checkbox" data-sec="comb" aria-label="Marcar 3 · Blocos combinatórios como estudado"><span>3 · Blocos combinatórios</span></a>
+<a href="#seq"><input type="checkbox" data-sec="seq" aria-label="Marcar 4 · Sequenciais e memórias como estudado"><span>4 · Sequenciais e memórias</span></a>
+<a href="#fsm"><input type="checkbox" data-sec="fsm" aria-label="Marcar 5 · Máquinas de estados como estudado"><span>5 · Máquinas de estados</span></a>
+<div class="grp">Arquitetura MIPS</div>
+<a href="#vonneumann"><input type="checkbox" data-sec="vonneumann" aria-label="Marcar 6 · Von Neumann e ISA como estudado"><span>6 · Von Neumann e ISA</span></a>
+<a href="#codif"><input type="checkbox" data-sec="codif" aria-label="Marcar 7 · Codificação de instruções como estudado"><span>7 · Codificação de instruções</span></a>
+<a href="#asm"><input type="checkbox" data-sec="asm" aria-label="Marcar 8 · Programar em assembly como estudado"><span>8 · Programar em assembly</span></a>
+<a href="#func"><input type="checkbox" data-sec="func" aria-label="Marcar 9 · Funções e stack como estudado"><span>9 · Funções e stack</span></a>
+<div class="grp">Microarquitetura</div>
+<a href="#sc"><input type="checkbox" data-sec="sc" aria-label="Marcar 10 · Datapath single-cycle como estudado"><span>10 · Datapath single-cycle</span></a>
+<a href="#mc"><input type="checkbox" data-sec="mc" aria-label="Marcar 11 · Datapath multi-cycle como estudado"><span>11 · Datapath multi-cycle</span></a>
+<div class="grp">Treino</div>
+<a href="#testes">Testes resolvidos</a>
+<a href="#erros">Erros clássicos</a>
+<a href="#checklist">Lista de verificação final</a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+  <div class="confirm" id="cf" hidden>Carrega outra vez para apagar o progresso guardado neste navegador.</div>
+</aside>
+<main>
+<div class="hero" id="top">
+<h1>AC: dos bits ao datapath do MIPS</h1>
+<p>Representação de números, Álgebra de Boole, circuitos combinatórios e sequenciais, memórias, máquinas de estados, assembly MIPS, funções e datapath single e multi-cycle. Inclui os testes de 2018-19, 2021-22 e 2023-24 resolvidos, com o código assembly testado.</p>
+</div>
+
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<h3>Avaliação</h3>
+<p>Segundo os slides de 2025: <strong>Nota final = 60% teórica + 40% prática</strong>, com mínimo de <strong>7 valores em cada componente</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Componente</th><th>Provas</th><th>Matéria típica</th></tr></thead>
+<tbody>
+<tr><td>Teórica (60%)</td><td>T1 (50%) a meio do semestre; T2 (50%) na época de exames</td><td>T1: representação, Boole, circuitos, memórias, máquinas de estados, Von Neumann. T2: codificação de instruções, datapath single e multi-cycle</td></tr>
+<tr><td>Prática (40%)</td><td>TP1 (40%), TP2 (50%), desempenho nas aulas (10%)</td><td>TP1: bases, complemento para 2, Boole, Karnaugh, circuitos. TP2: traduzir C para assembly MIPS e interpretar código</td></tr>
+</tbody></table></div>
+<p>Não é permitida calculadora: tens de saber converter bases e fazer contas em binário à mão.</p>
+
+<h3>O que sai sempre (pelos testes anteriores)</h3>
+<div class="cols">
+<div><h4>Teste 1 (teórico e prático)</h4>
+<ul>
+<li>Converter um número para base 2, 8, 16; sinal e módulo; complemento para 2</li>
+<li>Somar e dizer se há overflow</li>
+<li>IEEE 754 precisão simples</li>
+<li>Simplificar com teoremas de Boole</li>
+<li>Tabela de verdade → mintermos → Karnaugh → circuito → NAND-NAND</li>
+<li>Implementar função com descodificador ou multiplexer</li>
+<li>Memória: capacidade, endereçabilidade, RAM/ROM/SRAM/DRAM</li>
+<li>Máquina de estados completa (diagrama, tabela, equações, circuito)</li>
+<li>Von Neumann, instrução, ciclo fetch-execute (perguntas de texto)</li>
+</ul></div>
+<div><h4>Teste 2 (teórico e prático)</h4>
+<ul>
+<li>Codificar instruções em binário/hex (R, I, J), incluindo <code>beq</code> e <code>j</code></li>
+<li>Sinais de controlo do single-cycle para uma instrução</li>
+<li>Acrescentar uma instrução ao datapath (<code>sll</code>, <code>jal</code>, <code>andi</code>, <code>xori</code>)</li>
+<li>Estados da FSM multi-cycle para uma instrução</li>
+<li>Traduzir C para assembly: ciclos, arrays, strings, funções recursivas</li>
+<li>Interpretar código: valores de registos, pseudo-instruções</li>
+</ul></div>
+</div>
+<div class="box bad"><span class="t">Regra de ouro</span>
+<p>Todos os testes dizem "justifique todas as respostas". Mostra as divisões sucessivas, o complemento passo a passo, o teorema usado em cada linha, os campos da instrução separados. No assembly, <strong>comenta cada linha com o C correspondente</strong> e preenche a tabela de registos.</p></div>
+</section>
+
+<section id="repr" data-nav="1 · Representação de números" data-grp="Teórica 1" data-track>
+<h2>1 · Representação de números<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Bases e conversões</h3>
+<div class="tw"><table>
+<thead><tr><th>Conversão</th><th>Método</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td>Base 2 → 10</td><td>Soma de cada bit × potência de 2</td><td>1011₂ = 8+0+2+1 = 11</td></tr>
+<tr><td>Base 10 → 2</td><td>Divisões sucessivas por 2; restos lidos <strong>de baixo para cima</strong></td><td>103 → 1100111₂</td></tr>
+<tr><td>2 ↔ 16</td><td>Grupos de 4 bits a partir da direita</td><td>0110 0111₂ = 0x67</td></tr>
+<tr><td>2 ↔ 8</td><td>Grupos de 3 bits a partir da direita</td><td>1 100 111₂ = 147₈</td></tr>
+<tr><td>Parte fracionária → 2</td><td>Multiplicações sucessivas por 2; parte inteira de cada uma, de cima para baixo</td><td>0,625 → 0,101₂</td></tr>
+</tbody></table></div>
+<p>Potências de 2 a decorar: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048. Prefixos: kilo = 2¹⁰ = 1024, mega = 2²⁰, giga = 2³⁰. Byte = 8 bits; nibble = 4 bits; <em>lsb</em>/<em>msb</em> = bit menos/mais significativo; <em>LSB</em>/<em>MSB</em> = byte menos/mais significativo. Informação de uma variável com N níveis: ⌈log₂ N⌉ bits (21 níveis precisam de 5 bits).</p>
+
+<h3>Números com sinal</h3>
+<div class="tw"><table>
+<thead><tr><th>Sistema (N bits)</th><th>Gama</th><th>Como obter o negativo</th><th>Problemas</th></tr></thead>
+<tbody>
+<tr><td>Sem sinal</td><td>[0, 2ᴺ−1]</td><td>—</td><td>—</td></tr>
+<tr><td>Sinal e módulo</td><td>[−(2ᴺ⁻¹−1), 2ᴺ⁻¹−1]</td><td>pôr o bit da esquerda a 1</td><td>dois zeros (+0 e −0); somas não funcionam diretamente</td></tr>
+<tr><td>Complemento para 2</td><td>[−2ᴺ⁻¹, 2ᴺ⁻¹−1]</td><td><strong>inverter todos os bits e somar 1</strong></td><td>assimétrica (há mais um negativo)</td></tr>
+</tbody></table></div>
+<p>Em complemento para 2 o bit da esquerda <strong>pesa −2ᴺ⁻¹</strong>. Com 4 bits: 0111 = 7, 1000 = −8, 1111 = −1. Atalho para negar: copia os bits da direita até ao primeiro 1 (inclusive) e inverte os restantes.</p>
+
+<div class="box ex"><span class="t">Exemplo completo (TP1 2023-24): 103</span>
+<ul>
+<li>103 = 64+32+4+2+1 → <strong>1100111₂</strong> = <strong>147₈</strong> (1|100|111) = <strong>0x67</strong> (0110|0111)</li>
+<li>−103 em sinal e módulo com 8 bits: <strong>1</strong>1100111</li>
+<li>−103 em complemento para 2 com 8 bits: 103 = 01100111 → inverter 10011000 → somar 1 → <strong>10011001</strong></li>
+</ul></div>
+
+<h3>Soma e overflow</h3>
+<div class="box teo"><span class="t">Quando há overflow</span>
+<ul>
+<li><strong>Sem sinal</strong>: há overflow se houver carry para fora do bit mais significativo (o resultado não cabe em N bits).</li>
+<li><strong>Complemento para 2</strong>: há overflow se dois positivos dão negativo, ou dois negativos dão positivo. <strong>Nunca</strong> há overflow a somar números de sinais diferentes. O carry final <strong>não</strong> indica overflow em C2.</li>
+<li>Equação lógica (bits de sinal A₃, B₃, S₃): Ov = <span class="ov">A₃</span>·<span class="ov">B₃</span>·S₃ + A₃·B₃·<span class="ov">S₃</span>. Alternativa: Ov = Cin₃ ⊕ Cout₃.</li>
+</ul></div>
+<div class="box ex"><span class="t">Exemplos de testes</span>
+<ul>
+<li>0x56 + 0x4C (C2, 8 bits) = 01010110 + 01001100 = 10100010 = 0xA2. Dois positivos deram negativo (−94): <strong>overflow</strong>.</li>
+<li>153₈ + 00101101₂ sem sinal: 153₈ = 01101011 (107); 107 + 45 = 152 = <strong>10011000</strong>, cabe em 8 bits. Os mesmos bits em C2: dois positivos dão um número com bit de sinal 1 → <strong>overflow</strong>.</li>
+<li>x = 11000111 (−57), y = 01001011 (75) em C2. x+y = 00010010 (18), sem overflow (sinais diferentes). x−y = −132 &lt; −128 → <strong>overflow</strong> (o resultado em 8 bits seria 01111100).</li>
+</ul></div>
+<p><strong>Extensão de sinal</strong> (passar para mais bits): sem sinal, acrescentar zeros; sinal e módulo, mover o sinal para a esquerda e pôr zeros no meio; complemento para 2, <strong>repetir o bit de sinal</strong> (1101 → 11111101).</p>
+<p>Multiplicação binária: igual à decimal, com parcelas 0 ou o próprio número deslocado. 1011 × 0101 = 1011 + 101100 = 110111 (11 × 5 = 55).</p>
+
+<h3>Vírgula fixa</h3>
+<p>Bits à direita da vírgula valem 2⁻¹, 2⁻², ... 10,25 = 1010,01₂. <strong>Erro de representação</strong> = metade do peso do último bit. Para manter a precisão de 9,6 (uma casa decimal, erro ±0,05) precisas de bits até 2⁻⁴ = 0,0625 (erro 0,03): 9,6 ≈ 1001,1001₂ (9,5625).</p>
+
+<h3>IEEE 754 precisão simples (32 bits)</h3>
+<div class="tw"><table class="bits">
+<thead><tr><th>S (1 bit)</th><th>Expoente (8 bits)</th><th>Mantissa (23 bits)</th></tr></thead>
+<tbody><tr><td>0 = +, 1 = −</td><td>expoente real + 127 (bias)</td><td>parte depois da vírgula de 1,xxx (o 1 está escondido)</td></tr></tbody></table></div>
+<p>Valor = (−1)ˢ × 1,mantissa × 2^(expoente − 127). Precisão dupla: 1 + 11 + 52 bits, bias 1023.</p>
+<div class="box met"><span class="t">Método: decimal → IEEE 754 (exemplo 9,625, TT1 2018-19)</span>
+<ol>
+<li>Converter: 9 = 1001; 0,625 = 0,101 → 1001,101₂</li>
+<li>Normalizar: 1,001101 × 2³</li>
+<li>Sinal 0; expoente 3 + 127 = 130 = 10000010; mantissa 00110100000000000000000</li>
+<li>Juntar: 0 10000010 00110100000000000000000 = <strong>0x411A0000</strong></li>
+</ol>
+<p>Outros: 5,5 = 1,011 × 2² → 0x40B00000. Ao contrário, 0xBF400000 = 1 01111110 100... → −1,1₂ × 2⁻¹ = <strong>−0,75</strong>.</p></div>
+<div class="tw"><table>
+<thead><tr><th>Caso especial</th><th>Expoente</th><th>Mantissa</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>00000000</td><td>0</td></tr>
+<tr><td>±∞</td><td>11111111</td><td>0</td></tr>
+<tr><td>NaN</td><td>11111111</td><td>≠ 0</td></tr>
+</tbody></table></div>
+<p><strong>Soma em vírgula flutuante</strong>: extrair expoente e mantissa; repor o 1 escondido; deslocar à direita a mantissa do menor até os expoentes ficarem iguais; somar; normalizar; arredondar; voltar a juntar. Exemplo dos slides: 0x3FC00000 (1,1×2⁰) + 0x40500000 (1,101×2¹) = 0,11×2¹ + 1,101×2¹ = 10,011×2¹ = 1,0011×2² = <strong>0x40980000</strong> (4,75).</p>
+<h3>Caracteres</h3>
+<p>ASCII usa 7 bits (128 símbolos). 'A' = 0x41 (65), 'a' = 0x61 (97), '0' = 0x30 (48). A diferença entre minúscula e maiúscula é 0x20 (32): para converter, soma ou subtrai 32. UTF-8 é compatível com ASCII.</p>
+</section>
+
+<section id="boole" data-nav="2 · Lógica e Álgebra de Boole" data-grp="Teórica 1" data-track>
+<h2>2 · Lógica e Álgebra de Boole<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Portas lógicas</h3>
+<div class="tw"><table>
+<thead><tr><th>A B</th><th>AND</th><th>OR</th><th>NAND</th><th>NOR</th><th>XOR</th><th>XNOR</th></tr></thead>
+<tbody>
+<tr><td>0 0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>0 1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1 0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1 1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+</tbody></table></div>
+<p>A ⊕ B = <span class="ov">A</span>B + A<span class="ov">B</span>. Precedência: NOT, depois AND, depois OR (A + BC = A + (B·C)).</p>
+<h3>Teoremas (cada um tem o dual: troca · por + e 0 por 1)</h3>
+<div class="tw"><table>
+<thead><tr><th>Nome</th><th>Forma ·</th><th>Forma +</th></tr></thead>
+<tbody>
+<tr><td>T1 Identidade</td><td>B·1 = B</td><td>B+0 = B</td></tr>
+<tr><td>T2 Elemento absorvente</td><td>B·0 = 0</td><td>B+1 = 1</td></tr>
+<tr><td>T3 Idempotência</td><td>B·B = B</td><td>B+B = B</td></tr>
+<tr><td>T4 Involução</td><td colspan="2"><span class="ov"><span class="ov">B</span></span> = B</td></tr>
+<tr><td>T5 Complementaridade</td><td>B·<span class="ov">B</span> = 0</td><td>B+<span class="ov">B</span> = 1</td></tr>
+<tr><td>T6 Comutatividade</td><td>BC = CB</td><td>B+C = C+B</td></tr>
+<tr><td>T7 Associatividade</td><td>(BC)D = B(CD)</td><td>(B+C)+D = B+(C+D)</td></tr>
+<tr><td>T8 Distributividade</td><td>BC + BD = B(C+D)</td><td>(B+C)(B+D) = B + CD <em>(só existe em Boole)</em></td></tr>
+<tr><td>T9 Absorção</td><td>B(B+C) = B</td><td>B + BC = B</td></tr>
+<tr><td>T10 Adjacência</td><td>BC + B<span class="ov">C</span> = B</td><td>(B+C)(B+<span class="ov">C</span>) = B</td></tr>
+<tr><td>T11 Consenso</td><td colspan="2">BC + <span class="ov">B</span>D + CD = BC + <span class="ov">B</span>D</td></tr>
+<tr><td>T12 DeMorgan</td><td><span class="ov">AB</span> = <span class="ov">A</span> + <span class="ov">B</span></td><td><span class="ov">A+B</span> = <span class="ov">A</span>·<span class="ov">B</span></td></tr>
+</tbody></table></div>
+<p>Um útil que deriva destes: A + <span class="ov">A</span>B = A + B.</p>
+<div class="box ex"><span class="t">Simplificação justificada (TP1 2023-24)</span>
+<p>Y = (<span class="ov">A</span>B + AB)D + <span class="ov">B</span>(C + AC) + CD</p>
+<ol>
+<li>(<span class="ov">A</span>+A)B = B (T8 e T5, T1) → BD</li>
+<li>C + AC = C (T9, absorção) → <span class="ov">B</span>C</li>
+<li>Y = BD + <span class="ov">B</span>C + CD</li>
+<li>Consenso (T11): CD é redundante → <strong>Y = BD + <span class="ov">B</span>C</strong></li>
+</ol>
+<p>A resolução manuscrita que circula pára em BD + <span class="ov">B</span>C + A<span class="ov">B</span>C + CD, que não está simplificada ao máximo.</p></div>
+
+<h3>Formas canónicas</h3>
+<ul>
+<li><strong>Mintermo</strong>: produto com todas as variáveis, vale 1 só numa linha. <strong>1.ª forma canónica</strong> (SoP): soma dos mintermos onde F = 1. F = Σm(...).</li>
+<li><strong>Maxtermo</strong>: soma com todas as variáveis, vale 0 só numa linha. <strong>2.ª forma canónica</strong> (PoS): produto dos maxtermos onde F = 0. F = ΠM(...). Na linha 010 o maxtermo é (A + <span class="ov">B</span> + C): variável a 0 aparece direta, a 1 aparece negada.</li>
+<li><strong>NAND-NAND</strong> (3.ª forma): parte da SoP, nega duas vezes e aplica DeMorgan: AB + CD = <span class="ov"><span class="ov">AB</span>·<span class="ov">CD</span></span>. Os AND passam a NAND e o OR final passa a NAND.</li>
+<li><strong>NOR-NOR</strong> (4.ª forma): parte da PoS e faz o mesmo.</li>
+<li>Conjuntos completos: {AND, OR, NOT}, {AND, NOT}, {OR, NOT}, {NAND}, {NOR}.</li>
+</ul>
+
+<h3>Mapas de Karnaugh</h3>
+<div class="box met"><span class="t">Regras</span>
+<ol>
+<li>Ordem das linhas/colunas em <strong>código de Gray</strong>: 00, 01, 11, 10 (só muda um bit entre vizinhos).</li>
+<li>Agrupa 1's adjacentes em retângulos de 1, 2, 4, 8 células (potências de 2).</li>
+<li>Os grupos podem dar a volta pelas arestas (o mapa "fecha" como um cilindro).</li>
+<li>Faz os grupos <strong>o maior possível</strong> e usa o <strong>menor número</strong> de grupos que cubra todos os 1's.</li>
+<li>Don't cares (X) entram num grupo só se ajudarem.</li>
+<li>Cada grupo dá um produto com as variáveis que <strong>não mudam</strong> dentro dele.</li>
+</ol></div>
+<div class="box ex"><span class="t">Exemplo (TP1 2023-24): F = 1 nas linhas 000, 010, 100, 101</span>
+<div class="tw"><table>
+<thead><tr><th>A \ BC</th><th class="c">00</th><th class="c">01</th><th class="c">11</th><th class="c">10</th></tr></thead>
+<tbody>
+<tr><td>0</td><td class="c">1</td><td class="c">0</td><td class="c">0</td><td class="c">1</td></tr>
+<tr><td>1</td><td class="c">1</td><td class="c">1</td><td class="c">0</td><td class="c">0</td></tr>
+</tbody></table></div>
+<p>Canónica: F = <span class="ov">A</span><span class="ov">B</span><span class="ov">C</span> + <span class="ov">A</span>B<span class="ov">C</span> + A<span class="ov">B</span><span class="ov">C</span> + A<span class="ov">B</span>C. Grupo 1: as duas pontas da linha A=0 (000 e 010, dão a volta) → <span class="ov">A</span><span class="ov">C</span>. Grupo 2: 100 e 101 → A<span class="ov">B</span>. <strong>F = <span class="ov">A</span><span class="ov">C</span> + A<span class="ov">B</span></strong>. NAND-NAND: F = <span class="ov"><span class="ov"><span class="ov">A</span><span class="ov">C</span></span>·<span class="ov">A<span class="ov">B</span></span></span>.</p></div>
+
+<h3>Tempo e ruído</h3>
+<ul>
+<li><strong>Tempo de propagação</strong> (t<sub>pd</sub>): tempo <em>máximo</em> desde a mudança da entrada até a saída estabilizar (caminho crítico). <strong>Tempo de contaminação</strong> (t<sub>cd</sub>): tempo <em>mínimo</em> até a saída começar a mudar (caminho curto).</li>
+<li><strong>Glitch</strong>: uma única mudança na entrada provoca várias mudanças na saída (um pulso breve indesejado). Causa: o sinal chega à saída por caminhos com atrasos diferentes. Evita-se acrescentando o termo de consenso que cobre a transição entre os dois grupos do Karnaugh.</li>
+<li><strong>Margens de ruído</strong>: NM<sub>H</sub> = V<sub>OH</sub> − V<sub>IH</sub>; NM<sub>L</sub> = V<sub>IL</sub> − V<sub>OL</sub>. Entre V<sub>IL</sub> e V<sub>IH</sub> fica a zona proibida.</li>
+</ul>
+</section>
+
+<section id="comb" data-nav="3 · Blocos combinatórios" data-grp="Teórica 1" data-track>
+<h2>3 · Blocos combinatórios<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Multiplexer (mux)</h3>
+<p>N entradas de dados, log₂N entradas de seleção, 1 saída. Mux 2:1: Y = <span class="ov">S</span>D₀ + SD₁.</p>
+<div class="box met"><span class="t">Implementar funções com mux</span>
+<ul>
+<li><strong>Mux 2ⁿ:1 com n variáveis</strong>: as variáveis vão para a seleção e cada entrada D recebe a constante 0 ou 1 da tabela de verdade.</li>
+<li><strong>Mux mais pequeno (2ⁿ⁻¹:1)</strong>: usa n−1 variáveis na seleção; cada entrada recebe 0, 1, a última variável ou a sua negação. Agrupa a tabela em pares de linhas e vê como F depende da última variável.</li>
+<li><strong>Mux 4:1 com muxes 2:1</strong> (TP1 2023-24): dois muxes no primeiro nível, ambos com seleção S₀ (um escolhe D₀/D₁, o outro D₂/D₃); um terceiro mux com seleção S₁ escolhe entre as duas saídas.</li>
+</ul></div>
+<div class="box ex"><span class="t">TT1 2018-19: F com mux 2:1</span>
+<p>Tabela: F = 1 em 000, 001, 100, 111. Para A=0: F = <span class="ov">B</span>. Para A=1: F = <span class="ov">B⊕C</span> (BC + <span class="ov">B</span><span class="ov">C</span>). Mux 2:1 com seleção A: D₀ = <span class="ov">B</span>, D₁ = XNOR(B, C).</p></div>
+
+<h3>Descodificador</h3>
+<p>N entradas, 2ᴺ saídas; fica ativa só a saída cujo índice está na entrada. Cada saída Yᵢ é o mintermo i. Por isso, para implementar uma função: liga as variáveis às entradas e faz o <strong>OR das saídas correspondentes aos mintermos onde F = 1</strong>. Usado nas memórias para ativar a <em>wordline</em> do endereço.</p>
+
+<h3>Somador completo de 1 bit</h3>
+<p>Entradas A, B, Cin; saídas S e Cout:</p>
+<p>S = A ⊕ B ⊕ Cin &nbsp;&nbsp;&nbsp; Cout = AB + ACin + BCin</p>
+<p>Somador de N bits em cascata (<em>ripple-carry</em>): o Cout de um bit é o Cin do seguinte. É lento porque o carry tem de atravessar todos os somadores.</p>
+<div class="box ex"><span class="t">TP1 2023-24: somador de 2 bits (A₁A₀ + B₁B₀ = Y₂Y₁Y₀)</span>
+<p>Y₀ = A₀ ⊕ B₀; <strong>Y₁ = A₁ ⊕ B₁ ⊕ (A₀B₀)</strong>; Y₂ = A₁B₁ + (A₁ + B₁)A₀B₀. Em SoP mínima pelo Karnaugh, Y₁ fica com 6 termos (o XOR não simplifica em SoP): <span class="ov">A₁</span><span class="ov">A₀</span>B₁ + <span class="ov">A₁</span>B₁<span class="ov">B₀</span> + A₁<span class="ov">A₀</span><span class="ov">B₁</span> + A₁<span class="ov">B₁</span><span class="ov">B₀</span> + <span class="ov">A₁</span>A₀<span class="ov">B₁</span>B₀ + A₁A₀B₁B₀.</p></div>
+<p>Outros blocos: comparadores, ALU (várias operações em paralelo e um mux escolhe o resultado), shifters.</p>
+
+<h3>Exercício típico: detetor de diferenças (TP1 2018-19)</h3>
+<p>Saída I = 1 quando A₁A₀ ≠ B₁B₀. Basta: <strong>I = (A₁ ⊕ B₁) + (A₀ ⊕ B₀)</strong>, duas XOR e uma OR.</p>
+</section>
+
+<section id="seq" data-nav="4 · Sequenciais e memórias" data-grp="Teórica 1" data-track>
+<h2>4 · Circuitos sequenciais e memórias<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Num circuito <strong>sequencial</strong> a saída depende das entradas atuais <strong>e</strong> do passado (tem memória).</p>
+<div class="tw"><table>
+<thead><tr><th>Elemento</th><th>Funcionamento</th></tr></thead>
+<tbody>
+<tr><td>Latch SR (2 NOR cruzadas)</td><td>S=1 → Q=1; R=1 → Q=0; S=R=0 mantém; <strong>S=R=1 é proibido</strong></td></tr>
+<tr><td>Latch D</td><td>CLK=1: transparente (Q = D); CLK=0: guarda o valor. Evita o estado proibido</td></tr>
+<tr><td>Flip-flop D</td><td>Copia D para Q <strong>só no flanco ascendente</strong> do relógio (<em>edge-triggered</em>). Variantes com enable, reset e set</td></tr>
+<tr><td>Registo de N bits</td><td>N flip-flops D com o mesmo relógio</td></tr>
+</tbody></table></div>
+
+<h3>Memórias</h3>
+<div class="box teo"><span class="t">Fórmulas</span>
+<p>Com <strong>N bits de endereço</strong> e <strong>M bits de dados</strong>: 2ᴺ palavras (profundidade), cada uma com M bits (largura). Capacidade = 2ᴺ × M bits. <strong>Endereçabilidade</strong> = número de bits em cada endereço = M. Espaço de endereçamento = 0 a 2ᴺ−1.</p></div>
+<div class="box ex"><span class="t">TT1 2018-19: memória com 10 bits de endereço e 16 bits de dados</span>
+<p>a) 2¹⁰ × 16 bits = 2¹⁴ bits = 2¹¹ bytes = <strong>2048 bytes</strong>. b) Endereçabilidade = <strong>16 bits</strong>.</p></div>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Significado</th><th>Como guarda o bit</th><th>Características</th></tr></thead>
+<tbody>
+<tr><td>RAM</td><td>Random Access Memory</td><td>—</td><td>Volátil; leitura e escrita rápidas; acesso igual a qualquer posição (ao contrário de uma fita)</td></tr>
+<tr><td>SRAM</td><td>Static RAM</td><td>2 inversores acoplados</td><td>Mantém o valor enquanto alimentada; célula maior; rápida (caches)</td></tr>
+<tr><td>DRAM</td><td>Dynamic RAM</td><td>carga num condensador</td><td>Perde carga: precisa de <strong>refrescamento periódico</strong>; leitura destrutiva; célula pequena e barata (memória principal)</td></tr>
+<tr><td>ROM</td><td>Read Only Memory</td><td>ligação fixa / Flash</td><td><strong>Não volátil</strong>; leitura rápida; escrita impossível ou lenta</td></tr>
+</tbody></table></div>
+<p>Leitura (load): ativar CE, pôr o endereço, sinal de leitura (WE=0), ler o barramento de dados. Escrita (store): CE, endereço, dados, ativar WE. Uma ROM com descodificador implementa funções lógicas: cada coluna é o OR dos mintermos marcados com pontos.</p>
+</section>
+
+<section id="fsm" data-nav="5 · Máquinas de estados" data-grp="Teórica 1" data-track>
+<h2>5 · Máquinas de estados<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Uma máquina de estados síncrona tem um <strong>registo de estado</strong> (flip-flops D), <strong>lógica de próximo estado</strong> (combinatória) e <strong>lógica de saída</strong>. Todos os registos partilham o relógio.</p>
+<ul>
+<li><strong>Moore</strong>: saída depende só do estado atual.</li>
+<li><strong>Mealy</strong>: saída depende do estado e das entradas.</li>
+</ul>
+<div class="box met"><span class="t">Procedimento (6 passos, é o que os testes pedem por alíneas)</span>
+<ol>
+<li>Identificar entradas e saídas.</li>
+<li>Desenhar o diagrama de estados e transições (setas com a condição da entrada).</li>
+<li>Codificar os estados (k estados precisam de ⌈log₂k⌉ bits) e escrever a tabela de transições: estado atual + entradas → estado seguinte.</li>
+<li>Escrever a tabela das saídas em função do estado.</li>
+<li>Obter e simplificar (Karnaugh) as equações de S'ᵢ e das saídas.</li>
+<li>Desenhar o circuito: um flip-flop D por bit de estado, lógica de próximo estado à entrada e lógica de saída à saída.</li>
+</ol></div>
+<div class="box ex"><span class="t">TT1 2018-19 (6 valores): contador de 2 bits com enable E</span>
+<p>Sequência 00 → 01 → 10 → 11 → 00. Com E = 1 avança, com E = 0 mantém.</p>
+<div class="tw"><table>
+<thead><tr><th>S₁ S₀</th><th>E</th><th>S₁' S₀'</th></tr></thead>
+<tbody>
+<tr><td>00</td><td>0</td><td>00</td></tr><tr><td>00</td><td>1</td><td>01</td></tr>
+<tr><td>01</td><td>0</td><td>01</td></tr><tr><td>01</td><td>1</td><td>10</td></tr>
+<tr><td>10</td><td>0</td><td>10</td></tr><tr><td>10</td><td>1</td><td>11</td></tr>
+<tr><td>11</td><td>0</td><td>11</td></tr><tr><td>11</td><td>1</td><td>00</td></tr>
+</tbody></table></div>
+<p>Equações simplificadas: <strong>S₀' = S₀ ⊕ E</strong>; <strong>S₁' = S₁<span class="ov">E</span> + S₁<span class="ov">S₀</span> + <span class="ov">S₁</span>S₀E</strong> (equivale a S₁ ⊕ (S₀E)). Saída Max (vale 1 no 11): <strong>Max = S₁S₀</strong> (máquina de Moore).</p></div>
+<div class="box ex"><span class="t">Outros exemplos das aulas</span>
+<ul>
+<li><strong>Semáforo</strong> Verde(00) → Amarelo(01) → Vermelho(10) → Verde: S₁' = S₀; S₀' = <span class="ov">S₁</span><span class="ov">S₀</span>; G = <span class="ov">S₁</span><span class="ov">S₀</span>, Y = S₀, R = S₁ (usando 11 como don't care).</li>
+<li><strong>Semáforo com peão P</strong> (P=1 vai para Vermelho): S₁' = P + S₀; S₀' = <span class="ov">P</span><span class="ov">S₁</span><span class="ov">S₀</span>.</li>
+<li><strong>Detetor da sequência 01</strong>: S₁' = AS₀; S₀' = <span class="ov">A</span>; Y = S₁.</li>
+</ul></div>
+</section>
+
+<section id="vonneumann" data-nav="6 · Von Neumann e ISA" data-grp="Arquitetura MIPS" data-track>
+<h2>6 · Modelo de Von Neumann e arquitetura<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="box teo"><span class="t">Respostas de texto que saem no T1</span>
+<ul>
+<li><strong>Contribuição de Von Neumann</strong>: propôs guardar o <strong>programa e os dados na mesma memória</strong>. Antes (ENIAC) reprogramar era refazer ligações e podia demorar dias; com o programa em memória basta carregar outro programa. Modelo: CPU (unidade de controlo + ALU + registos), memória, entrada e saída, ligados por barramentos.</li>
+<li><strong>Instrução</strong>: uma operação elementar que o processador sabe executar. Tem de dizer: qual a operação; onde estão os operandos (registos, memória, imediato); onde guardar o resultado; qual a próxima instrução (normalmente a seguinte, explícita só nos saltos).</li>
+<li><strong>Ciclo básico de execução</strong> (fetch-decode-execute): ler da memória a instrução apontada pelo PC (fetch) e incrementar o PC; descodificar; ler os operandos; executar; guardar o resultado; repetir.</li>
+</ul></div>
+<ul>
+<li><strong>Barramentos</strong>: dados (transporta a informação), endereços (diz de onde/para onde), controlo (protocolo: leitura/escrita, etc.).</li>
+<li><strong>CPU</strong> = datapath (registos, ALU) + unidade de controlo (máquina de estados que gera os sinais). PC guarda o endereço da próxima instrução; IR guarda a instrução atual.</li>
+<li><strong>Arquitetura (ISA)</strong> = o que o programador vê (instruções, registos, memória). <strong>Microarquitetura</strong> = como o hardware a implementa. Uma ISA pode ter várias microarquiteturas (Intel e AMD em x86).</li>
+<li><strong>Harvard</strong>: memórias separadas para instruções e dados (usado no single-cycle). <strong>Von Neumann</strong>: uma só memória (multi-cycle).</li>
+<li><strong>RISC</strong> (MIPS): poucas instruções simples, de tamanho fixo (32 bits), arquitetura load-store. <strong>CISC</strong> (x86): instruções complexas de tamanho variável.</li>
+<li>Princípios de desenho do MIPS: a regularidade favorece a simplicidade; quanto mais pequeno mais rápido; tornar rápido o caso comum; um bom desenho exige bons compromissos.</li>
+</ul>
+
+<h3>Registos do MIPS (32 registos de 32 bits)</h3>
+<div class="tw"><table>
+<thead><tr><th>Nome</th><th>Número</th><th>Uso</th><th>Preservado numa chamada?</th></tr></thead>
+<tbody>
+<tr><td><code>$0</code> / <code>$zero</code></td><td>0</td><td>constante 0</td><td>—</td></tr>
+<tr><td><code>$at</code></td><td>1</td><td>temporário do assembler (pseudo-instruções)</td><td>—</td></tr>
+<tr><td><code>$v0-$v1</code></td><td>2-3</td><td>valor de retorno; código do syscall</td><td>não</td></tr>
+<tr><td><code>$a0-$a3</code></td><td>4-7</td><td>argumentos</td><td>não</td></tr>
+<tr><td><code>$t0-$t7</code></td><td>8-15</td><td>temporários</td><td>não</td></tr>
+<tr><td><code>$s0-$s7</code></td><td>16-23</td><td>variáveis salvaguardadas</td><td><strong>sim</strong></td></tr>
+<tr><td><code>$t8-$t9</code></td><td>24-25</td><td>temporários</td><td>não</td></tr>
+<tr><td><code>$k0-$k1</code></td><td>26-27</td><td>sistema operativo</td><td>—</td></tr>
+<tr><td><code>$gp</code>, <code>$sp</code>, <code>$fp</code>, <code>$ra</code></td><td>28, 29, 30, 31</td><td>global pointer, stack pointer, frame pointer, endereço de retorno</td><td><code>$sp</code> e <code>$ra</code> sim</td></tr>
+</tbody></table></div>
+
+<h3>Memória</h3>
+<p>O MIPS endereça <strong>bytes</strong>; uma palavra tem 4 bytes e tem de estar num endereço múltiplo de 4. <strong>Big-endian</strong>: o byte mais significativo fica no endereço mais baixo. <strong>Little-endian</strong> (o MARS): o menos significativo fica no endereço mais baixo.</p>
+<div class="box ex"><span class="t">Exemplo dos slides (big-endian)</span>
+<p><code>$t0 = 0x12345678</code>; <code>sw $t0, 0($s0)</code> guarda 12, 34, 56, 78 nos endereços +0, +1, +2, +3. Então <code>lb $t1, 1($s0)</code> dá <strong>0x34</strong>. Numa máquina little-endian daria 0x56.</p></div>
+</section>
+
+<section id="codif" data-nav="7 · Codificação de instruções" data-grp="Arquitetura MIPS" data-track>
+<h2>7 · Codificação de instruções<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table class="bits">
+<thead><tr><th>Tipo</th><th>31:26</th><th>25:21</th><th>20:16</th><th>15:11</th><th>10:6</th><th>5:0</th></tr></thead>
+<tbody>
+<tr><td>R</td><td>op = 0</td><td>rs</td><td>rt</td><td>rd</td><td>shamt</td><td>funct</td></tr>
+<tr><td>I</td><td>op</td><td>rs</td><td>rt</td><td colspan="3">imm (16 bits)</td></tr>
+<tr><td>J</td><td>op</td><td colspan="5">addr (26 bits)</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Tipo R</strong>: <code>add rd, rs, rt</code> escreve-se assim em assembly, mas a ordem dos campos é rs, rt, rd. A operação vem no <strong>funct</strong>; shamt só nos shifts (nos outros é 0). Nos shifts <code>sll rd, rt, shamt</code> o rs é 0.</li>
+<li><strong>Tipo I</strong>: <code>addi rt, rs, imm</code>; <code>lw rt, imm(rs)</code>; <code>sw rt, imm(rs)</code>; <code>beq rs, rt, label</code>. A operação vem só do opcode.</li>
+<li><strong>Tipo J</strong>: <code>j</code> e <code>jal</code>.</li>
+</ul>
+<div class="cols">
+<div><h4>Opcodes (tabela B.1)</h4>
+<div class="tw"><table>
+<tbody>
+<tr><td>R-type</td><td>0</td><td>addi</td><td>8</td></tr>
+<tr><td>j</td><td>2</td><td>addiu</td><td>9</td></tr>
+<tr><td>jal</td><td>3</td><td>slti</td><td>10</td></tr>
+<tr><td>beq</td><td>4</td><td>andi</td><td>12</td></tr>
+<tr><td>bne</td><td>5</td><td>ori</td><td>13</td></tr>
+<tr><td>lb</td><td>32</td><td>xori</td><td>14</td></tr>
+<tr><td>lw</td><td>35</td><td>lui</td><td>15</td></tr>
+<tr><td>lbu</td><td>36</td><td>sb</td><td>40</td></tr>
+<tr><td>sw</td><td>43</td><td></td><td></td></tr>
+</tbody></table></div></div>
+<div><h4>Funct (tabela B.2)</h4>
+<div class="tw"><table>
+<tbody>
+<tr><td>sll</td><td>0</td><td>add</td><td>32</td></tr>
+<tr><td>srl</td><td>2</td><td>addu</td><td>33</td></tr>
+<tr><td>sra</td><td>3</td><td>sub</td><td>34</td></tr>
+<tr><td>jr</td><td>8</td><td>and</td><td>36</td></tr>
+<tr><td>syscall</td><td>12</td><td>or</td><td>37</td></tr>
+<tr><td>mult</td><td>24</td><td>xor</td><td>38</td></tr>
+<tr><td>div</td><td>26</td><td>nor</td><td>39</td></tr>
+<tr><td>mfhi/mflo</td><td>16/18</td><td>slt</td><td>42</td></tr>
+</tbody></table></div></div>
+</div>
+
+<div class="box met"><span class="t">Método: codificar uma instrução</span>
+<ol>
+<li>Identifica o tipo e o opcode (e o funct se for R).</li>
+<li>Converte os registos para números (tabela acima).</li>
+<li>Coloca cada valor no seu campo, <strong>em binário com o número certo de bits</strong>.</li>
+<li>Agrupa os 32 bits em grupos de 4 e converte para hexadecimal.</li>
+</ol></div>
+<div class="tw"><table>
+<thead><tr><th>Instrução</th><th>Campos</th><th>Hex</th></tr></thead>
+<tbody>
+<tr><td><code>add $t0, $s4, $s5</code></td><td>0 | 20 | 21 | 8 | 0 | 32</td><td>0x02954020</td></tr>
+<tr><td><code>lw $s3, -24($s4)</code></td><td>35 | 20 | 19 | 0xFFE8</td><td>0x8E93FFE8</td></tr>
+<tr><td><code>sw $t5, 0($t0)</code> (TT2 2023-24)</td><td>101011 | 01000 | 01101 | 0...0</td><td><strong>0xAD0D0000</strong></td></tr>
+<tr><td><code>addi $8, $10, -1</code> (TT2 2023-24)</td><td>001000 | 01010 | 01000 | 1111111111111111</td><td><strong>0x2148FFFF</strong></td></tr>
+<tr><td><code>sll $t1, $t0, 25</code> (TT2 2021-22)</td><td>000000 | 00000 | 01000 | 01001 | 11001 | 000000</td><td><strong>0x00084E40</strong></td></tr>
+</tbody></table></div>
+<p><strong>Descodificar</strong>: olha para os 6 bits da esquerda. Se forem 0 é tipo R e vês o funct. Exemplos: 0x02F34022 → op 0, rs 23, rt 19, rd 8, funct 34 → <code>sub $t0, $s7, $s3</code>. 0x2237FFF1 → op 8 (addi), rs 17, rt 23, imm 0xFFF1 = −15 → <code>addi $s7, $s1, -15</code>.</p>
+
+<h3>Modos de endereçamento e saltos</h3>
+<div class="tw"><table>
+<thead><tr><th>Modo</th><th>Instruções</th><th>Endereço/valor</th></tr></thead>
+<tbody>
+<tr><td>Só registos</td><td>tipo R</td><td>—</td></tr>
+<tr><td>Imediato</td><td>addi, andi, ori, slti</td><td>imm com extensão de <strong>sinal</strong> (addi, slti) ou de <strong>zeros</strong> (andi, ori, xori)</td></tr>
+<tr><td>Base + deslocamento</td><td>lw, sw, lb, sb</td><td>rs + SignExt(imm)</td></tr>
+<tr><td>Relativo ao PC</td><td>beq, bne</td><td><strong>BTA = (PC + 4) + imm × 4</strong>; imm = número de instruções a saltar a partir da seguinte</td></tr>
+<tr><td>Pseudo-direto</td><td>j, jal</td><td><strong>JTA = (PC+4)[31:28] : addr × 4</strong>; addr = endereço destino ÷ 4 (26 bits)</td></tr>
+</tbody></table></div>
+<div class="box ex"><span class="t">TT2 2021-22: codificar <code>beq</code> e <code>j</code></span>
+<pre><code>0x00400000  <span class="k">la</span>   $t0, array        <span class="c"># pseudo: lui + ori (2 instruções!)</span>
+0x00400008  <span class="k">li</span>   $t5, <span class="n">3</span>
+0x0040000C  <span class="k">li</span>   $t1, <span class="n">0</span>
+0x00400010  for: <span class="k">beq</span> $t1, $t5, endfor
+0x00400014  <span class="k">sll</span>  $t2, $t1, <span class="n">2</span>
+0x00400018  <span class="k">addu</span> $t2, $t2, $t0
+0x0040001C  <span class="k">sw</span>   $t1, <span class="n">0</span>($t2)
+0x00400020  <span class="k">j</span>    for
+0x00400024  endfor: <span class="k">li</span> $v0, <span class="n">10</span></code></pre>
+<p><code>beq</code>: imm = (0x00400024 − 0x00400014) / 4 = 4 → 000100 | 01001 | 01101 | 0000000000000100 = <strong>0x112D0004</strong>. <code>j for</code>: addr = 0x00400010 / 4 = 0x0100004 → 000010 | 00 0001 0000 0000 0000 0000 0100 = <strong>0x08100004</strong>. Cuidado: <code>la</code> ocupa duas posições, por isso <code>for</code> está em 0x00400010.</p></div>
+<div class="box ex"><span class="t">TT2 2023-24: <code>jal target</code> com target em 0x00400040</span>
+<p>addr = 0x00400040 ÷ 4 = 0x0100010 → 000011 | 00 0001 0000 0000 0000 0001 0000 = <strong>0x0C100010</strong>.</p></div>
+
+<h3>Constantes e pseudo-instruções</h3>
+<ul>
+<li>Constante de 16 bits: <code>addi $s0, $0, 0x4F3C</code>. Constante de 32 bits: <code>lui $s0, 0xFEDC</code> + <code>ori $s0, $s0, 0x8765</code>.</li>
+<li><code>li</code>, <code>la</code>, <code>move</code>, <code>blt</code>, <code>bgt</code>, <code>ble</code>, <code>bge</code> são <strong>pseudo-instruções</strong>: o assembler converte-as em nativas usando <code>$at</code>.</li>
+<li><code>la $t5, result</code> com result em 0x10010008 → <code>lui $1, 0x1001</code> + <code>ori $13, $1, 0x0008</code>.</li>
+<li><code>bge $t1, $t2, L</code> → <code>slt $at, $t1, $t2</code> + <code>beq $at, $0, L</code>. <code>move $a, $b</code> → <code>addu $a, $0, $b</code>.</li>
+</ul>
+</section>
+
+<section id="asm" data-nav="8 · Programar em assembly" data-grp="Arquitetura MIPS" data-track>
+<h2>8 · Programar em assembly MIPS<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Instruções essenciais</h3>
+<div class="tw"><table>
+<thead><tr><th>Grupo</th><th>Instruções</th><th>Notas</th></tr></thead>
+<tbody>
+<tr><td>Aritméticas</td><td><code>add sub addi addu addiu mul</code>, <code>div rem</code> (pseudo)</td><td>as versões <code>u</code> não geram exceção de overflow</td></tr>
+<tr><td>Lógicas</td><td><code>and or xor nor andi ori xori</code></td><td>NOT A = <code>nor $d, $a, $0</code>; não existe <code>nori</code></td></tr>
+<tr><td>Shifts</td><td><code>sll srl sra sllv srlv srav</code></td><td><code>sll k</code> = ×2ᵏ; <code>srl</code> = ÷2ᵏ sem sinal; <code>sra</code> = ÷2ᵏ com sinal (repete o bit de sinal)</td></tr>
+<tr><td>Memória</td><td><code>lw sw lb lbu sb lui</code></td><td><code>lb</code> estende com o sinal; <code>lbu</code> com zeros; <code>sb</code> guarda só o byte menos significativo</td></tr>
+<tr><td>Comparação</td><td><code>slt slti sltu sltiu</code></td><td>rd = 1 se rs &lt; rt</td></tr>
+<tr><td>Saltos</td><td><code>beq bne j jal jr</code>, <code>blt bgt ble bge</code> (pseudo)</td><td><code>jal</code> guarda PC+4 em <code>$ra</code></td></tr>
+</tbody></table></div>
+
+<h3>Diretivas e syscalls (MARS)</h3>
+<pre><code>        .eqv  PRINT_INT10, <span class="n">1</span>        <span class="c"># constante com nome</span>
+        .data                       <span class="c"># segmento de dados (0x10010000)</span>
+lista:  .word <span class="n">4</span>, <span class="n">3</span>, -<span class="n">2</span>              <span class="c"># inteiros de 4 bytes</span>
+c:      .byte <span class="n">3</span>                     <span class="c"># 1 byte</span>
+        .align <span class="n">2</span>                    <span class="c"># alinhar a 2^2 = 4 bytes</span>
+res:    .space <span class="n">4</span>                    <span class="c"># reservar 4 bytes</span>
+msg:    .asciiz <span class="s">"Total: "</span>           <span class="c"># string terminada em '\0'</span>
+        .text                       <span class="c"># segmento de código (0x00400000)</span>
+        .globl main
+main:   ...</code></pre>
+<div class="tw"><table>
+<thead><tr><th><code>$v0</code></th><th>Serviço</th><th>Argumento</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>print_int10</td><td><code>$a0</code> = inteiro</td></tr>
+<tr><td>4</td><td>print_str</td><td><code>$a0</code> = endereço da string</td></tr>
+<tr><td>5</td><td>read_int</td><td>devolve em <code>$v0</code></td></tr>
+<tr><td>10</td><td>exit</td><td>—</td></tr>
+<tr><td>11</td><td>print_char</td><td><code>$a0</code> = carácter</td></tr>
+<tr><td>34</td><td>print_int16 (hexadecimal)</td><td><code>$a0</code></td></tr>
+</tbody></table></div>
+
+<h3>Traduzir C para assembly</h3>
+<div class="box met"><span class="t">Receitas</span>
+<ul>
+<li><strong>if</strong>: testa a condição <strong>contrária</strong> e salta por cima do bloco. <code>if (a == b) x = 3;</code> → <code>bne $a, $b, fim</code> + bloco.</li>
+<li><strong>if-else</strong>: condição contrária salta para <code>else</code>; no fim do bloco <code>if</code>, <code>j fim</code>.</li>
+<li><strong>while / for</strong>: etiqueta no início; teste da condição contrária que salta para o fim; corpo; incremento; <code>j</code> para o início.</li>
+<li><strong>&amp;&amp;</strong>: cada condição falsa salta logo para o fim do if. <strong>||</strong>: cada condição verdadeira salta para o bloco.</li>
+<li><strong>Array de int</strong>: endereço de <code>a[i]</code> = base + <strong>4×i</strong> (<code>sll $t, $i, 2</code> + <code>addu</code>), depois <code>lw</code>/<code>sw</code>.</li>
+<li><strong>Array de char / string</strong>: endereço = base + i (sem multiplicar), <code>lb</code>/<code>sb</code>; termina no byte 0.</li>
+<li><strong>Ponteiros</strong>: em vez de calcular base+i em cada iteração, avança o registo (<code>addiu $p, $p, 4</code> para int, <code>1</code> para char). Menos instruções por iteração.</li>
+</ul></div>
+<pre><code><span class="c"># for (i = 0; i &lt; 1000; i++) array[i] = array[i] + 3;</span>
+        <span class="k">la</span>    $s0, array          <span class="c"># base</span>
+        <span class="k">li</span>    $s1, <span class="n">0</span>              <span class="c"># i = 0</span>
+        <span class="k">li</span>    $t2, <span class="n">1000</span>
+loop:   <span class="k">slt</span>   $t0, $s1, $t2       <span class="c"># i &lt; 1000 ?</span>
+        <span class="k">beq</span>   $t0, $<span class="n">0</span>, done       <span class="c"># se não, termina</span>
+        <span class="k">sll</span>   $t0, $s1, <span class="n">2</span>         <span class="c"># i * 4</span>
+        <span class="k">addu</span>  $t0, $t0, $s0       <span class="c"># &amp;array[i]</span>
+        <span class="k">lw</span>    $t1, <span class="n">0</span>($t0)         <span class="c"># array[i]</span>
+        <span class="k">addi</span>  $t1, $t1, <span class="n">3</span>
+        <span class="k">sw</span>    $t1, <span class="n">0</span>($t0)         <span class="c"># array[i] = array[i] + 3</span>
+        <span class="k">addi</span>  $s1, $s1, <span class="n">1</span>         <span class="c"># i++</span>
+        <span class="k">j</span>     loop
+done:</code></pre>
+<div class="box exa"><span class="t">Exercício de autoavaliação (resolução do professor, testada)</span>
+<p>Contar quantos elementos de <code>lista = {4, 3, -2, 1, 27, 45}</code> estão entre 1 e 9: o programa imprime <strong>3</strong> (4, 3 e 1).</p>
+<pre><code>for:    <span class="k">bge</span>  $t1, <span class="n">6</span>, endf        <span class="c"># for (i = 0; i &lt; 6; i++)</span>
+        <span class="k">sll</span>  $t3, $t1, <span class="n">2</span>
+        <span class="k">addu</span> $t3, $t2, $t3       <span class="c"># &amp;lista[i]</span>
+        <span class="k">lw</span>   $t4, <span class="n">0</span>($t3)
+        <span class="k">ble</span>  $t4, <span class="n">0</span>, endif       <span class="c"># if (lista[i] &gt; 0 &amp;&amp;</span>
+        <span class="k">bge</span>  $t4, <span class="n">10</span>, endif      <span class="c">#     lista[i] &lt; 10)</span>
+        <span class="k">addi</span> $t0, $t0, <span class="n">1</span>         <span class="c">#   n_num++</span>
+endif:  <span class="k">addi</span> $t1, $t1, <span class="n">1</span>
+        <span class="k">j</span>    for</code></pre></div>
+</section>
+
+<section id="func" data-nav="9 · Funções e stack" data-grp="Arquitetura MIPS" data-track>
+<h2>9 · Funções e stack<span class="done-tag" hidden>estudado ✓</span></h2>
+<ul>
+<li>Chamar: <code>jal f</code> (salta e guarda o endereço de retorno em <code>$ra</code>). Voltar: <code>jr $ra</code>.</li>
+<li>Argumentos em <code>$a0-$a3</code>; resultado em <code>$v0</code>.</li>
+<li>A <strong>stack</strong> cresce para endereços mais baixos; <code>$sp</code> aponta para o topo. Reservar: <code>addiu $sp, $sp, -4*n</code>; libertar: <code>addiu $sp, $sp, 4*n</code>.</li>
+</ul>
+<div class="box teo"><span class="t">Convenção de salvaguarda de registos</span>
+<div class="tw"><table>
+<thead><tr><th>Não preservados (caller-saved)</th><th>Preservados (callee-saved)</th></tr></thead>
+<tbody><tr><td><code>$t0-$t9</code>, <code>$a0-$a3</code>, <code>$v0-$v1</code></td><td><code>$s0-$s7</code>, <code>$ra</code>, <code>$sp</code></td></tr></tbody></table></div>
+<ul>
+<li>A <strong>chamadora</strong> guarda os <code>$t</code>/<code>$a</code> de que ainda precisa depois do <code>jal</code>.</li>
+<li>A <strong>chamada</strong> guarda os <code>$s</code> que altera e restaura-os antes de voltar.</li>
+<li>Uma função <strong>não terminal</strong> (que chama outra) tem de guardar <code>$ra</code>, porque o <code>jal</code> o vai reescrever.</li>
+<li>Truque prático: numa função não terminal, guarda as variáveis que têm de sobreviver ao <code>jal</code> em registos <code>$s</code> (e salva-os à entrada).</li>
+</ul></div>
+<pre><code><span class="c"># int factorial(int n) { if (n &lt;= 1) return 1; return n * factorial(n-1); }</span>
+factorial: <span class="k">addiu</span> $sp, $sp, -<span class="n">8</span>     <span class="c"># reservar 2 palavras</span>
+        <span class="k">sw</span>    $a0, <span class="n">4</span>($sp)         <span class="c"># guardar n</span>
+        <span class="k">sw</span>    $ra, <span class="n">0</span>($sp)         <span class="c"># guardar $ra (função não terminal)</span>
+        <span class="k">addi</span>  $t0, $<span class="n">0</span>, <span class="n">2</span>
+        <span class="k">slt</span>   $t0, $a0, $t0       <span class="c"># n &lt;= 1 ?</span>
+        <span class="k">beq</span>   $t0, $<span class="n">0</span>, else
+        <span class="k">addi</span>  $v0, $<span class="n">0</span>, <span class="n">1</span>          <span class="c"># return 1</span>
+        <span class="k">addiu</span> $sp, $sp, <span class="n">8</span>
+        <span class="k">jr</span>    $ra
+else:   <span class="k">addi</span>  $a0, $a0, -<span class="n">1</span>        <span class="c"># n - 1</span>
+        <span class="k">jal</span>   factorial           <span class="c"># factorial(n-1)</span>
+        <span class="k">lw</span>    $a0, <span class="n">4</span>($sp)         <span class="c"># recuperar n</span>
+        <span class="k">mul</span>   $v0, $a0, $v0       <span class="c"># n * factorial(n-1)</span>
+        <span class="k">lw</span>    $ra, <span class="n">0</span>($sp)
+        <span class="k">addiu</span> $sp, $sp, <span class="n">8</span>
+        <span class="k">jr</span>    $ra</code></pre>
+<p>Com <code>factorial(3)</code> a stack ganha 3 frames (n = 3, 2, 1), cada uma com o seu <code>$a0</code> e <code>$ra</code>, e desfaz-se pela ordem inversa ao regressar.</p>
+</section>
+
+<section id="sc" data-nav="10 · Datapath single-cycle" data-grp="Microarquitetura" data-track>
+<h2>10 · Datapath single-cycle<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Cada instrução executa num <strong>único ciclo</strong> (CPI = 1). Usa memórias separadas de instruções e dados (Harvard), uma ALU e dois somadores (PC+4 e endereço do branch). O período do relógio é limitado pela instrução mais lenta, <code>lw</code>.</p>
+<h3>Percurso de cada instrução</h3>
+<ul>
+<li><strong>lw</strong>: PC → memória de instruções → lê rs → SignExt(imm) → ALU soma → memória de dados lê → escreve em rt (MemToReg = 1, RegDst = 0).</li>
+<li><strong>sw</strong>: igual até à ALU; escreve o valor de rt (RD2) na memória (MemWrite = 1); não escreve no banco de registos.</li>
+<li><strong>Tipo R</strong>: lê rs e rt → ALU → escreve em rd (RegDst = 1, ALUSrc = 0, MemToReg = 0).</li>
+<li><strong>beq</strong>: a ALU subtrai rs − rt; se Zero = 1 e Branch = 1, PCSrc = 1 e PC' = BTA = (SignImm &lt;&lt; 2) + PC+4.</li>
+</ul>
+<div class="tw"><table>
+<thead><tr><th>Instr.</th><th>Op</th><th>RegWrite</th><th>RegDst</th><th>ALUSrc</th><th>Branch</th><th>MemWrite</th><th>MemToReg</th><th>ALUOp</th></tr></thead>
+<tbody>
+<tr><td>Tipo R</td><td>000000</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>10</td></tr>
+<tr><td>lw</td><td>100011</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>00</td></tr>
+<tr><td>sw</td><td>101011</td><td>0</td><td>X</td><td>1</td><td>0</td><td>1</td><td>X</td><td>00</td></tr>
+<tr><td>beq</td><td>000100</td><td>0</td><td>X</td><td>0</td><td>1</td><td>0</td><td>X</td><td>01</td></tr>
+<tr><td>addi</td><td>001000</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>00</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>ALUOp</th><th>Funct</th><th>ALUControl</th></tr></thead>
+<tbody>
+<tr><td>00</td><td>X</td><td>010 (add) — lw, sw, addi</td></tr>
+<tr><td>01</td><td>X</td><td>110 (subtract) — beq</td></tr>
+<tr><td>10</td><td>100000 add / 100010 sub</td><td>010 / 110</td></tr>
+<tr><td>10</td><td>100100 and / 100101 or</td><td>000 / 001</td></tr>
+<tr><td>10</td><td>101010 slt</td><td>111</td></tr>
+</tbody></table></div>
+<p>Um X (don't care) aparece quando o sinal não tem efeito: em <code>sw</code> e <code>beq</code> não se escreve no banco de registos, por isso RegDst e MemToReg são indiferentes.</p>
+
+<h3>Acrescentar instruções (pergunta típica)</h3>
+<div class="tw"><table>
+<thead><tr><th>Instrução</th><th>O que falta no datapath</th><th>Sinais</th></tr></thead>
+<tbody>
+<tr><td><code>addi</code></td><td>nada (usa o caminho do lw sem a memória)</td><td>RegWrite 1, RegDst 0, ALUSrc 1, Branch 0, MemWrite 0, MemToReg 0, ALUOp 00</td></tr>
+<tr><td><code>sll rd, rt, shamt</code></td><td>levar o campo shamt (Instr[10:6]) à ALU: novo mux na entrada SrcA para escolher entre RD1 e shamt (estendido a 32 bits com zeros), e uma operação de shift na ALU (usar uma combinação livre do ALUControl, p.ex. 011)</td><td>RegWrite 1, RegDst 1, ALUSrc 0, Branch 0, MemWrite 0, MemToReg 0, ALUOp 10 com funct 000000 → ALUControl 011</td></tr>
+<tr><td><code>j</code></td><td>novo mux no PC' com o endereço JTA = PC+4[31:28] : Instr[25:0] &lt;&lt; 2; sinal Jump</td><td>Jump 1, RegWrite 0, MemWrite 0, restantes X</td></tr>
+<tr><td><code>jal</code></td><td>o mesmo mux de jump; mais uma entrada no mux RegDst com a constante 31; mais uma entrada no mux do Result com PC+4 (para escrever em <code>$ra</code>)</td><td>Jump 1, RegWrite 1, RegDst = 31, Result = PC+4</td></tr>
+<tr><td><code>andi</code>, <code>ori</code>, <code>xori</code></td><td>um <strong>extensor de zeros</strong> para o imediato (estes usam zero-extend, não sign-extend) e um mux para escolher entre os dois; na ALU, a operação correspondente</td><td>RegWrite 1, RegDst 0, ALUSrc 1, MemToReg 0, ALUOp novo (p.ex. 11)</td></tr>
+</tbody></table></div>
+
+<h3>Desempenho</h3>
+<p><strong>Tempo de execução = nº de instruções × CPI × T<sub>C</sub></strong>. No single-cycle: T<sub>C</sub> = t<sub>pcq</sub> + 2t<sub>mem</sub> + t<sub>RFread</sub> + t<sub>ALU</sub> + t<sub>mux</sub> + t<sub>RFsetup</sub>. Exemplo dos slides: 30 + 2×250 + 150 + 200 + 25 + 20 = <strong>925 ps</strong> (1,08 GHz); 10¹¹ instruções demoram 92,5 s.</p>
+</section>
+
+<section id="mc" data-nav="11 · Datapath multi-cycle" data-grp="Microarquitetura" data-track>
+<h2>11 · Datapath multi-cycle<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Divide cada instrução em passos curtos, um por ciclo. Vantagens: relógio mais rápido; instruções simples demoram menos ciclos; reutiliza <strong>uma só ALU</strong> e <strong>uma só memória</strong> (Von Neumann). Desvantagem: unidade de controlo mais complexa (FSM).</p>
+<p>Registos novos (não visíveis ao programador): <strong>IR</strong> (instrução, com IRWrite), <strong>Data</strong>, <strong>A</strong> e <strong>B</strong> (operandos lidos), <strong>ALUOut</strong>. Sinais novos: <strong>IorD</strong> (endereço da memória vem do PC ou do ALUOut), <strong>ALUSrcA</strong> (PC ou A), <strong>ALUSrcB</strong> (00 = B, 01 = 4, 10 = SignImm, 11 = SignImm&lt;&lt;2), <strong>PCWrite</strong>, <strong>PCSrc</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Estado</th><th>O que faz</th><th>Sinais ativos</th></tr></thead>
+<tbody>
+<tr><td>S0 Fetch</td><td>IR ← Mem[PC]; PC ← PC + 4</td><td>IorD=0, ALUSrcA=0, ALUSrcB=01, ALUOp=00, PCSrc=0, IRWrite, PCWrite</td></tr>
+<tr><td>S1 Decode</td><td>lê rs e rt para A e B; calcula BTA = PC + (SignImm&lt;&lt;2) para o caso de ser beq</td><td>ALUSrcA=0, ALUSrcB=11, ALUOp=00</td></tr>
+<tr><td>S2 MemAdr</td><td>ALUOut ← A + SignImm (lw/sw)</td><td>ALUSrcA=1, ALUSrcB=10, ALUOp=00</td></tr>
+<tr><td>S3 MemRead</td><td>Data ← Mem[ALUOut]</td><td>IorD=1</td></tr>
+<tr><td>S4 Mem Writeback</td><td>rt ← Data</td><td>RegDst=0, MemToReg=1, RegWrite</td></tr>
+<tr><td>S5 MemWrite</td><td>Mem[ALUOut] ← B</td><td>IorD=1, MemWrite</td></tr>
+<tr><td>S6 Execute</td><td>ALUOut ← A op B (tipo R)</td><td>ALUSrcA=1, ALUSrcB=00, ALUOp=10</td></tr>
+<tr><td>S7 ALU Writeback</td><td>rd ← ALUOut</td><td>RegDst=1, MemToReg=0, RegWrite</td></tr>
+<tr><td>S8 Branch</td><td>compara A e B; se iguais PC ← BTA</td><td>ALUSrcA=1, ALUSrcB=00, ALUOp=01, PCSrc=1, Branch</td></tr>
+<tr><td>S9 Imm Execute</td><td>ALUOut ← A op Imm (addi, andi, xori...)</td><td>ALUSrcA=1, ALUSrcB=10 (ou entrada do imediato com zero-extend), ALUOp da operação</td></tr>
+<tr><td>S10 Imm Writeback</td><td>rt ← ALUOut</td><td>RegDst=0, MemToReg=0, RegWrite</td></tr>
+<tr><td>S11 Jump</td><td>PC ← JTA</td><td>PCSrc=10, PCWrite</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<thead><tr><th>Instrução</th><th>Estados</th><th>Ciclos</th></tr></thead>
+<tbody>
+<tr><td>lw</td><td>S0 S1 S2 S3 S4</td><td>5</td></tr>
+<tr><td>sw</td><td>S0 S1 S2 S5</td><td>4</td></tr>
+<tr><td>Tipo R</td><td>S0 S1 S6 S7</td><td>4</td></tr>
+<tr><td>beq</td><td>S0 S1 S8</td><td>3</td></tr>
+<tr><td>addi / andi / xori</td><td>S0 S1 S9 S10</td><td>4</td></tr>
+<tr><td>j</td><td>S0 S1 S11</td><td>3</td></tr>
+</tbody></table></div>
+<div class="box ex"><span class="t">TT2 2023-24 e 2021-22: acrescentar <code>xori</code> / <code>andi</code></span>
+<ol>
+<li><strong>Datapath</strong>: o imediato destas instruções é estendido com <strong>zeros</strong>. Acrescenta-se um extensor de zeros e liga-se a uma nova entrada do mux ALUSrcB (ou um mux antes, que escolha entre sign e zero extend).</li>
+<li><strong>Descodificador da ALU</strong>: usar a combinação livre <strong>ALUOp = 11 → ALUControl = 100 (Xor)</strong> para xori (ou 000 And para andi), sem mudar o número de bits.</li>
+<li><strong>Estados</strong>: S0 Fetch, S1 Decode, S9 Execute (ALUSrcA = 1, ALUSrcB = imediato com zero-extend, ALUOp = 11), S10 Writeback (RegDst = 0, MemToReg = 0, RegWrite = 1). São 4 ciclos.</li>
+<li><strong>Sinais na fase Decode</strong> (iguais para todas as instruções): ALUSrcA = 0, ALUSrcB = 11, ALUOp = 00; IRWrite = 0, PCWrite = 0, RegWrite = 0, MemWrite = 0, Branch = 0; IorD, RegDst, MemToReg e PCSrc são X.</li>
+</ol></div>
+<p><strong>CPI médio</strong> = Σ (fração de cada tipo × ciclos). Ex.: 25% lw, 10% sw, 11% beq, 2% j, 52% tipo R → 0,25×5 + 0,10×4 + 0,11×3 + 0,02×3 + 0,52×4 = 4,12.</p>
+</section>
+
+<section id="testes" data-nav="Testes resolvidos" data-grp="Treino">
+<h2>Testes resolvidos</h2>
+<p>Respostas confirmadas com cálculo em Python e o assembly corrido num simulador. Tenta primeiro sem abrir.</p>
+
+<h3>Teste teórico 1, 2018-19</h3>
+<details><summary>1 · Menor e maior número com 10 bits</summary><div class="in">
+<div class="tw"><table>
+<thead><tr><th>Sistema</th><th>Menor (binário / decimal)</th><th>Maior (binário / decimal)</th></tr></thead>
+<tbody>
+<tr><td>Sem sinal</td><td>0000000000 / 0</td><td>1111111111 / 1023</td></tr>
+<tr><td>Sinal e módulo</td><td>1111111111 / −511</td><td>0111111111 / 511</td></tr>
+<tr><td>Complemento para 2</td><td>1000000000 / −512</td><td>0111111111 / 511</td></tr>
+</tbody></table></div></div></details>
+<details><summary>2 · 0x56 + 0x4C em complemento para 2 com 8 bits</summary><div class="in">
+<p>01010110 + 01001100 = 10100010 (0xA2). Dois positivos deram um resultado com bit de sinal 1 (−94): <strong>overflow</strong>. O resultado correto, 162, não cabe em [−128, 127].</p></div></details>
+<details><summary>3 · 9,625 em IEEE 754</summary><div class="in"><p>1001,101 = 1,001101 × 2³ → 0 | 10000010 | 00110100... = <strong>0x411A0000</strong>.</p></div></details>
+<details><summary>4 · Equação de overflow com 4 bits</summary><div class="in"><p>Ov = <span class="ov">A₃</span>·<span class="ov">B₃</span>·S₃ + A₃·B₃·<span class="ov">S₃</span>.</p></div></details>
+<details><summary>5-6 · Função F com descodificador 3:8 e com mux 2:1</summary><div class="in">
+<p>F = 1 em 000, 001, 100, 111 → F = Σm(0, 1, 4, 7). Com descodificador: uma OR de 4 entradas ligada às saídas 0, 1, 4 e 7. Com mux 2:1 (seleção A): D₀ = <span class="ov">B</span>, D₁ = B XNOR C.</p></div></details>
+<details><summary>7 · Glitch</summary><div class="in"><p>Transição indesejada e breve na saída quando muda uma só entrada. Causa: o sinal propaga-se por caminhos com atrasos diferentes e, durante um instante, nenhum dos termos da SoP está ativo (ou estão os dois). Corrige-se acrescentando o termo de consenso.</p></div></details>
+<details><summary>8-9 · Memória 10 bits de endereço × 16 bits; RAM e ROM</summary><div class="in"><p>2¹⁰ × 16 bits = 2048 bytes; endereçabilidade 16 bits. RAM e ROM estão explicadas na <a href="#seq">secção 4</a>.</p></div></details>
+<details><summary>13 · Contador de 2 bits com enable (6 valores)</summary><div class="in"><p>Resolvido na <a href="#fsm">secção 5</a>: S₀' = S₀ ⊕ E; S₁' = S₁ ⊕ (S₀E); Max = S₁S₀. Circuito: dois flip-flops D; à entrada de S₀ uma XOR (S₀, E); à entrada de S₁ a lógica de S₁'; Max é uma AND de S₁ e S₀.</p></div></details>
+
+<h3>Teste prático 1, 2023-24</h3>
+<details><summary>1 · 103 em bases e com sinal</summary><div class="in"><p>1100111₂, 147₈, 0x67. −103: sinal e módulo 11100111; complemento para 2 <strong>10011001</strong>.</p></div></details>
+<details><summary>2 · 153₈ + 00101101₂</summary><div class="in"><p>Sem sinal: 01101011 + 00101101 = <strong>10011000</strong> (152), representável. Em C2 há <strong>overflow</strong>: dois positivos deram bit de sinal 1. A resolução manuscrita que circula tem a conversão de 153₈ errada.</p></div></details>
+<details><summary>3 · x = 11000111, y = 01001011 em C2</summary><div class="in"><p>x = −57, y = 75. x+y = 00010010 (18), sem overflow. x−y = x + (−y) = 11000111 + 10110101 = 01111100: dois negativos deram positivo → <strong>overflow</strong> (−132 não cabe). A resolução manuscrita diz que não há; está errada.</p></div></details>
+<details><summary>4 · Simplificar Y</summary><div class="in"><p><strong>Y = BD + <span class="ov">B</span>C</strong> (passos na <a href="#boole">secção 2</a>).</p></div></details>
+<details><summary>5 · Tabela de F, Karnaugh, NAND</summary><div class="in"><p>F = <span class="ov">A</span><span class="ov">C</span> + A<span class="ov">B</span>. Sim, só com NAND: F = NAND(NAND(<span class="ov">A</span>, <span class="ov">C</span>), NAND(A, <span class="ov">B</span>)), e cada negação é uma NAND com as duas entradas ligadas.</p></div></details>
+<details><summary>6 · Somador de 2 bits</summary><div class="in"><p>Y₁ = A₁ ⊕ B₁ ⊕ A₀B₀ (ver <a href="#comb">secção 3</a>).</p></div></details>
+<details><summary>7 · Mux 4:1 com muxes 2:1</summary><div class="in"><p>Dois muxes com seleção S₀ (D₀/D₁ e D₂/D₃) e um terceiro com seleção S₁ que escolhe entre as saídas deles.</p></div></details>
+
+<h3>Teste prático 2, 2023-24 (assembly testado)</h3>
+<details><summary>1 · main: contar notas entre 10 e 20</summary><div class="in">
+<pre><code>        .data
+msg:    .asciiz <span class="s">"O numero de positivas e: "</span>
+notas:  .word <span class="n">17</span>, <span class="n">8</span>, <span class="n">12</span>, <span class="n">10</span>, <span class="n">4</span>
+        .text
+        .globl main
+<span class="c"># num -&gt; $t0 ; i -&gt; $t1 ; &amp;notas[i] -&gt; $t2 ; notas[i] -&gt; $t3</span>
+main:   <span class="k">li</span>   $t0, <span class="n">0</span>              <span class="c"># num = 0</span>
+        <span class="k">li</span>   $t1, <span class="n">0</span>              <span class="c"># i = 0</span>
+        <span class="k">la</span>   $t4, notas
+for:    <span class="k">bge</span>  $t1, <span class="n">5</span>, endfor      <span class="c"># for (; i &lt; 5;)</span>
+        <span class="k">sll</span>  $t2, $t1, <span class="n">2</span>         <span class="c"># i * 4</span>
+        <span class="k">addu</span> $t2, $t4, $t2       <span class="c"># $t2 = &amp;notas[i]</span>
+        <span class="k">lw</span>   $t3, <span class="n">0</span>($t2)         <span class="c"># $t3 = notas[i]</span>
+        <span class="k">blt</span>  $t3, <span class="n">10</span>, endif      <span class="c"># if (notas[i] &gt;= 10 &amp;&amp;</span>
+        <span class="k">bgt</span>  $t3, <span class="n">20</span>, endif      <span class="c">#     notas[i] &lt;= 20)</span>
+        <span class="k">addi</span> $t0, $t0, <span class="n">1</span>         <span class="c">#   num = num + 1</span>
+endif:  <span class="k">addi</span> $t1, $t1, <span class="n">1</span>         <span class="c"># i++</span>
+        <span class="k">j</span>    for
+endfor: <span class="k">la</span>   $a0, msg
+        <span class="k">li</span>   $v0, <span class="n">4</span>
+        <span class="k">syscall</span>                  <span class="c"># print_str(msg)</span>
+        <span class="k">move</span> $a0, $t0
+        <span class="k">li</span>   $v0, <span class="n">1</span>
+        <span class="k">syscall</span>                  <span class="c"># print_int10(num)  -&gt; 3</span>
+        <span class="k">li</span>   $v0, <span class="n">10</span>
+        <span class="k">syscall</span>                  <span class="c"># exit()</span></code></pre></div></details>
+<details><summary>2a · encoder (cifra de César +1)</summary><div class="in">
+<pre><code><span class="c"># char *encoder(char *str)  str -&gt; $a0 ; i -&gt; $t0 ; &amp;str[i] -&gt; $t1 ; str[i] -&gt; $t2 ; aux -&gt; $t3</span>
+encoder: <span class="k">li</span>   $t0, <span class="n">0</span>             <span class="c"># i = 0</span>
+ewhile: <span class="k">addu</span> $t1, $a0, $t0       <span class="c"># &amp;str[i]  (char: sem multiplicar por 4)</span>
+        <span class="k">lb</span>   $t2, <span class="n">0</span>($t1)         <span class="c"># str[i]</span>
+        <span class="k">beq</span>  $t2, $<span class="n">0</span>, eend       <span class="c"># while (str[i] != 0)</span>
+        <span class="k">blt</span>  $t2, <span class="s">'a'</span>, enext     <span class="c"># if (str[i] &gt;= 'a' &amp;&amp;</span>
+        <span class="k">bgt</span>  $t2, <span class="s">'z'</span>, enext     <span class="c">#     str[i] &lt;= 'z')</span>
+        <span class="k">addi</span> $t3, $t2, -<span class="n">96</span>       <span class="c">#   aux = str[i] - 'a' + 1</span>
+        <span class="k">rem</span>  $t3, $t3, <span class="n">26</span>        <span class="c">#   aux = aux % 26</span>
+        <span class="k">addi</span> $t3, $t3, <span class="s">'a'</span>
+        <span class="k">sb</span>   $t3, <span class="n">0</span>($t1)         <span class="c">#   str[i] = aux + 'a'</span>
+enext:  <span class="k">addi</span> $t0, $t0, <span class="n">1</span>         <span class="c"># i++</span>
+        <span class="k">j</span>    ewhile
+eend:   <span class="k">move</span> $v0, $a0            <span class="c"># return str</span>
+        <span class="k">jr</span>   $ra</code></pre>
+<p>"abc xyz Zz" fica "bcd yza Za". É uma função terminal que só usa <code>$t</code>: não precisa de stack.</p></div></details>
+<details><summary>2b · product (recursiva)</summary><div class="in">
+<pre><code><span class="c"># int product(int a, int b)  a -&gt; $a0 ; b -&gt; $a1 ; r -&gt; $s0</span>
+product: <span class="k">addiu</span> $sp, $sp, -<span class="n">8</span>
+        <span class="k">sw</span>   $ra, <span class="n">0</span>($sp)         <span class="c"># não terminal: guarda $ra</span>
+        <span class="k">sw</span>   $s0, <span class="n">4</span>($sp)         <span class="c"># vai alterar $s0: guarda-o</span>
+        <span class="k">li</span>   $s0, <span class="n">0</span>              <span class="c"># r = 0</span>
+        <span class="k">rem</span>  $t0, $a0, <span class="n">2</span>
+        <span class="k">beq</span>  $t0, $<span class="n">0</span>, pif2       <span class="c"># if (a % 2 != 0)</span>
+        <span class="k">move</span> $s0, $a1            <span class="c">#   r = b</span>
+pif2:   <span class="k">beq</span>  $a0, $<span class="n">0</span>, pret       <span class="c"># if (a != 0)</span>
+        <span class="k">sra</span>  $a0, $a0, <span class="n">1</span>         <span class="c">#   a &gt;&gt; 1</span>
+        <span class="k">sll</span>  $a1, $a1, <span class="n">1</span>         <span class="c">#   b &lt;&lt; 1</span>
+        <span class="k">jal</span>  product             <span class="c">#   product(a&gt;&gt;1, b&lt;&lt;1)</span>
+        <span class="k">addu</span> $s0, $s0, $v0       <span class="c">#   r += ...</span>
+pret:   <span class="k">move</span> $v0, $s0            <span class="c"># return r</span>
+        <span class="k">lw</span>   $ra, <span class="n">0</span>($sp)
+        <span class="k">lw</span>   $s0, <span class="n">4</span>($sp)
+        <span class="k">addiu</span> $sp, $sp, <span class="n">8</span>
+        <span class="k">jr</span>   $ra</code></pre>
+<p><code>r</code> fica em <code>$s0</code> porque tem de sobreviver à chamada recursiva. <code>product(13, 7)</code> = 91.</p></div></details>
+<details><summary>3 · Interpretar código</summary><div class="in">
+<p>oper1 (−1 = 0xFFFFFFFF) fica em 0x10010000; oper2 (3) em 0x10010004; <code>.align 2</code> põe result em <strong>0x10010008</strong>.</p>
+<ul>
+<li>a) <code>la $t5, result</code> → <code>lui $1, 0x1001</code> (destino <code>$at</code>, constante 0x1001) e <code>ori $13, $1, 0x0008</code> (destino <code>$t5</code>, constante 0x0008).</li>
+<li>b) <code>$t2</code> = 0x00000003 (<code>lb</code> estende o sinal; 3 é positivo). <code>$t3</code> = 0xFFFFFFFF.</li>
+<li>c) O ciclo decrementa <code>$t2</code> de 3 até 0: <code>sll</code> executa <strong>3 vezes</strong>. <code>$t3</code> = 0xFFFFFFFF &lt;&lt; 3 = <strong>0xFFFFFFF8</strong>.</li>
+<li>d) O syscall 34 imprime em hexadecimal: <strong>0xfffffff8</strong>.</li>
+</ul></div></details>
+
+<h3>Teste teórico 2, 2023-24</h3>
+<details><summary>1 · MIPS com 64 registos</summary><div class="in"><p>Cada campo de registo passa de 5 para <strong>6 bits</strong> (2⁶ = 64). Tipo R: rs, rt e rd ganham 1 bit cada (+3), que têm de sair do shamt e/ou funct. Tipo I: rs e rt ganham 2 bits no total, por isso o imediato passa de 16 para <strong>14 bits</strong> (constantes e offsets de branch com menor alcance). Tipo J: <strong>não é afetado</strong> (não tem registos).</p></div></details>
+<details><summary>2 · Código máquina de <code>sw $t5, 0($t0)</code></summary><div class="in"><p>101011 | 01000 | 01101 | 0000000000000000 = <strong>0xAD0D0000</strong>.</p></div></details>
+<details><summary>3a-3b · Sinais para <code>beq</code> e <code>addi</code></summary><div class="in">
+<div class="tw"><table>
+<thead><tr><th>Sinal</th><th>beq $t5, $0, endfor</th><th>addi $8, $10, -1</th></tr></thead>
+<tbody>
+<tr><td>RegWrite</td><td>0</td><td>1</td></tr>
+<tr><td>RegDst</td><td>X</td><td>0</td></tr>
+<tr><td>ALUSrc</td><td>0</td><td>1</td></tr>
+<tr><td>ALUOp</td><td>01</td><td>00</td></tr>
+<tr><td>Branch</td><td>1</td><td>0</td></tr>
+<tr><td>MemWrite</td><td>0</td><td>0</td></tr>
+<tr><td>MemToReg</td><td>X</td><td>0</td></tr>
+</tbody></table></div></div></details>
+<details><summary>3d · Código máquina de <code>addi $8, $10, -1</code></summary><div class="in"><p>001000 | 01010 | 01000 | 1111111111111111 = <strong>0x2148FFFF</strong>.</p></div></details>
+<details><summary>3e-3f · Acrescentar <code>jal</code>; codificar <code>jal target</code></summary><div class="in"><p>Ver a tabela da <a href="#sc">secção 10</a>. Código: <strong>0x0C100010</strong>.</p></div></details>
+<details><summary>4 · <code>xori</code> no multi-cycle</summary><div class="in"><p>Ver o exemplo da <a href="#mc">secção 11</a>.</p></div></details>
+
+<h3>Teste prático 2, 2018-19 e teste 2, 2021-22</h3>
+<details><summary>Valores pares de <code>nums</code></summary><div class="in">
+<pre><code><span class="c"># i -&gt; $t0 ; val -&gt; $t1 ; &amp;nums[i] -&gt; $t2 ; nums -&gt; $t3</span>
+main:   <span class="k">li</span>   $t0, <span class="n">0</span>
+        <span class="k">la</span>   $t3, nums
+for:    <span class="k">bge</span>  $t0, <span class="n">8</span>, endfor      <span class="c"># for (i = 0; i &lt; SIZE; i++)</span>
+        <span class="k">sll</span>  $t2, $t0, <span class="n">2</span>
+        <span class="k">addu</span> $t2, $t3, $t2       <span class="c"># &amp;nums[i]</span>
+        <span class="k">lw</span>   $t1, <span class="n">0</span>($t2)         <span class="c"># val = nums[i]</span>
+        <span class="k">rem</span>  $t4, $t1, <span class="n">2</span>
+        <span class="k">bne</span>  $t4, $<span class="n">0</span>, next       <span class="c"># if ((val % 2) == 0)</span>
+        <span class="k">move</span> $a0, $t1
+        <span class="k">li</span>   $v0, <span class="n">1</span>
+        <span class="k">syscall</span>                  <span class="c">#   print_int10(val)</span>
+        <span class="k">li</span>   $a0, <span class="s">','</span>
+        <span class="k">li</span>   $v0, <span class="n">11</span>
+        <span class="k">syscall</span>                  <span class="c">#   print_char(',')</span>
+next:   <span class="k">addi</span> $t0, $t0, <span class="n">1</span>
+        <span class="k">j</span>    for
+endfor: <span class="k">li</span>   $v0, <span class="n">10</span>
+        <span class="k">syscall</span></code></pre>
+<p>Imprime <code>-2,6,4,8,126,</code>.</p></div></details>
+<details><summary><code>n_alphas</code> e a sua <code>main</code></summary><div class="in">
+<pre><code><span class="c"># int n_alphas(char *str)  str -&gt; $a0 ; i -&gt; $t0 ; str[i] -&gt; $t2 ; alfas -&gt; $v0</span>
+n_alphas: <span class="k">li</span>  $v0, <span class="n">0</span>             <span class="c"># alfas = 0</span>
+        <span class="k">li</span>   $t0, <span class="n">0</span>              <span class="c"># i = 0</span>
+nfor:   <span class="k">addu</span> $t1, $a0, $t0       <span class="c"># &amp;str[i]</span>
+        <span class="k">lb</span>   $t2, <span class="n">0</span>($t1)
+        <span class="k">beq</span>  $t2, $<span class="n">0</span>, nend       <span class="c"># str[i] != '\0'</span>
+        <span class="k">blt</span>  $t2, <span class="s">'A'</span>, nnext
+        <span class="k">bgt</span>  $t2, <span class="s">'z'</span>, nnext     <span class="c"># if (str[i] &gt;= 'A' &amp;&amp; str[i] &lt;= 'z')</span>
+        <span class="k">addi</span> $v0, $v0, <span class="n">1</span>         <span class="c">#   alfas++</span>
+nnext:  <span class="k">addi</span> $t0, $t0, <span class="n">1</span>
+        <span class="k">j</span>    nfor
+nend:   <span class="k">jr</span>   $ra</code></pre>
+<p>Para "Te3m In5tei1ros Mis8tura9dos" devolve <strong>21</strong>. A <code>main</code> guarda <code>$ra</code> na stack antes do <code>jal n_alphas</code>.</p></div></details>
+<details><summary>Interpretar código (2018-19, pergunta 3)</summary><div class="in">
+<ul>
+<li>a) <code>la $t1, oper2</code> → <code>lui $1, 0x1001</code> + <code>ori $9, $1, 0x0004</code>.</li>
+<li>b) <code>lb</code> de 48 → <code>$t2</code> = <strong>0x00000030</strong>.</li>
+<li>c) <code>srl $t3, $t2, 2</code> → 48 / 4 = <strong>12</strong>.</li>
+<li>d) <code>$a0</code> = −217 + 12 = <strong>−205</strong>.</li>
+<li>e) −205 = 0xFFFFFF33; XOR com 0x8000 → <strong>0xFFFF7F33</strong>.</li>
+</ul></div></details>
+<details><summary><code>print_fact</code> (2021-22, pergunta 4)</summary><div class="in">
+<pre><code><span class="c"># int print_fact(int n)  n -&gt; $s0 ; i -&gt; $s1 (em $s porque chamamos factorial)</span>
+print_fact: <span class="k">addiu</span> $sp, $sp, -<span class="n">12</span>
+        <span class="k">sw</span>   $ra, <span class="n">0</span>($sp)
+        <span class="k">sw</span>   $s0, <span class="n">4</span>($sp)
+        <span class="k">sw</span>   $s1, <span class="n">8</span>($sp)
+        <span class="k">move</span> $s0, $a0            <span class="c"># n</span>
+        <span class="k">bge</span>  $s0, $<span class="n">0</span>, pfelse     <span class="c"># if (n &lt; 0)</span>
+        <span class="k">li</span>   $v0, -<span class="n">1</span>             <span class="c">#   return -1</span>
+        <span class="k">j</span>    pfend
+pfelse: <span class="k">li</span>   $s1, <span class="n">0</span>              <span class="c"># i = 0</span>
+pffor:  <span class="k">bgt</span>  $s1, $s0, pfret     <span class="c"># for (; i &lt;= n; i++)</span>
+        <span class="k">move</span> $a0, $s1
+        <span class="k">jal</span>  factorial           <span class="c">#   factorial(i)</span>
+        <span class="k">move</span> $a0, $v0
+        <span class="k">li</span>   $v0, <span class="n">1</span>
+        <span class="k">syscall</span>                  <span class="c">#   print_int10(...)</span>
+        <span class="k">addi</span> $s1, $s1, <span class="n">1</span>
+        <span class="k">j</span>    pffor
+pfret:  <span class="k">li</span>   $v0, <span class="n">1</span>              <span class="c"># return 1</span>
+pfend:  <span class="k">lw</span>   $ra, <span class="n">0</span>($sp)
+        <span class="k">lw</span>   $s0, <span class="n">4</span>($sp)
+        <span class="k">lw</span>   $s1, <span class="n">8</span>($sp)
+        <span class="k">addiu</span> $sp, $sp, <span class="n">12</span>
+        <span class="k">jr</span>   $ra</code></pre></div></details>
+</section>
+
+<section id="erros" data-nav="Erros clássicos" data-grp="Treino">
+<h2>Erros clássicos</h2>
+<div class="cols">
+<div><h4>Teste 1</h4>
+<ul>
+<li>Ler os restos das divisões pela ordem errada.</li>
+<li>Esquecer o +1 no complemento para 2.</li>
+<li>Dizer que há overflow em C2 por haver carry final.</li>
+<li>Esquecer o bias 127 ou o 1 escondido no IEEE 754.</li>
+<li>Karnaugh sem código de Gray (00, 01, 11, 10) ou sem aproveitar as arestas.</li>
+<li>Confundir capacidade em bits com bytes.</li>
+</ul></div>
+<div><h4>Teste 2 e assembly</h4>
+<ul>
+<li>Esquecer <code>sll</code> (×4) no índice de arrays de <code>int</code>, ou pô-lo em arrays de <code>char</code>.</li>
+<li>Usar <code>$t</code> para valores que têm de sobreviver a um <code>jal</code>.</li>
+<li>Esquecer de guardar <code>$ra</code> numa função que chama outra.</li>
+<li>Contar <code>la</code>/<code>li</code> grande como uma só instrução nos endereços.</li>
+<li>Offset do <code>beq</code> a partir do PC e não de PC+4.</li>
+<li>Usar sign-extend em <code>andi</code>/<code>ori</code>/<code>xori</code>.</li>
+</ul></div>
+</div>
+</section>
+
+<section id="checklist" data-nav="Lista de verificação final" data-grp="Treino">
+<h2>Lista de verificação final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="a1"> Converter entre bases 2, 8, 10 e 16 sem calculadora</label></li>
+<li><label><input type="checkbox" data-k="a2"> Representar negativos em sinal e módulo e complemento para 2, e detetar overflow</label></li>
+<li><label><input type="checkbox" data-k="a3"> Converter de e para IEEE 754 precisão simples</label></li>
+<li><label><input type="checkbox" data-k="a4"> Simplificar expressões citando o teorema em cada passo</label></li>
+<li><label><input type="checkbox" data-k="a5"> Tabela de verdade → canónica → Karnaugh → circuito → NAND-NAND</label></li>
+<li><label><input type="checkbox" data-k="a6"> Implementar funções com descodificador e com multiplexer</label></li>
+<li><label><input type="checkbox" data-k="a7"> Calcular capacidade e endereçabilidade de uma memória; explicar SRAM, DRAM, ROM</label></li>
+<li><label><input type="checkbox" data-k="a8"> Projetar uma máquina de estados completa</label></li>
+<li><label><input type="checkbox" data-k="a9"> Responder a perguntas de texto sobre Von Neumann, instrução e ciclo de execução</label></li>
+<li><label><input type="checkbox" data-k="a10"> Codificar e descodificar instruções R, I e J, incluindo beq e j</label></li>
+<li><label><input type="checkbox" data-k="a11"> Traduzir C para assembly com ciclos, arrays, strings e funções</label></li>
+<li><label><input type="checkbox" data-k="a12"> Aplicar a convenção de registos e a stack em funções recursivas</label></li>
+<li><label><input type="checkbox" data-k="a13"> Dar os sinais de controlo do single-cycle e acrescentar instruções</label></li>
+<li><label><input type="checkbox" data-k="a14"> Percorrer os estados da FSM multi-cycle e calcular CPI</label></li>
+</ul>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var KEY='guia-ac', state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('.chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var tag=document.querySelector('#'+id+' .done-tag'); if(tag) tag.hidden=!on;
+    });
+    pbar.style.width=(secBoxes.length?100*n/secBoxes.length:0)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){ cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); }); });
+  var rst=document.getElementById('rst'), cf=document.getElementById('cf');
+  rst.addEventListener('click',function(){
+    if(cf.hidden){ cf.hidden=false; rst.textContent='Confirmar limpeza'; return; }
+    state={}; save(); refresh(); cf.hidden=true; rst.textContent='Limpar progresso';
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+        if(links[en.target.id]) links[en.target.id].classList.add('on'); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>

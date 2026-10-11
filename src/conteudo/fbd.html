@@ -1,0 +1,544 @@
+<hero>
+<h1>FBD: do diagrama E/R ao SQL Server</h1>
+<p>As 12 aulas de Fundamentos de Bases de Dados 2026/27 resumidas (SGBD, E/R, modelo relacional, SQL DDL e DML, álgebra relacional, vistas, normalização, índices, T-SQL, transações e segurança), com os testes teórico-práticos ATP1 e ATP2 de 2023/24 e 2024/25 resolvidos e justificados.</p>
+</hero>
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<div class="tw"><table>
+<thead><tr><th>Prova</th><th>Matéria</th><th>Formato</th></tr></thead>
+<tbody>
+<tr><td><strong>ATP1</strong> (abril, 65 min)</td><td>Aulas 1 a 6: SGBD, E/R, relacional, DDL, álgebra relacional, DML</td><td>20 V/F (+0,4 / −0,2), um DER para completar (cardinalidade, participação, entidade fraca), esquema relacional, ~9 escolhas múltiplas de AR e SQL sobre a BD "Company"</td></tr>
+<tr><td><strong>ATP2</strong> (junho, 60 min)</td><td>Aulas 7 a 12: vistas, normalização, índices, T-SQL, transações, segurança</td><td>30 V/F (+0,5 / −0,25), análise de um stored procedure, escolha de índices, normalização de uma relação</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">A base de dados "Company" (usada em todas as perguntas)</span>
+<pre data-lang="txt">EMPLOYEE(Fname, Minit, Lname, Ssn, Bdate, Address, Sex, Salary, Super_ssn→EMPLOYEE, Dno→DEPARTMENT)
+DEPARTMENT(Dname, Dnumber, Mgr_ssn→EMPLOYEE, Mgr_start_date)
+DEPT_LOCATIONS(Dnumber→DEPARTMENT, Dlocation)
+PROJECT(Pname, Pnumber, Plocation, Dnum→DEPARTMENT)
+WORKS_ON(Essn→EMPLOYEE, Pno→PROJECT, Hours)
+DEPENDENT(Essn→EMPLOYEE, Dependent_name, Sex, Bdate, Relationship)</pre>
+<p>Chaves primárias: Ssn, Dnumber, (Dnumber, Dlocation), Pnumber, (Essn, Pno), (Essn, Dependent_name). Decora este esquema: poupa muito tempo no teste.</p></div>
+</section>
+
+<section id="sgbd" data-nav="1 · SGBD e arquitetura" data-grp="Modelação" data-track>
+<h2>1 · Sistemas de gestão de bases de dados</h2>
+<p>Uma <strong>BD</strong> é uma coleção organizada de dados relacionados, partilhados por várias aplicações. Um <strong>SGBD</strong> é o software que permite <em>definir</em> (tipos, estruturas, restrições, no catálogo), <em>construir</em>, <em>manipular</em> e <em>partilhar</em> BDs. Evolução: processamento isolado → sistema de ficheiros partilhados (problemas de concorrência, integridade, segurança) → SGBD.</p>
+<div class="cols">
+<div><h4>Vantagens do SGBD</h4><ul><li>Independência programas/dados</li><li>Integridade e consistência (mesmo com falhas)</li><li>Eficiência, concorrência, isolamento</li><li>Segurança, backup e recuperação</li><li>Linguagem própria (SQL)</li></ul></div>
+<div><h4>Metadados</h4><p>O SGBD guarda a descrição da própria BD: tabelas, utilizadores, regras, vistas, índices, locks, esquemas.</p></div>
+</div>
+<h3>Arquitetura ANSI/SPARC (3 níveis)</h3>
+<div class="tw"><table><thead><tr><th>Nível</th><th>Descreve</th><th>Para quem</th></tr></thead><tbody>
+<tr><td>Externo</td><td>Vistas adaptadas a cada utilizador</td><td>Utilizadores finais</td></tr>
+<tr><td>Conceptual</td><td>Entidades, tipos, relações, restrições (ex.: CREATE TABLE)</td><td>Administradores e programadores</td></tr>
+<tr><td>Interno</td><td>Implementação física: ficheiros, páginas, índices</td><td>Programadores de sistemas</td></tr>
+</tbody></table></div>
+<div class="box teo"><span class="t">Independência dos dados: são DOIS níveis, não três</span><strong>Física:</strong> mudar o nível interno não afeta o conceptual. <strong>Lógica:</strong> mudar o esquema conceptual não afeta os esquemas externos nem as aplicações. (Afirmação "existem 3 níveis de independência" é <strong>falsa</strong>: há 3 níveis de arquitetura.)</div>
+<h3>Modelos de dados</h3>
+<ul>
+<li><strong>1.ª geração:</strong> hierárquico (árvore pai-filho 1:N; bom para acesso <em>sequencial</em>, mau para aleatório; não suporta N:M sem duplicar dados) e rede (grafos, registos em vários conjuntos).</li>
+<li><strong>2.ª geração:</strong> relacional (o mais usado: bancos, hospitais, finanças).</li>
+<li><strong>3.ª geração:</strong> objeto-relacional, OO, NoSQL (chave-valor, documentos, colunas, grafos).</li>
+</ul>
+</section>
+
+<section id="er" data-nav="2 · Modelo E/R (notação de Chen)" data-grp="Modelação" data-track>
+<h2>2 · Desenho conceptual: modelo Entidade/Relacionamento</h2>
+<p>Fases do desenho: análise de requisitos (texto) → desenho conceptual (DER, independente do SGBD) → esquema lógico (relacional, dependente do SGBD) → esquema físico. A modelação <strong>não é determinística</strong>: há vários DER válidos para o mesmo problema.</p>
+<div class="tw"><table><thead><tr><th>Elemento</th><th>Desenho (Chen)</th><th>Notas</th></tr></thead><tbody>
+<tr><td>Entidade forte</td><td>Retângulo</td><td>Tem atributo(s) chave, sublinhados</td></tr>
+<tr><td>Entidade fraca</td><td>Retângulo duplo</td><td>Não tem chave própria; identifica-se pela entidade dona + chave parcial (sublinhado tracejado), através de um <strong>relacionamento identificador</strong> (losango duplo)</td></tr>
+<tr><td>Atributo</td><td>Oval</td><td><strong>Derivado</strong> (tracejado, ex.: idade), <strong>multivalor</strong> (oval duplo, ex.: ações de formação), <strong>composto</strong> (oval com sub-ovais, ex.: morada)</td></tr>
+<tr><td>Relacionamento</td><td>Losango</td><td>Pode ter atributos (ex.: Hours em WORKS_ON)</td></tr>
+</tbody></table></div>
+<h3>Classificação dos relacionamentos</h3>
+<ul>
+<li><strong>Grau:</strong> unário (recursivo), binário (o mais comum), ternário (pode converter-se em binários).</li>
+<li><strong>Recursivo assimétrico</strong> (ex.: supervisiona): <strong>obriga a indicar os papéis</strong> (supervisor / supervisionado).</li>
+<li><strong>Cardinalidade:</strong> 1:1, 1:N, N:M.</li>
+<li><strong>Participação:</strong> total (linha dupla, cada instância participa pelo menos uma vez) ou parcial. Notação alternativa (min,max): min 0 = opcional, 1 = obrigatório.</li>
+</ul>
+<div class="box met"><span class="t">Ler a cardinalidade na notação de Chen</span>O número escrito junto a uma entidade diz com <strong>quantas</strong> instâncias <em>dessa</em> entidade se relaciona uma instância da outra. "Um funcionário trabalha num departamento; um departamento tem vários funcionários": N do lado do Funcionário, 1 do lado do Departamento. A participação marca-se em cada lado: Funcionário total (todos trabalham num departamento), Departamento total ou parcial conforme o enunciado.</div>
+<h3>Especialização e agregação</h3>
+<ul>
+<li><strong>IS-A</strong> (superclasse/subclasses). <strong>Disjunta</strong> (d): cada entidade está em <em>no máximo</em> uma subclasse. <strong>Sobreposta</strong> (o): pode estar em várias. <strong>Total</strong> (linha dupla): tem de estar em pelo menos uma. Não confundir: disjunta não obriga a pertencer a uma subclasse.</li>
+<li><strong>Agregação:</strong> tratar um relacionamento como entidade para o relacionar com outra entidade.</li>
+</ul>
+<h3>Restrições de integridade no DER</h3>
+<p>Atributo com um só valor; chaves únicas; obrigatoriedade de valor; domínios (&gt;, &lt;, not null); cardinalidade; participação.</p>
+</section>
+
+<section id="rel" data-nav="3 · Modelo relacional e mapeamento" data-grp="Modelação" data-track>
+<h2>3 · Modelo relacional e passagem DER → tabelas</h2>
+<div class="tw"><table><thead><tr><th>Termo formal</th><th>Termo comum</th></tr></thead><tbody>
+<tr><td>Relação</td><td>Tabela</td></tr><tr><td>Tuplo</td><td>Linha</td></tr><tr><td>Atributo</td><td>Coluna</td></tr>
+<tr><td>Domínio</td><td>Tipo / conjunto de valores possíveis</td></tr><tr><td>Grau / cardinalidade</td><td>Nº de colunas / nº de linhas</td></tr>
+</tbody></table></div>
+<h3>Chaves</h3>
+<ul>
+<li><strong>Superchave:</strong> conjunto de atributos que identifica univocamente cada tuplo. O conjunto de <strong>todos</strong> os atributos é sempre superchave.</li>
+<li><strong>Chave candidata:</strong> superchave mínima (não se pode tirar nenhum atributo).</li>
+<li><strong>Chave primária:</strong> a candidata escolhida (preferir simples, estável, sem NULL).</li>
+<li><strong>Chave única (UNIQUE):</strong> outra candidata; <strong>pode ter NULL</strong> (no SQL Server, um só NULL).</li>
+<li><strong>Chave estrangeira:</strong> referencia a PK (ou UNIQUE) de outra tabela ou <strong>da própria</strong> (ex.: Super_ssn). Tem de ter o <strong>mesmo tipo</strong>. <strong>Pode ser NULL</strong> se não tiver NOT NULL. Uma tabela pode ter várias FK para a mesma tabela (ex.: Voo com origem e destino → Aeroporto). Cada FK referencia <strong>uma só</strong> tabela.</li>
+</ul>
+<p><strong>Integridade de entidade:</strong> PK nunca é NULL. <strong>Integridade referencial:</strong> o valor da FK existe na tabela referenciada ou é NULL.</p>
+<h3>Regras de mapeamento DER → relacional</h3>
+<div class="tw"><table><thead><tr><th>No DER</th><th>No relacional</th></tr></thead><tbody>
+<tr><td>Entidade forte</td><td>Tabela com os atributos simples; compostos desdobrados; PK = chave</td></tr>
+<tr><td>Entidade fraca</td><td>Tabela com a PK da dona como FK; PK = (PK dona, chave parcial)</td></tr>
+<tr><td>1:1</td><td>FK num dos lados (de preferência o de participação total)</td></tr>
+<tr><td>1:N</td><td><strong>A PK do lado 1 vai como FK para a tabela do lado N</strong> (com os atributos do relacionamento)</td></tr>
+<tr><td>N:M</td><td><strong>Nova relação</strong> com as duas PK como FK; PK composta pelas duas</td></tr>
+<tr><td>Multivalor</td><td>Nova relação (PK da entidade + valor)</td></tr>
+<tr><td>Ternário</td><td>Nova relação com as três PK</td></tr>
+<tr><td>IS-A</td><td>Tabela por subclasse com a PK da superclasse (ou uma só tabela com atributo tipo)</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">Exemplo completo (ATP1 2024 e 2025: companhia aérea)</span>
+<pre data-lang="txt">MODELO(Id, Autonomia, Lugares)
+AVIAO(Matricula, Nome, Id_modelo→MODELO)                      tipo: N aviões : 1 modelo
+VOO(Num_voo, Hora, Origem, Destino)
+VOO_INSTANCIA(Num_voo→VOO, Data, Matricula→AVIAO)              entidade fraca de VOO
+         PK = (Num_voo, Data)                                  usa: N instâncias : 1 avião
+PILOTO(Licenca_num, Nome)
+PILOTADO(Num_voo, Data, Licenca_num→PILOTO)                    N:M
+         PK = (Num_voo, Data, Licenca_num); FK (Num_voo, Data)→VOO_INSTANCIA</pre></div>
+<h3>Regras de Codd (as ideias)</h3>
+<p>Toda a informação está em tabelas; cada valor acessível por tabela + PK + coluna; NULL tratado de forma sistemática; catálogo também é relacional; uma linguagem completa (SQL); vistas atualizáveis quando teoricamente possível; operações sobre conjuntos; independência física e lógica; integridade definida no catálogo.</p>
+</section>
+
+<section id="ddl" data-nav="4 · SQL DDL" data-grp="SQL" data-track>
+<h2>4 · SQL DDL: criar e alterar tabelas</h2>
+<pre data-lang="sql">CREATE TABLE EMPLOYEE (
+    Fname     VARCHAR(15)   NOT NULL,
+    Ssn       CHAR(9)       NOT NULL,
+    Salary    DECIMAL(10,2) DEFAULT 0 CHECK (Salary &gt; 0),
+    Super_ssn CHAR(9),
+    Dno       INT           NOT NULL DEFAULT 1,
+    CONSTRAINT EMPPK PRIMARY KEY (Ssn),
+    CONSTRAINT EMPSUPERFK FOREIGN KEY (Super_ssn) REFERENCES EMPLOYEE(Ssn)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT EMPDEPTFK FOREIGN KEY (Dno) REFERENCES DEPARTMENT(Dnumber)
+        ON DELETE SET DEFAULT ON UPDATE CASCADE
+);
+ALTER TABLE EMPLOYEE ADD Job VARCHAR(12);                 -- coluna nova fica a NULL
+ALTER TABLE EMPLOYEE DROP COLUMN Job;
+ALTER TABLE DEPARTMENT ADD CONSTRAINT DEPMGRFK
+    FOREIGN KEY (Mgr_ssn) REFERENCES EMPLOYEE(Ssn);
+DROP TABLE EMPLOYEE;                                      -- falha se for referenciada</pre>
+<div class="box met"><span class="t">Ações referenciais</span>Quando o tuplo referenciado é apagado/alterado: <code>NO ACTION</code> (por omissão, rejeita), <code>CASCADE</code> (propaga), <code>SET NULL</code>, <code>SET DEFAULT</code>.</div>
+<div class="box bad"><span class="t">Armadilhas dos V/F</span>
+<ul>
+<li><code>ALTER TABLE EMPLOYEE ADD noFiscal CHAR(9) NOT NULL;</code> numa tabela <strong>com linhas</strong> dá <strong>erro</strong>: as linhas existentes ficariam com NULL. Só funciona com <code>DEFAULT</code>.</li>
+<li>Não se pode criar uma tabela com FK para uma tabela que <strong>ainda não existe</strong>. Cria-se primeiro e acrescenta-se a FK depois com ALTER TABLE (é o caso de EMPLOYEE ↔ DEPARTMENT, que se referenciam mutuamente).</li>
+<li><code>FOREIGN KEY (at1, at2) REFERENCES Y(atI) AND Z(atII)</code> não existe: uma FK referencia uma única tabela.</li>
+</ul></div>
+<p>No SQL Server: <code>CREATE DATABASE</code>, <code>CREATE SCHEMA</code> (agrupa objetos, ex.: <code>dbo</code>), tipos definidos pelo utilizador (<code>CREATE TYPE SSN FROM CHAR(9)</code>), <code>IDENTITY</code> para numeração automática.</p>
+</section>
+
+<section id="ar" data-nav="5 · Álgebra relacional" data-grp="SQL" data-track>
+<h2>5 · Álgebra relacional</h2>
+<div class="tw"><table><thead><tr><th>Operador</th><th>Símbolo</th><th>SQL equivalente</th></tr></thead><tbody>
+<tr><td>Seleção (linhas)</td><td>σ<sub>cond</sub>(R)</td><td>WHERE</td></tr>
+<tr><td>Projeção (colunas, sem duplicados)</td><td>π<sub>atrs</sub>(R)</td><td>SELECT DISTINCT</td></tr>
+<tr><td>Renomeação</td><td>ρ<sub>S</sub>(R)</td><td>AS</td></tr>
+<tr><td>União, interseção, diferença</td><td>∪ ∩ −</td><td>UNION, INTERSECT, EXCEPT (relações compatíveis)</td></tr>
+<tr><td>Produto cartesiano</td><td>R × S</td><td>FROM R, S</td></tr>
+<tr><td>Junção (theta / equi / natural)</td><td>R ⋈<sub>cond</sub> S, R * S</td><td>JOIN … ON, NATURAL JOIN</td></tr>
+<tr><td>Junção externa esquerda/direita/completa</td><td>⟕ ⟖ ⟗</td><td>LEFT / RIGHT / FULL OUTER JOIN</td></tr>
+<tr><td>Semi-junção</td><td>⋉</td><td>EXISTS / IN</td></tr>
+<tr><td>Agregação</td><td><sub>grupo</sub>ℑ<sub>funções</sub>(R)</td><td>GROUP BY + COUNT/SUM/AVG/MIN/MAX</td></tr>
+<tr><td>Divisão</td><td>R ÷ S</td><td>"para todos" (NOT EXISTS duplo)</td></tr>
+</tbody></table></div>
+<div class="box def"><span class="t">Divisão</span>R(X, Y) ÷ S(Y) dá os valores de X que aparecem em R combinados com <strong>todos</strong> os valores de S. Os atributos de S têm de ser um <strong>subconjunto próprio</strong> dos de R (o numerador tem mais atributos). Uso típico: "funcionários que trabalham em <em>todos</em> os projetos": π<sub>Essn,Pno</sub>(WORKS_ON) ÷ ρ<sub>Pno</sub>(π<sub>Pnumber</sub>(PROJECT)).</div>
+<h3>Padrões que saem sempre</h3>
+<pre data-lang="txt">Supervisor de cada funcionário:
+  π E.Fname,E.Lname,S.Fname,S.Lname ( ρE(EMPLOYEE) ⋈ E.Super_ssn=S.Ssn ρS(EMPLOYEE) )
+
+Salário médio das mulheres por departamento (nome):
+  Dname ℑ AVG(Salary) ( σ Sex='F' (EMPLOYEE ⋈ Dno=Dnumber DEPARTMENT) )
+
+Funcionários sem projetos (junção externa + IS NULL + projeção):
+  π Fname,Minit,Lname ( σ Essn=NULL (EMPLOYEE ⟕ Ssn=Essn WORKS_ON) )</pre>
+<p>Atenção às opções-armadilha: σ no lugar de π para escolher colunas; filtrar <code>Ssn = NULL</code> (que vem da tabela da esquerda e nunca é NULL) em vez de <code>Essn = NULL</code>; juntar pelo campo errado (<code>E.Ssn = S.Super_ssn</code> dá os subordinados, não o supervisor).</p>
+</section>
+
+<section id="dml" data-nav="6 · SQL DML: consultas" data-grp="SQL" data-track>
+<h2>6 · SQL DML</h2>
+<pre data-lang="sql">INSERT INTO EMPLOYEE (Fname, Lname, Ssn, Dno) VALUES ('Ana', 'Silva', '123456789', 4);
+UPDATE EMPLOYEE SET Salary = Salary * 1.1 WHERE Dno = 5;
+DELETE FROM EMPLOYEE WHERE Dno = 5;            -- sem WHERE apaga tudo</pre>
+<h3>Ordem lógica de uma consulta</h3>
+<pre data-lang="sql">SELECT   Dno, COUNT(*) AS N, AVG(Salary)   -- 5. o que mostrar (aqui nasce o alias)
+FROM     EMPLOYEE                           -- 1. de onde
+WHERE    Sex = 'F'                          -- 2. filtra linhas
+GROUP BY Dno                                -- 3. agrupa
+HAVING   COUNT(*) &gt; 3                       -- 4. filtra grupos
+ORDER BY N DESC;                            -- 6. ordena (já pode usar o alias)</pre>
+<div class="box teo"><span class="t">Regras que caem nos V/F</span>
+<ul>
+<li>No SELECT de uma consulta com GROUP BY só podem aparecer <strong>atributos de agrupamento</strong> ou funções de agregação. <code>SELECT Fname, COUNT(*) FROM EMPLOYEE GROUP BY Lname</code> está <strong>errado</strong>.</li>
+<li>O alias do SELECT <strong>não</strong> pode ser usado no WHERE nem no HAVING (no SQL Server): estes são avaliados antes do SELECT. Escreve <code>HAVING SUM(area) &lt; 3000000</code>, não <code>HAVING tarea &lt; …</code>.</li>
+<li>Condições sobre agregados vão para o <strong>HAVING</strong>, nunca para o WHERE.</li>
+<li><code>COUNT(*)</code> conta linhas; <code>COUNT(col)</code> ignora NULL; <code>COUNT()</code> e <code>SUM(*)</code> não existem.</li>
+<li>Qualquer operação com NULL dá NULL (<code>5 + NULL</code>). Compara-se com <code>IS NULL</code> / <code>IS NOT NULL</code>, nunca com <code>= NULL</code>.</li>
+<li><code>SELECT ALL</code> (omissão) mantém duplicados; <code>DISTINCT</code> remove-os. <code>UNION</code> remove duplicados; <code>UNION ALL</code> não.</li>
+</ul></div>
+<h3>Junções</h3>
+<pre data-lang="sql">-- funcionário e o seu supervisor (auto-junção)
+SELECT E.Lname AS Employee, S.Lname AS Supervisor
+FROM EMPLOYEE AS E LEFT OUTER JOIN EMPLOYEE AS S ON E.Super_ssn = S.Ssn;
+
+-- total de horas por funcionário, incluindo quem não tem projetos
+SELECT Ssn, Fname, Lname, SUM(Hours)
+FROM EMPLOYEE LEFT OUTER JOIN WORKS_ON ON Ssn = Essn
+GROUP BY Ssn, Fname, Lname;</pre>
+<h3>Subconsultas</h3>
+<pre data-lang="sql">-- IN / NOT IN
+SELECT Fname FROM EMPLOYEE WHERE Ssn NOT IN (SELECT Essn FROM DEPENDENT);
+-- EXISTS correlacionado: trabalham EXCLUSIVAMENTE em projetos do departamento 4
+SELECT Fname FROM EMPLOYEE
+WHERE NOT EXISTS (SELECT * FROM WORKS_ON JOIN PROJECT ON Pno = Pnumber
+                  WHERE Essn = Ssn AND Dnum &lt;&gt; 4);
+-- ALL / ANY: o país menos populoso de cada região
+SELECT region, name, population FROM country AS x
+WHERE population &lt;= ALL (SELECT population FROM country AS y
+                         WHERE y.region = x.region AND population &gt; 0);
+-- subconsulta no FROM (tabela derivada)
+SELECT D.Dname, T.N FROM DEPARTMENT D
+JOIN (SELECT Dno, COUNT(*) AS N FROM EMPLOYEE GROUP BY Dno) AS T ON T.Dno = D.Dnumber;</pre>
+<p>Outros: <code>BETWEEN a AND b</code>, <code>LIKE 'A%'</code> (<code>%</code> qualquer sequência, <code>_</code> um carácter), <code>IN ('Poland', 'Germany')</code>, <code>ORDER BY … ASC|DESC</code>, <code>TOP n</code>.</p>
+</section>
+
+<section id="vistas" data-nav="7 · Vistas" data-grp="SQL" data-track>
+<h2>7 · Vistas (views)</h2>
+<p>Uma vista é uma <strong>tabela virtual</strong> definida por um SELECT. Não guarda dados (salvo vistas materializadas/indexadas): o SGBD faz <em>query modification</em>, substituindo a vista pela sua definição.</p>
+<pre data-lang="sql">CREATE VIEW EMPLOYEE_DEP5 AS
+    SELECT Fname, Lname, Ssn, Dno FROM EMPLOYEE WHERE Dno = 5
+    WITH CHECK OPTION;          -- impede inserir/alterar linhas que saiam da vista
+ALTER VIEW … ; DROP VIEW EMPLOYEE_DEP5;</pre>
+<ul>
+<li>Usos: simplificar consultas, segurança (mostrar só algumas colunas), independência lógica.</li>
+<li>É atualizável se for sobre <strong>uma tabela</strong>, sem agregação nem DISTINCT e incluindo as colunas obrigatórias. Vistas com GROUP BY ou várias tabelas, em geral, não são.</li>
+<li>Vistas <strong>não têm parâmetros</strong>. Para isso usa-se uma UDF <em>inline table-valued</em>.</li>
+</ul>
+</section>
+
+<section id="norm" data-nav="8 · Normalização" data-grp="Desenho" data-track>
+<h2>8 · Dependências funcionais e formas normais</h2>
+<p>Objetivo: evitar <strong>redundância</strong> e anomalias de inserção, alteração e eliminação. A redundância está associada a <strong>dependências funcionais indesejadas</strong>.</p>
+<div class="box def"><span class="t">Dependência funcional X → Y</span>Dois tuplos com o mesmo X têm sempre o mesmo Y. É uma propriedade do <strong>esquema</strong> (semântica dos dados), <strong>não</strong> se deduz de uma instância concreta (uma instância só pode mostrar que uma DF não existe). <strong>Total</strong> (plena): Y depende de toda a chave. <strong>Parcial</strong>: depende de parte de uma chave composta. <strong>Transitiva</strong>: chave → X → Y com X não-chave.</div>
+<div class="tw"><table><thead><tr><th>Forma normal</th><th>Condição</th><th>Como corrigir</th></tr></thead><tbody>
+<tr><td>1FN</td><td>Atributos atómicos: sem multivalor nem relações embutidas</td><td>Tirar o grupo repetido para outra relação</td></tr>
+<tr><td>2FN</td><td>1FN e nenhum atributo não-chave depende de <strong>parte</strong> de uma chave candidata (sem DF parciais). Com chaves simples, está automaticamente em 2FN</td><td>Separar a DF parcial</td></tr>
+<tr><td>3FN</td><td>2FN e nenhum atributo não-chave depende <strong>transitivamente</strong> da chave (não há DF entre atributos não-chave)</td><td>Separar a DF transitiva</td></tr>
+<tr><td>BCNF</td><td>Para toda a DF não trivial X → Y, X é superchave</td><td>Decompor; pode <strong>perder DF</strong></td></tr>
+<tr><td>4FN</td><td>BCNF e sem dependências multivalor não triviais (X ↠ Y)</td><td>Separar cada multivalor</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">Exemplo (ATP2 2023/24)</span>
+<p>R = {A,B,C,D,E,F,G,H,I} com {A,B} → {D,F,G,I}, {B} → {C}, {D,F} → {E}, {G} → {H}.</p>
+<ul>
+<li>Chave: <strong>{A, B}</strong> (o fecho de AB é tudo; B sozinho não chega).</li>
+<li>{B} → {C} é <strong>parcial</strong> (não transitiva). {D,F} → {E} e {G} → {H} são <strong>transitivas</strong>.</li>
+<li>{A,B} → {D,F,G,I} é total. R está em 1FN (sem multivalor).</li>
+<li>Decompor em R1 = {A,B,C,D,F,G,I}, R2 = {D,F,E}, R3 = {G,H} <strong>não</strong> deixa tudo em 3FN: R1 ainda tem B → C (parcial, nem 2FN). Correto: {A,B,D,F,G,I}, {B,C}, {D,F,E}, {G,H}.</li>
+</ul></div>
+</section>
+
+<section id="indices" data-nav="9 · Índices e otimização" data-grp="Desenho" data-track>
+<h2>9 · Índices e otimização</h2>
+<ul>
+<li><strong>Índice primário/ordenado:</strong> sobre o campo de ordenação do ficheiro. <strong>Clustering:</strong> sobre campo de ordenação não chave. <strong>Secundário:</strong> sobre outro campo.</li>
+<li><strong>Multinível</strong> e <strong>árvores B/B+</strong>: árvores de pesquisa sempre equilibradas, nós = páginas de disco. Procura O(log n).</li>
+<li><code>CREATE INDEX idxEmpName ON EMPLOYEE(Fname, Minit, Lname);</code> Um índice composto só ajuda (seek) se a pesquisa usar o <strong>primeiro atributo</strong> (prefixo à esquerda).</li>
+</ul>
+<h3>SQL Server</h3>
+<div class="tw"><table><thead><tr><th></th><th>Clustered</th><th>Non-clustered</th></tr></thead><tbody>
+<tr><td>Quantos por tabela</td><td><strong>Um</strong> (os dados ficam ordenados por ele). Criado <strong>por omissão para a PK</strong></td><td>Vários (até 999)</td></tr>
+<tr><td>Folhas</td><td>As próprias linhas da tabela</td><td>Chave + apontador (chave do clustered, ou RowID se for heap)</td></tr>
+<tr><td>Bom para</td><td>Intervalos, ORDER BY, chaves crescentes estreitas (IDENTITY)</td><td>Pesquisas seletivas, FK usadas em junções, colunas no WHERE</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>Heap:</strong> tabela sem índice clustered; as linhas <strong>não</strong> têm ordem física. Pode ter índices non-clustered.</li>
+<li><code>UNIQUE</code> e <code>PRIMARY KEY</code> criam índices automaticamente.</li>
+<li><strong>Fill factor:</strong> % de cada página preenchida na criação. Deixar espaço livre (ex.: 85 %) reduz <strong>page splits</strong> quando há inserções no meio. Para chaves sempre crescentes (identity) usa-se <strong>≈ 100 %</strong>, pois as inserções vão sempre para o fim.</li>
+<li><strong>Filtered index:</strong> só para um subconjunto (WHERE no índice), útil para colunas esparsas.</li>
+<li>Índices <strong>aceleram leituras</strong> mas <strong>atrasam INSERT/UPDATE/DELETE</strong> (têm de ser atualizados). Escolher pelos padrões de consulta: a tabela de custos do caso de estudo (sem índice / índice em star / em movie / ambos) mostra que a melhor escolha depende da fração de consultas e inserções.</li>
+<li>Fragmentação: <code>ALTER INDEX … REORGANIZE</code> (leve) ou <code>REBUILD WITH (FILLFACTOR = 98)</code>.</li>
+</ul>
+</section>
+
+<section id="tsql" data-nav="10 · T-SQL: SP, UDF, triggers" data-grp="Programação" data-track>
+<h2>10 · Programação em T-SQL</h2>
+<h3>Batches e scripts</h3>
+<ul>
+<li><strong>Batch:</strong> grupo de instruções enviado de uma vez, terminado por <code>GO</code> (que não vai para o servidor; <code>GO n</code> repete n vezes).</li>
+<li>Erro de <strong>sintaxe</strong> faz falhar a batch inteira; erro de <strong>runtime não anula</strong> as instruções anteriores da batch. Uma batch <strong>não é uma transação</strong>.</li>
+<li>No fim da batch são destruídas as variáveis locais, tabelas temporárias e cursores criados nela. <code>CREATE PROCEDURE/VIEW/TRIGGER</code> têm de ser a única instrução da batch.</li>
+</ul>
+<pre data-lang="sql">DECLARE @x INT = 5, @nome VARCHAR(20);
+SET @x += 1;
+SELECT @nome = Fname FROM EMPLOYEE WHERE Ssn = '123456789';   -- se vierem várias, fica a última
+IF EXISTS (SELECT * FROM EMPLOYEE WHERE Dno = 5) PRINT 'Há' ELSE PRINT 'Não há';
+WHILE @x &lt; 10 BEGIN SET @x += 1; IF @x = 8 BREAK; END;</pre>
+<h3>Tabelas temporárias</h3>
+<div class="tw"><table><thead><tr><th>Tipo</th><th>Visibilidade</th><th>Restrições</th></tr></thead><tbody>
+<tr><td><code>#Local</code></td><td>Sessão que a criou e níveis interiores da call stack; destruída no fim do procedimento</td><td>Como tabela normal</td></tr>
+<tr><td><code>##Global</code></td><td>Todas as sessões; destruída quando a última desliga</td><td>Como tabela normal</td></tr>
+<tr><td><code>@Tabela</code> (variável)</td><td>Só a batch/procedimento atual (não os níveis interiores); pode ser parâmetro</td><td>PK, UNIQUE, DEFAULT, NULL sim; <strong>FK, CHECK e triggers não</strong></td></tr>
+</tbody></table></div>
+<h3>Cursores (5 passos)</h3>
+<pre data-lang="sql">DECLARE C CURSOR FAST_FORWARD FOR SELECT Essn, Hours FROM WORKS_ON;
+OPEN C;
+FETCH NEXT FROM C INTO @essn, @h;
+WHILE @@FETCH_STATUS = 0          -- 0 ok, -1 fim, -2 tuplo indisponível
+BEGIN
+    -- processar a linha
+    FETCH NEXT FROM C INTO @essn, @h;
+END
+CLOSE C;
+DEALLOCATE C;</pre>
+<p>Percorrem os tuplos um a um ("pesca à linha"). Soluções <strong>set-based</strong> ("pesca com rede") são em geral <strong>muito mais rápidas</strong>.</p>
+<h3>Stored procedures vs UDF</h3>
+<div class="tw"><table><thead><tr><th>Stored procedure</th><th>User defined function</th></tr></thead><tbody>
+<tr><td>Devolve 0, 1 ou vários valores; parâmetros <code>OUTPUT</code>; <code>RETURN n</code> (inteiro de estado)</td><td>Devolve um escalar ou uma tabela; só parâmetros de entrada</td></tr>
+<tr><td><strong>Não</strong> pode ser usado no FROM/WHERE</td><td>Pode ser usada em SELECT/WHERE/HAVING (e escalar até em CHECK)</td></tr>
+<tr><td>Pode alterar dados, usar TRY/CATCH, transações, chamar SPs</td><td><strong>Não</strong> altera dados, <strong>sem TRY/CATCH nem RAISERROR</strong>, sem transações, sem funções não determinísticas</td></tr>
+</tbody></table></div>
+<p>Tipos de UDF: <strong>escalar</strong>; <strong>inline table-valued</strong> (<code>RETURNS TABLE AS RETURN (SELECT …)</code>, uma "vista com parâmetros"); <strong>multi-statement table-valued</strong> (<code>RETURNS @t TABLE (…)</code>, preenche e devolve). Invocação com o schema: <code>dbo.fsMultiply(3, 4)</code>.</p>
+<pre data-lang="sql">CREATE PROC dbo.GetProductName (@Code CHAR(10), @Name VARCHAR(25) OUTPUT) AS
+    SELECT @Name = ProductName FROM dbo.Product WHERE Code = @Code;
+GO
+DECLARE @n VARCHAR(25);
+EXEC dbo.GetProductName '1001', @n OUTPUT;</pre>
+<h3>Erros</h3>
+<ul>
+<li><code>@@ERROR</code>: código de erro da <strong>última</strong> instrução (0 = sucesso; a seguinte já repõe). <code>@@ROWCOUNT</code>: linhas afetadas.</li>
+<li><code>RAISERROR('msg', severidade, estado)</code> devolve um erro ao cliente; <strong>não faz rollback</strong> sozinho.</li>
+<li><code>BEGIN TRY … END TRY BEGIN CATCH … END CATCH</code> com <code>ERROR_NUMBER()</code>, <code>ERROR_MESSAGE()</code>… O erro passa o controlo para o CATCH; o rollback só acontece se o CATCH o fizer (ou com <code>SET XACT_ABORT ON</code>).</li>
+</ul>
+<h3>Triggers DML</h3>
+<ul>
+<li>Disparam <strong>uma vez por instrução</strong> (não por tuplo, ao contrário do Oracle). Devem estar preparados para várias linhas em <code>inserted</code>/<code>deleted</code>.</li>
+<li>Tabelas lógicas só de leitura: <code>inserted</code> (novas linhas: INSERT, UPDATE) e <code>deleted</code> (linhas antigas: DELETE, UPDATE). Num AFTER DELETE, <code>inserted</code> está <strong>vazia</strong>. SPs chamados pelo trigger <strong>não</strong> as veem.</li>
+<li><strong>AFTER</strong>: vários por tabela; corre depois de todas as restrições (PK, CHECK, FK) e da escrita, antes do commit; pode fazer <code>ROLLBACK TRAN</code>. Não pode corrigir dados que violem restrições (a instrução já falhou antes).</li>
+<li><strong>INSTEAD OF</strong>: um por tabela/vista; <strong>substitui</strong> a instrução (que não é executada); usa-se quando é provável que a instrução falhe e se quer outra lógica (ex.: atualizar uma vista não atualizável, arquivar em vez de apagar). Não é recursivo.</li>
+<li><code>UPDATE(coluna)</code> diz se a coluna foi alterada.</li>
+</ul>
+</section>
+
+<section id="trans" data-nav="11 · Transações e recuperação" data-grp="Programação" data-track>
+<h2>11 · Transações, concorrência e recuperação</h2>
+<div class="tw"><table><thead><tr><th>ACID</th><th>Significado</th></tr></thead><tbody>
+<tr><td>Atomicidade</td><td>Tudo (commit) ou nada (rollback)</td></tr>
+<tr><td>Consistência</td><td>De um estado íntegro para outro estado íntegro</td></tr>
+<tr><td>Isolamento</td><td>Cada transação tem a ilusão de ser a única</td></tr>
+<tr><td>Durabilidade (persistência)</td><td>Depois do commit, nenhuma falha anula as alterações</td></tr>
+</tbody></table></div>
+<p><strong>Estados:</strong> ativa → <em>parcialmente efetivada</em> (executou a última instrução, mas o commit ainda não está garantido em disco) → efetivada (committed); ou ativa → falhada → abortada.</p>
+<h3>Problemas de concorrência</h3>
+<p><strong>Atualização perdida</strong> (duas escrevem por cima), <strong>leitura suja</strong> (ler dados não efetivados de outra que depois faz rollback), leitura não repetível, fantasmas. Transações <strong>só de leitura</strong> não entram em conflito entre si.</p>
+<div class="cols">
+<div><h4>Preventivos (pessimistas)</h4><ul><li><strong>Locking</strong>: lock de leitura (partilhado) / escrita (exclusivo), libertados no commit/rollback; podem causar <strong>deadlock</strong> e esperas.</li><li><strong>Etiquetagem</strong> (timestamps): ordem de chegada; conflito ⇒ desfaz e reinicia.</li></ul></div>
+<div><h4>Otimistas</h4><p>Assumem que conflitos são raros: executam livremente e validam no fim; se houver conflito, a transação é <strong>abortada e reiniciada</strong> (não há só atrasos).</p></div>
+</div>
+<h3>Escalonamentos</h3>
+<ul>
+<li><strong>Serializável:</strong> equivalente a uma execução em série.</li>
+<li><strong>Recuperável:</strong> nenhuma transação T faz commit antes de todas as transações de que leu dados terem feito commit.</li>
+<li><strong>Sem abort em cascata:</strong> só se lê dados já efetivados.</li>
+<li><strong>Estrito:</strong> não se lê nem escreve um elemento escrito por uma transação ainda não terminada.</li>
+</ul>
+<h3>Níveis de isolamento (SQL Server)</h3>
+<div class="tw"><table><thead><tr><th>Nível</th><th>Lê dados não efetivados?</th><th>Outros podem alterar o que leu?</th></tr></thead><tbody>
+<tr><td>READ UNCOMMITTED</td><td>Sim (leitura suja)</td><td>Sim</td></tr>
+<tr><td>READ COMMITTED (<strong>omissão</strong>)</td><td>Não</td><td>Sim</td></tr>
+<tr><td>REPEATABLE READ</td><td>Não</td><td>Não</td></tr>
+<tr><td>SERIALIZABLE</td><td>Não</td><td>Não, e sem fantasmas (isolamento completo)</td></tr>
+<tr><td>SNAPSHOT</td><td>Vê a imagem do início da transação</td><td>Alterações posteriores não são visíveis</td></tr>
+</tbody></table></div>
+<h3>Recuperação de falhas</h3>
+<ul>
+<li>O <strong>transaction log</strong> regista todas as operações (incluindo o commit) com a <strong>before-image</strong> (antes) e a <strong>after-image</strong> (depois). O log vai para disco antes dos dados (write-ahead).</li>
+<li><strong>Falha de transação:</strong> rollback com as <strong>before-images</strong>.</li>
+<li><strong>Falha de sistema:</strong> rollback com before-images + rollforward com after-images.</li>
+<li><strong>Falha de disco:</strong> restore do último backup + <strong>rollforward com as after-images</strong>.</li>
+<li><strong>Checkpoint:</strong> momento em que o log e a BD em disco ficam sincronizados; limita até onde é preciso recuar. O log <strong>não se apaga</strong> depois de cada commit (é truncado após backups/checkpoints, conforme o modelo de recuperação).</li>
+<li><strong>Savepoint:</strong> permite <strong>rollback parcial</strong> dentro de uma transação.</li>
+</ul>
+<pre data-lang="sql">BEGIN TRAN;
+    INSERT INTO People VALUES ('Tom');
+    SAVE TRAN Savepoint1;
+    INSERT INTO People VALUES ('Dick');
+    ROLLBACK TRAN Savepoint1;        -- só desfaz o Dick
+COMMIT TRAN;                         -- Tom fica
+-- @@TRANCOUNT = nº de transações abertas</pre>
+</section>
+
+<section id="seg" data-nav="12 · Segurança" data-grp="Programação" data-track>
+<h2>12 · Segurança no SQL Server</h2>
+<ul>
+<li><strong>Login</strong> (nível do servidor) e <strong>user</strong> (nível de cada BD). Um login pode ter <strong>um user em cada BD</strong>, mapeados para ele: <code>CREATE USER joao_db FOR LOGIN joao;</code></li>
+<li><strong>Server roles</strong> (sysadmin…) e <strong>database roles</strong> fixas (db_owner, db_datareader, db_datawriter…) ou definidas pelo utilizador. Um user pode pertencer a <strong>várias roles</strong>: <code>EXEC sp_addrolemember 'db_owner', 'joao_db';</code></li>
+<li><code>GRANT SELECT, UPDATE ON Project TO MyRole [WITH GRANT OPTION];</code> <code>REVOKE</code> retira um GRANT (ou DENY). <code>DENY</code> proíbe explicitamente e <strong>sobrepõe-se a GRANT</strong> (incluindo os herdados de roles).</li>
+<li><strong>Ownership chaining:</strong> se o SP e as tabelas têm o mesmo dono, basta dar EXECUTE no SP para o utilizador usar as tabelas através dele.</li>
+<li><strong>Cifragem de atributos:</strong> <code>EncryptByPassPhrase</code>/<code>DecryptByPassPhrase</code> guardam dados cifrados (VARBINARY); a frase-passe deve ficar <strong>fora</strong> da BD.</li>
+</ul>
+<div class="box bad"><span class="t">SQL injection</span>
+<pre data-lang="sql">-- código vulnerável: "SELECT * FROM Login WHERE username = '" + input + "'"
+input = ' OR 1=1 --                 → devolve todas as linhas
+input = '; DROP TABLE Login; --     → executa DDL (é possível!)
+input = x' UNION SELECT TABLE_NAME, … FROM INFORMATION_SCHEMA.TABLES --   → descobre o esquema</pre>
+<p><strong>Prevenção:</strong> consultas parametrizadas e stored procedures, validar inputs, privilégios mínimos, e <strong>não mostrar mensagens de erro detalhadas</strong> ao utilizador (ajudam o atacante).</p></div>
+</section>
+
+<section id="atp1-25" data-nav="ATP1 2024/25 resolvido" data-grp="Testes resolvidos" data-track>
+<h2>ATP1 2024/25 (4 de abril de 2025)</h2>
+<h3>V/F (1 a 20)</h3>
+<div class="tw"><table><thead><tr><th>#</th><th></th><th>Porquê</th><th>#</th><th></th><th>Porquê</th></tr></thead><tbody>
+<tr><td>1</td><td>V</td><td>Recursivas assimétricas obrigam a papéis</td><td>11</td><td>F</td><td>3 níveis de arquitetura, 2 de independência</td></tr>
+<tr><td>2</td><td>F</td><td>FK pode ser NULL</td><td>12</td><td>V</td><td>Uma FK referencia uma só tabela</td></tr>
+<tr><td>3</td><td>V</td><td>N:M dá nova relação</td><td>13</td><td>F</td><td>Desenho conceptual não é determinístico</td></tr>
+<tr><td>4</td><td>V</td><td>No SELECT só atributos de agrupamento (e agregados)</td><td>14</td><td>F</td><td>FK tem o mesmo tipo da PK</td></tr>
+<tr><td>5</td><td>F</td><td>Hierárquico é para acesso sequencial</td><td>15</td><td>V</td><td>1:N: PK do lado 1 vai para o lado N</td></tr>
+<tr><td>6</td><td>V</td><td>Pode (ex.: Super_ssn)</td><td>16</td><td>V</td><td>Todos os atributos formam superchave</td></tr>
+<tr><td>7</td><td>F</td><td>Disjunta não obriga; isso é participação total</td><td>17</td><td>F</td><td>Alias não se usa no WHERE</td></tr>
+<tr><td>8</td><td>V</td><td>UNIQUE aceita NULL</td><td>18</td><td>F</td><td>Fname não está no GROUP BY</td></tr>
+<tr><td>9</td><td>V</td><td>Ex.: origem e destino → Aeroporto</td><td>19</td><td>V</td><td>Atributos de S ⊂ atributos de R</td></tr>
+<tr><td>10</td><td>F</td><td>Coluna NOT NULL sem DEFAULT em tabela com linhas dá erro</td><td>20</td><td>V</td><td>A tabela referenciada tem de existir</td></tr>
+</tbody></table></div>
+<h3>21. DER da companhia aérea</h3>
+<p>Tabela de respostas deste ano: A = 1/Sim, B = 1/Não, C = N/Sim, D = N/Não (no de 2023/24 as letras eram outras: lê sempre a tabela do enunciado).</p>
+<div class="tw"><table><thead><tr><th>Posição</th><th>Lado</th><th>Cardinalidade / participação</th><th>Resp.</th></tr></thead><tbody>
+<tr><td>1</td><td>Modelo (tipo)</td><td>1 modelo por avião; pode haver modelos sem aviões</td><td>B</td></tr>
+<tr><td>2</td><td>Avião (tipo)</td><td>N aviões por modelo; todo o avião tem modelo</td><td>C</td></tr>
+<tr><td>3</td><td>Avião (usa)</td><td>1 avião por instância; avião pode não ter voos</td><td>B</td></tr>
+<tr><td>4</td><td>Voo-Instância (usa)</td><td>N instâncias por avião; toda a instância usa um avião</td><td>C</td></tr>
+<tr><td>5</td><td>Voo-Instância (instância)</td><td>N instâncias por voo; entidade fraca ⇒ total</td><td>C</td></tr>
+<tr><td>6</td><td>Voo (instância)</td><td>1 voo por instância; um voo pode ainda não ter instâncias</td><td>B</td></tr>
+<tr><td>7</td><td>Voo-Instância (pilotado)</td><td>N:M; cada voo tem pelo menos um piloto</td><td>C</td></tr>
+<tr><td>8</td><td>Piloto (pilotado)</td><td>N:M; pode haver pilotos sem voos</td><td>D</td></tr>
+</tbody></table></div>
+<p><strong>ii.</strong> Entidade fraca: <strong>Voo-Instância</strong>, identificada pelo número do voo + data através de "instância" ⇒ resposta <strong>5</strong>. Avião tem matrícula (chave própria), por isso é forte. <strong>b)</strong> Esquema relacional: ver o exemplo na secção 3.</p>
+<h3>22. Álgebra relacional e SQL</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>Resp.</th><th>Justificação</th></tr></thead><tbody>
+<tr><td>a</td><td>C</td><td>Supervisor: E.Super_ssn = S.Ssn</td></tr>
+<tr><td>b</td><td>A</td><td>σ Sex='F' antes de agrupar por Dname (B usa π como filtro; C junta pelo gestor; D filtra depois de agrupar)</td></tr>
+<tr><td>c</td><td>B</td><td>π (não σ) sobre a junção externa esquerda, filtrando Essn = NULL</td></tr>
+<tr><td>d</td><td>D</td><td>"Todos os projetos" exige divisão (÷) pelos números de projeto. Rigorosamente devia projetar-se (Essn, Pno) antes de dividir, mas é a única opção com divisão correta</td></tr>
+<tr><td>e</td><td>B</td><td>NOT EXISTS de um projeto com Dnum ≠ 4. A e D dão "pelo menos um" projeto do dep. 4; C não está correlacionada. (Nota: B também devolve quem não tem projetos)</td></tr>
+<tr><td>f</td><td>C</td><td>Projetos em Aveiro e NOT IN dos funcionários cujo departamento (Dno) tem localização em Aveiro. A e B usam o departamento do projeto (Dnum) em vez do do funcionário</td></tr>
+<tr><td>g</td><td>A</td><td>LEFT OUTER JOIN para incluir quem não tem projetos + SUM</td></tr>
+<tr><td>h</td><td>B</td><td>COUNT(Ssn) GROUP BY Dno</td></tr>
+<tr><td>i</td><td>D</td><td>HAVING COUNT(*) &gt; 3</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="atp1-24" data-nav="ATP1 2023/24 resolvido" data-grp="Testes resolvidos" data-track>
+<h2>ATP1 2023/24 (10 de abril de 2024)</h2>
+<p>Muito parecido com 2024/25. V/F: 1 <strong>F</strong> (aqui diz "não obrigam"), 2 <strong>V</strong>, 3 <strong>F</strong>, 4 <strong>V</strong>, 5 <strong>F</strong>, 6 <strong>F</strong> (diz "não pode ter FK para ela própria"), 7 <strong>F</strong>, 8 <strong>V</strong>, 9 <strong>V</strong>, 10 <strong>F</strong>, 11 <strong>F</strong>, 12 <strong>V</strong>, 13 <strong>F</strong>, 14 <strong>V</strong>.</p>
+<p>15 (DER): mesma solução, mas com as letras deste ano (A = N/Sim, B = N/Não, C = 1/Sim, D = 1/Não): 1 D, 2 A, 3 D, 4 A, 5 A, 6 D, 7 A, 8 B; entidade fraca: 5.</p>
+<p>16: a <strong>B</strong>, b <strong>D</strong> (divisão), c <strong>C</strong>, d <strong>A</strong>, e <strong>B</strong> (projetos em Aveiro e NOT IN dos funcionários cujo departamento tem localização em Aveiro), f <strong>A</strong> (≤ ALL correlacionado por região), g <strong>D</strong> (COUNT com WHERE), h <strong>C</strong> (IN), i <strong>C</strong> (HAVING SUM(area)).</p>
+<div class="box bad"><span class="t">A resolução que circula tem erros</span>
+<ul>
+<li>V/F 3 marcado V: falso, o SQL Server recusa adicionar NOT NULL sem DEFAULT a uma tabela com linhas.</li>
+<li>V/F 7 marcado V: falso, disjunta ≠ total.</li>
+<li>V/F 9 marcado F: verdadeiro, uma tabela pode ter várias FK para a mesma tabela.</li>
+<li>16 b marcado B: a opção B é uma junção externa, não calcula "todos"; é a D (divisão).</li>
+<li>16 e marcado C: a C usa o departamento do projeto e <code>dlocation != 'Aveiro'</code> (falha com departamentos com várias localizações); é a B.</li>
+<li>16 i marcado D: usar o alias <code>tarea</code> no HAVING dá erro no SQL Server; é a C.</li>
+<li>Posição 6 marcada N/Não: do lado do Voo a cardinalidade é 1 (cada instância pertence a um só voo).</li>
+<li>Diz que Avião é fraca de Modelo e Voo-Instância fraca de Avião e de Piloto: só há uma entidade fraca (Voo-Instância, de Voo).</li>
+</ul></div>
+</section>
+
+<section id="atp2-25" data-nav="ATP2 2024/25 resolvido" data-grp="Testes resolvidos" data-track>
+<h2>ATP2 2024/25 (6 de junho de 2025)</h2>
+<div class="tw"><table><thead><tr><th>#</th><th></th><th>Porquê</th><th>#</th><th></th><th>Porquê</th></tr></thead><tbody>
+<tr><td>1</td><td>V</td><td>Non-clustered existe em heap ou clustered</td><td>16</td><td>V</td><td>Definição de durabilidade</td></tr>
+<tr><td>2</td><td>V</td><td>Espaço livre reduz page splits</td><td>17</td><td>F</td><td>T2 só pode fazer commit depois de T1</td></tr>
+<tr><td>3</td><td>F</td><td>Sem o 1.º atributo não há seek no índice</td><td>18</td><td>F</td><td>Otimista provoca aborts (pessimista provoca esperas)</td></tr>
+<tr><td>4</td><td>F</td><td>Muitos índices atrasam updates e deletes</td><td>19</td><td>F</td><td>O log não se elimina após cada commit</td></tr>
+<tr><td>5</td><td>F</td><td>Heap não tem ordem física</td><td>20</td><td>V</td><td>Savepoints = rollback parcial</td></tr>
+<tr><td>6</td><td>V</td><td>Variáveis morrem no fim da batch</td><td>21</td><td>F</td><td>Checkpoint sincroniza log e disco, não guarda queries</td></tr>
+<tr><td>7</td><td>F</td><td>Erro de runtime não anula o anterior</td><td>22</td><td>V</td><td>Um user pode ter várias roles</td></tr>
+<tr><td>8</td><td>V</td><td>Variáveis tabela sem FK nem triggers</td><td>23</td><td>V</td><td>DENY prevalece sobre GRANT</td></tr>
+<tr><td>9</td><td>F</td><td>Set-based é, em geral, mais eficiente</td><td>24</td><td>F</td><td>Falha de disco: rollforward com after-images</td></tr>
+<tr><td>10</td><td>V</td><td>INSTEAD OF substitui a instrução</td><td>25</td><td>F</td><td>Injection pode executar DROP TABLE</td></tr>
+<tr><td>11</td><td>F</td><td>UDF não permite TRY…CATCH</td><td>26</td><td>V</td><td>Sem chave composta não há DF parcial</td></tr>
+<tr><td>12</td><td>F</td><td>Inserted/deleted só no trigger</td><td>27</td><td>V</td><td>3FN proíbe DF entre não-chave (transitivas)</td></tr>
+<tr><td>13</td><td>V</td><td>RAISERROR não faz rollback</td><td>28</td><td>F</td><td>BCNF pode perder DF</td></tr>
+<tr><td>14</td><td>V</td><td>@@ERROR e @@ROWCOUNT</td><td>29</td><td>V</td><td>Redundância ⇐ DF indesejadas</td></tr>
+<tr><td>15</td><td>V</td><td>Parcialmente efetivada: antes do commit em disco</td><td>30</td><td>F</td><td>Vistas não têm parâmetros (usar UDF inline)</td></tr>
+</tbody></table></div>
+<h3>31. Stored procedure TransferEmployeeDepartment</h3>
+<details><summary>O que faz o procedimento</summary><div class="in">
+<ol>
+<li>Abre uma transação dentro de TRY.</li>
+<li>Se o funcionário não existe → erro e rollback. Se o departamento não existe → erro e rollback.</li>
+<li>Se o funcionário <strong>gere outro departamento</strong> que não o novo → erro e rollback.</li>
+<li>Muda o <code>Dno</code>, <strong>apaga todas</strong> as linhas de WORKS_ON do funcionário.</li>
+<li>Percorre com um <strong>cursor</strong> a lista de projetos recebida como <strong>parâmetro tabela</strong> (<code>READONLY</code>); se algum projeto não existe → erro e rollback; senão insere com <strong>0 horas</strong>.</li>
+<li>Commit. No CATCH: RAISERROR e rollback.</li>
+</ol>
+<p>Pormenor: quando sai pelo RETURN dentro do ciclo, o cursor fica por fechar e libertar.</p></div></details>
+<p>Afirmações verdadeiras: <strong>valida a existência de funcionários e departamentos</strong>; <strong>usa um cursor para iterar sobre a lista passada como parâmetro de valor de tabela</strong>; <strong>insere 0 horas</strong>; <strong>gera um erro se um projeto da lista não existir</strong>. As restantes são falsas (apaga as atribuições antigas, não ignora projetos inválidos, não aceita horas negativas, não usa ERROR_MESSAGE, não verifica se já trabalhava nos projetos, só transfere um funcionário para um departamento). O próprio enunciado avisa que talvez não haja 5 certas; só encontrámos 4 defensáveis.</p>
+</section>
+
+<section id="atp2-24" data-nav="ATP2 2023/24 resolvido" data-grp="Testes resolvidos" data-track>
+<h2>ATP2 2023/24 (12 de julho de 2024)</h2>
+<div class="tw"><table><thead><tr><th>#</th><th></th><th>Porquê</th><th>#</th><th></th><th>Porquê</th></tr></thead><tbody>
+<tr><td>1</td><td>F</td><td>DENY sobrepõe-se a GRANT</td><td>11</td><td>F*</td><td>O erro salta para o CATCH; só há rollback se o CATCH o fizer</td></tr>
+<tr><td>2</td><td>V</td><td>READ UNCOMMITTED</td><td>12</td><td>V</td><td>UDF sem transações</td></tr>
+<tr><td>3</td><td>F</td><td>Locking é preventivo (pessimista)</td><td>13</td><td>V</td><td>@@ERROR da última instrução</td></tr>
+<tr><td>4</td><td>F</td><td>Nesse caso usa-se INSTEAD OF</td><td>14</td><td>F</td><td>Uma vez por instrução</td></tr>
+<tr><td>5</td><td>F</td><td>Só leituras não entram em conflito</td><td>15</td><td>F</td><td>DF é do esquema, não se infere de uma instância</td></tr>
+<tr><td>6</td><td>V</td><td>SP não vai no FROM (UDF sim)</td><td>16</td><td>F</td><td>Mensagens detalhadas ajudam o atacante</td></tr>
+<tr><td>7</td><td>F</td><td>Inserções ordenadas: fill factor ≈ 100 %</td><td>17</td><td>F</td><td>Rollback usa before-images</td></tr>
+<tr><td>8</td><td>V</td><td>Definição de recuperável</td><td>18</td><td>F</td><td>SQL Server só aceita um NULL num UNIQUE</td></tr>
+<tr><td>9</td><td>V</td><td>Um user por BD mapeado para o login</td><td>19</td><td>V</td><td>Definição de cursor</td></tr>
+<tr><td>10</td><td>F</td><td>Num AFTER DELETE, inserted está vazia</td><td>20</td><td>V</td><td>Frase-passe fora da BD</td></tr>
+</tbody></table></div>
+<p class="lead">* A resolução que circula marca 11 como V, assumindo um CATCH com ROLLBACK como no exemplo dos slides. Pela letra da afirmação, o erro por si só não faz rollback; lê bem o enunciado no dia.</p>
+<h3>21 a) Índices (BD Company enorme)</h3>
+<div class="tw"><table><thead><tr><th></th><th></th><th>Porquê</th></tr></thead><tbody>
+<tr><td>A</td><td>V</td><td>A PK cria por omissão um índice clustered</td></tr>
+<tr><td>B</td><td>F</td><td>Pesquisa-se por Fname <em>e</em> Lname juntos: um índice composto, não dois separados</td></tr>
+<tr><td>C</td><td>V</td><td>UNIQUE cria um índice automaticamente</td></tr>
+<tr><td>D</td><td>F</td><td>Já existe o clustered da PK (só pode haver um)</td></tr>
+<tr><td>E</td><td>F</td><td>A PK (Essn, Pno) é clustered e começa por Essn: já serve a pesquisa por funcionário</td></tr>
+<tr><td>F</td><td>F</td><td>Nenhuma consulta pesquisa WORKS_ON por Pno</td></tr>
+<tr><td>G</td><td>V</td><td>Dno (FK) é usado na junção com DEPT_LOCATIONS para o salário médio por localização</td></tr>
+<tr><td>H</td><td>F</td><td>Índice filtrado é para subconjuntos; aqui pesquisa-se toda a tabela</td></tr>
+</tbody></table></div>
+<h3>21 b) Processo para eliminar um funcionário</h3>
+<div class="tw"><table><thead><tr><th></th><th></th><th>Porquê</th></tr></thead><tbody>
+<tr><td>A</td><td>V</td><td>SP: altera dados, usa transação e devolve erros</td></tr>
+<tr><td>B</td><td>F</td><td>Um AFTER DELETE só corre depois do DELETE, que falharia antes por causa das FK (dependentes, works_on, supervisionados). Seria preciso INSTEAD OF</td></tr>
+<tr><td>C</td><td>F</td><td>Apagar o funcionário antes de remover as referências viola as FK; o delete tem de ser o último passo</td></tr>
+<tr><td>D</td><td>V</td><td><code>ON DELETE CASCADE</code> na FK Essn de DEPENDENT apaga os dependentes de forma declarativa</td></tr>
+<tr><td>E</td><td>F</td><td>Num trigger de DELETE os dados estão em <code>deleted</code>, não em <code>inserted</code></td></tr>
+<tr><td>F</td><td>V</td><td>UDFs não alteram dados</td></tr>
+<tr><td>G</td><td>F</td><td>Os restantes passos (ii, i, iv e o delete) continuam a precisar de uma transação para serem atómicos</td></tr>
+</tbody></table></div>
+<p class="lead">A resolução que circula diverge em D, E e G (com pontos de interrogação); as justificações acima seguem os slides.</p>
+<h3>22. Normalização</h3>
+<p>A <strong>F</strong> (chave {A,B}), B <strong>F</strong> (B → C é parcial), C <strong>V</strong>, D <strong>V</strong>, E <strong>F</strong> (R1 mantém B → C). Ver a secção 8.</p>
+</section>
+
+<section id="rev" data-nav="Revisão final" data-grp="Testes resolvidos">
+<h2>Revisão final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="b1"> Ler e completar um DER de Chen: cardinalidade, participação, entidade fraca e papéis</label></li>
+<li><label><input type="checkbox" data-k="b2"> Converter um DER em esquema relacional com PK e FK</label></li>
+<li><label><input type="checkbox" data-k="b3"> Saber o esquema da BD Company de cor</label></li>
+<li><label><input type="checkbox" data-k="b4"> Escrever em álgebra relacional: supervisor, junção externa + NULL, agregação, divisão</label></li>
+<li><label><input type="checkbox" data-k="b5"> SQL: GROUP BY/HAVING, LEFT JOIN, NOT EXISTS, ALL/ANY, IN</label></li>
+<li><label><input type="checkbox" data-k="b6"> Identificar DF parciais e transitivas e normalizar até 3FN/BCNF</label></li>
+<li><label><input type="checkbox" data-k="b7"> Escolher índices clustered/non-clustered e explicar o fill factor</label></li>
+<li><label><input type="checkbox" data-k="b8"> Distinguir SP, UDF (3 tipos) e triggers AFTER/INSTEAD OF com inserted/deleted</label></li>
+<li><label><input type="checkbox" data-k="b9"> ACID, escalonamentos recuperáveis, níveis de isolamento, before/after-images</label></li>
+<li><label><input type="checkbox" data-k="b10"> GRANT/REVOKE/DENY, logins vs users, SQL injection</label></li>
+</ul>
+</section>

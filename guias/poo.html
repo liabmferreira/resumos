@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>POO — guia de estudo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB; --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC; --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8; --ex:#475569; --ex-bg:#EEF1F5;
+  --code-bg:#F0F2F7; --kw:#7A2BB0; --str:#1C7A3A; --cm:#7A8494; --num:#9A5700;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D; --def:#8FA8FF; --def-bg:#1B2544; --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F; --bad:#FF8F85; --bad-bg:#3A1E1B; --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735; --code-bg:#121924; --kw:#D2A8FF; --str:#7EE0A0; --cm:#8592A6; --num:#F0B45A;
+  --grid:rgba(143,168,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.confirm{font-size:12.5px;color:var(--muted);margin-top:8px}
+.mnav{display:none}
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:940px;width:100%;min-width:0}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em;text-wrap:balance}
+.hero p{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;text-wrap:balance}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);margin-left:10px}
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0;min-width:0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:12px 0;max-width:100%}
+pre code{background:none;padding:0;font-size:inherit}
+.box pre{background:var(--card)}
+pre .k{color:var(--kw);font-weight:500} pre .s{color:var(--str)} pre .c{color:var(--cm);font-style:italic} pre .n{color:var(--num)}
+.out{border-left:3px solid var(--teo)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+td code,th code{white-space:nowrap}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px;min-width:0}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px;min-width:0}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+.ov{text-decoration:overline;text-decoration-thickness:1px}
+.bits td{font-family:var(--mono);text-align:center;font-size:13px}
+.fig{margin:16px 0;overflow-x:auto}
+.fig svg{display:block;max-width:100%;height:auto}
+.fig figcaption{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:6px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details>summary{display:none}
+  .box,pre{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>POO — guia de estudo</h1>
+  <p class="sub">Programação Orientada a Objetos · Java · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 12 capítulos estudados</div>
+  <nav id="nav">
+<a href="#intro">Antes de começar</a>
+<div class="grp">Linguagem</div>
+<a href="#basico"><input type="checkbox" data-sec="basico" aria-label="Marcar 1 · Java básico como estudado"><span>1 · Java básico</span></a>
+<a href="#classes"><input type="checkbox" data-sec="classes" aria-label="Marcar 2 · Classes e objetos como estudado"><span>2 · Classes e objetos</span></a>
+<a href="#heranca"><input type="checkbox" data-sec="heranca" aria-label="Marcar 3 · Herança e composição como estudado"><span>3 · Herança e composição</span></a>
+<a href="#polimorfismo"><input type="checkbox" data-sec="polimorfismo" aria-label="Marcar 4 · Polimorfismo, abstratas, interfaces como estudado"><span>4 · Polimorfismo, abstratas, interfaces</span></a>
+<a href="#comparar"><input type="checkbox" data-sec="comparar" aria-label="Marcar 5 · Comparable e Comparator como estudado"><span>5 · Comparable e Comparator</span></a>
+<a href="#excecoes"><input type="checkbox" data-sec="excecoes" aria-label="Marcar 6 · Exceções como estudado"><span>6 · Exceções</span></a>
+<a href="#enum"><input type="checkbox" data-sec="enum" aria-label="Marcar 7 · Enumerados como estudado"><span>7 · Enumerados</span></a>
+<div class="grp">Bibliotecas</div>
+<a href="#colecoes"><input type="checkbox" data-sec="colecoes" aria-label="Marcar 8 · Coleções como estudado"><span>8 · Coleções</span></a>
+<a href="#ficheiros"><input type="checkbox" data-sec="ficheiros" aria-label="Marcar 9 · Ficheiros e datas como estudado"><span>9 · Ficheiros e datas</span></a>
+<a href="#lambdas"><input type="checkbox" data-sec="lambdas" aria-label="Marcar 10 · Lambdas e interfaces funcionais como estudado"><span>10 · Lambdas e interfaces funcionais</span></a>
+<a href="#streams"><input type="checkbox" data-sec="streams" aria-label="Marcar 11 · Streams como estudado"><span>11 · Streams</span></a>
+<a href="#extra"><input type="checkbox" data-sec="extra" aria-label="Marcar 12 · JARs, Maven, sockets como estudado"><span>12 · JARs, Maven, sockets</span></a>
+<div class="grp">Treino</div>
+<a href="#testes">Testes escritos resolvidos</a>
+<a href="#exame">Exame prático 2024-25 resolvido</a>
+<a href="#erros">Erros clássicos</a>
+<a href="#checklist">Lista de verificação final</a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+  <div class="confirm" id="cf" hidden>Carrega outra vez para apagar o progresso guardado neste navegador.</div>
+</aside>
+<main>
+<div class="hero" id="top">
+<h1>POO: Java orientado a objetos para o teste e o exame prático</h1>
+<p>Classes, herança, polimorfismo, interfaces, exceções, enums, coleções, ficheiros, lambdas e streams. Inclui as perguntas dos testes escritos resolvidas e o exame prático de 2024-25 resolvido de raiz, compilado e testado com o ficheiro do exame.</p>
+</div>
+
+
+<section id="intro" data-nav="Antes de começar">
+<h2>Antes de começar</h2>
+<h3>Como é a avaliação</h3>
+<div class="tw"><table>
+<thead><tr><th>Prova</th><th>Formato</th><th>O que pedem</th></tr></thead>
+<tbody>
+<tr><td>Testes escritos / Moodle (ATP1, ATP2)</td><td>Verdadeiro/falso com desconto por erro, indicar o que é impresso, completar código</td><td>Regras da linguagem: <code>static</code>, <code>final</code>, construtores, <code>==</code> vs <code>equals</code>, herança, coleções, ficheiros, lambdas</td></tr>
+<tr><td>Avaliações em aula e exame prático (1h30)</td><td>Programar no computador a partir de ficheiros base, submeter no elearning</td><td>Modelar um domínio (concertos, reservas, armazéns, eventos) com classes, interface, herança/enum; guardar em coleções; ler e escrever ficheiros; ordenar e agrupar</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">O padrão de todos os exames práticos (2016 a 2025)</span>
+<ol>
+<li>Uma <strong>classe principal</strong> com id automático (<code>static int nextId</code>), construtor, getters/setters e <code>toString</code>.</li>
+<li>Uma <strong>interface</strong> dada (ex.: <code>IConcertProfitCalculator</code>, <code>ITicketBookingSystem</code>, <code>StorageServiceInterface</code>) que tens de implementar.</li>
+<li><strong>Herança</strong> ou <strong>enum</strong> para os tipos (Cinema/Theatre/Concert; Garage/Locker/Warehouse; ClientType).</li>
+<li>Uma classe <strong>gestora</strong> com um <code>Map&lt;Integer, X&gt;</code> ou <code>List&lt;X&gt;</code> e métodos add, remove, get, listar.</li>
+<li><strong>Ler um ficheiro</strong> (linhas separadas por <code>;</code>, com cabeçalho) e <strong>escrever</strong> outro.</li>
+<li><strong>Ordenar e agrupar</strong> (por mês, por tipo, por valor decrescente).</li>
+<li>Datas com <code>LocalDate</code>/<code>LocalDateTime</code> e <code>DateTimeFormatter</code>.</li>
+</ol>
+<p>Se dominares as secções 2, 3, 4, 8 e 9 deste guia, tens a maior parte da cotação do exame prático.</p></div>
+</section>
+
+<section id="basico" data-nav="1 · Java básico" data-grp="Linguagem" data-track>
+<h2>1 · Java básico<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Java é compilado para <strong>bytecode</strong> (<code>javac X.java</code> gera <code>X.class</code>) que corre na JVM (<code>java X</code>). Tipagem <strong>estática</strong>: cada variável tem um tipo fixo.</p>
+<div class="tw"><table>
+<thead><tr><th>Tipo primitivo</th><th>Tamanho</th><th>Gama / exemplo</th><th>Por omissão (atributo)</th></tr></thead>
+<tbody>
+<tr><td><code>byte</code></td><td>8 bits</td><td>−128 a 127</td><td>0</td></tr>
+<tr><td><code>short</code></td><td>16 bits</td><td>−32768 a 32767</td><td>0</td></tr>
+<tr><td><code>int</code></td><td>32 bits</td><td>≈ ±2,1 mil milhões</td><td>0</td></tr>
+<tr><td><code>long</code></td><td>64 bits</td><td><code>10L</code></td><td>0</td></tr>
+<tr><td><code>float</code> / <code>double</code></td><td>32 / 64 bits</td><td><code>2.5f</code> / <code>2.5</code></td><td>0.0</td></tr>
+<tr><td><code>char</code></td><td>16 bits</td><td><code>'a'</code></td><td>'\u0000'</td></tr>
+<tr><td><code>boolean</code></td><td>—</td><td><code>true</code>/<code>false</code></td><td>false</td></tr>
+</tbody></table></div>
+<p>Referências (objetos, arrays, <code>String</code>) valem <code>null</code> por omissão. <strong>Variáveis locais não têm valor por omissão</strong>: usar sem inicializar dá erro de compilação. Constantes: <code>final</code>, em MAIÚSCULAS (<code>SPEED_LIMIT</code>). Classes em PascalCase, métodos e variáveis em camelCase.</p>
+<pre><code><span class="k">import</span> java.util.Scanner;
+
+<span class="k">public</span> <span class="k">class</span> Ola {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(String[] args) {
+        Scanner sc = <span class="k">new</span> Scanner(System.in);
+        System.out.print(<span class="s">"Qual é o teu nome? "</span>);
+        String nome = sc.nextLine();
+        System.out.print(<span class="s">"Que idade tens? "</span>);
+        <span class="k">int</span> idade = sc.nextInt();          <span class="c">// cuidado: depois de nextInt, um nextLine lê o resto da linha</span>
+        System.out.printf(<span class="s">"Nome: %s%nIdade: %d anos%n"</span>, nome, idade);
+        <span class="k">int</span>[] v = <span class="k">new</span> <span class="k">int</span>[<span class="n">5</span>];              <span class="c">// array de tamanho fixo, v.length == 5</span>
+        <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; v.length; i++) v[i] = i * i;
+        <span class="k">for</span> (<span class="k">int</span> x : v) System.out.print(x + <span class="s">" "</span>);   <span class="c">// for-each</span>
+    }
+}</code></pre>
+<p>Controlo de fluxo igual ao C: <code>if/else</code>, <code>switch</code> (com <code>break</code>, ou a forma nova <code>case X -&gt; ...</code>), <code>while</code>, <code>do-while</code>, <code>for</code>, <code>break</code>, <code>continue</code>. Divisão inteira: <code>7 / 2 == 3</code>; <code>7 / 2.0 == 3.5</code>; cast: <code>(int) 3.9 == 3</code>.</p>
+
+<h3>Strings</h3>
+<p><code>String</code> é <strong>imutável</strong>: os métodos devolvem uma nova String. Para construir texto num ciclo usa <code>StringBuilder</code> (<code>append</code>, <code>reverse</code>, <code>insert</code>, <code>toString</code>), que altera o próprio objeto.</p>
+<div class="tw"><table>
+<thead><tr><th>Método</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td><code>length()</code>, <code>charAt(i)</code></td><td><code>"abc".charAt(1)</code> → <code>'b'</code></td></tr>
+<tr><td><code>substring(a, b)</code></td><td>de a até b−1</td></tr>
+<tr><td><code>equals</code>, <code>equalsIgnoreCase</code>, <code>compareTo</code></td><td><strong>nunca compares Strings com <code>==</code></strong></td></tr>
+<tr><td><code>split(regex)</code></td><td><code>"a;b;c".split(";")</code> → 3 elementos</td></tr>
+<tr><td><code>trim()</code>, <code>strip()</code>, <code>toUpperCase()</code>, <code>replace</code>, <code>contains</code>, <code>startsWith</code>, <code>indexOf</code></td><td></td></tr>
+<tr><td><code>String.format</code>, <code>String.join</code>, <code>String.valueOf</code></td><td><code>String.format("%.2f", 3.14159)</code> → <code>"3.14"</code></td></tr>
+<tr><td><code>Integer.parseInt</code>, <code>Double.parseDouble</code></td><td>converter texto em número</td></tr>
+<tr><td><code>Character.isDigit</code>, <code>isLetter</code>, <code>toUpperCase</code></td><td></td></tr>
+</tbody></table></div>
+<h3>Expressões regulares</h3>
+<p><code>s.matches("^[A-Z][A-Za-z0-9]*$")</code> verifica um nome de classe. Símbolos: <code>X?</code> zero ou um, <code>X*</code> zero ou mais, <code>X+</code> um ou mais, <code>\\d</code> dígito, <code>\\s</code> espaço, <code>[A-Za-z]</code> classe, <code>^</code>/<code>$</code> início/fim. Em Java a barra escreve-se dupla dentro da String. <code>split("\\s+")</code> parte por qualquer número de espaços.</p>
+</section>
+
+<section id="classes" data-nav="2 · Classes e objetos" data-grp="Linguagem" data-track>
+<h2>2 · Classes e objetos<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Uma <strong>classe</strong> é o molde (atributos + métodos); um <strong>objeto</strong> é uma instância criada com <code>new</code>. Uma classe pode ter atributos, métodos, construtores, blocos <code>static</code> e classes internas.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> Book {
+    <span class="k">private</span> <span class="k">static</span> <span class="k">int</span> nextId = <span class="n">1</span>;     <span class="c">// de CLASSE: partilhado por todos os objetos</span>
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> id;              <span class="c">// final: só se atribui uma vez (no construtor)</span>
+    <span class="k">private</span> String title;              <span class="c">// private: encapsulamento</span>
+    <span class="k">private</span> <span class="k">double</span> price;
+
+    <span class="k">public</span> Book(String title, <span class="k">double</span> price) {   <span class="c">// construtor</span>
+        <span class="k">this</span>.id = nextId++;            <span class="c">// id automático e incremental</span>
+        <span class="k">this</span>.title = title;            <span class="c">// this distingue atributo de parâmetro</span>
+        setPrice(price);
+    }
+
+    <span class="k">public</span> Book(String title) {        <span class="c">// sobrecarga (overloading): mesmo nome, parâmetros diferentes</span>
+        <span class="k">this</span>(title, <span class="n">0.0</span>);              <span class="c">// chama o outro construtor (tem de ser a 1.ª linha)</span>
+    }
+
+    <span class="k">public</span> <span class="k">int</span> getId() { <span class="k">return</span> id; }
+    <span class="k">public</span> String getTitle() { <span class="k">return</span> title; }
+    <span class="k">public</span> <span class="k">double</span> getPrice() { <span class="k">return</span> price; }
+    <span class="k">public</span> <span class="k">void</span> setPrice(<span class="k">double</span> price) {
+        <span class="k">if</span> (price &lt; <span class="n">0</span>) <span class="k">throw</span> <span class="k">new</span> IllegalArgumentException(<span class="s">"Preço negativo"</span>);
+        <span class="k">this</span>.price = price;            <span class="c">// os setters validam: é para isso que existe encapsulamento</span>
+    }
+
+    @Override
+    <span class="k">public</span> String toString() {         <span class="c">// sem isto, println mostra "Book@33909752"</span>
+        <span class="k">return</span> String.format(<span class="s">"Book #%d: %s (%.2f €)"</span>, id, title, price);
+    }
+}</code></pre>
+<div class="tw"><table>
+<thead><tr><th>Modificador</th><th>Mesma classe</th><th>Mesmo pacote</th><th>Subclasse</th><th>Qualquer lado</th></tr></thead>
+<tbody>
+<tr><td><code>private</code></td><td>✓</td><td></td><td></td><td></td></tr>
+<tr><td>(nenhum, "package")</td><td>✓</td><td>✓</td><td></td><td></td></tr>
+<tr><td><code>protected</code></td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
+<tr><td><code>public</code></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+</tbody></table></div>
+<div class="box teo"><span class="t">Regras que saem em verdadeiro/falso</span>
+<ul>
+<li>Se <strong>não</strong> definires nenhum construtor, o compilador cria um <strong>construtor por omissão sem argumentos</strong>. Se definires um qualquer, deixa de existir.</li>
+<li>Atributos e métodos <code>static</code> pertencem à classe: chamam-se <code>Classe.metodo()</code>, mesmo sem existirem objetos. Um método <code>static</code> não pode usar <code>this</code> nem atributos de instância.</li>
+<li><code>final</code>: variável não muda; método não pode ser reescrito; classe não pode ter subclasses.</li>
+<li><code>a == b</code> compara <strong>referências</strong> (é o mesmo objeto?). <code>a.equals(b)</code> compara o <strong>conteúdo</strong>, se a classe o redefinir.</li>
+<li>Objetos da mesma classe têm o mesmo comportamento mas guardam dados diferentes.</li>
+</ul></div>
+
+<h3>equals e hashCode</h3>
+<p>Se redefinires <code>equals</code>, redefine também <code>hashCode</code>: o <code>HashSet</code> e o <code>HashMap</code> usam os dois. Objetos iguais têm de ter o mesmo hashCode.</p>
+<pre><code>@Override
+<span class="k">public</span> <span class="k">boolean</span> equals(Object o) {
+    <span class="k">if</span> (<span class="k">this</span> == o) <span class="k">return</span> <span class="k">true</span>;
+    <span class="k">if</span> (o == <span class="k">null</span> || getClass() != o.getClass()) <span class="k">return</span> <span class="k">false</span>;
+    Book b = (Book) o;
+    <span class="k">return</span> title.equals(b.title) &amp;&amp; price == b.price;
+}
+
+@Override
+<span class="k">public</span> <span class="k">int</span> hashCode() {
+    <span class="k">return</span> java.util.Objects.hash(title, price);
+}</code></pre>
+<p>Métodos que todas as classes herdam de <code>Object</code>: <code>toString()</code>, <code>equals()</code>, <code>hashCode()</code>, <code>getClass()</code>.</p>
+
+<h3>Pacotes e modularidade</h3>
+<p><code>package aula03;</code> na 1.ª linha; a pasta tem de ter o mesmo nome. <code>import java.util.*;</code> ou <code>import java.util.List;</code>. Métodos auxiliares sem estado são <code>static</code> (ex.: <code>Math.sqrt</code>).</p>
+</section>
+
+<section id="heranca" data-nav="3 · Herança e composição" data-grp="Linguagem" data-track>
+<h2>3 · Herança e composição<span class="done-tag" hidden>estudado ✓</span></h2>
+<pre><code><span class="k">public</span> <span class="k">class</span> Vehicle {
+    <span class="k">protected</span> String plate;
+    <span class="k">public</span> Vehicle(String plate) { <span class="k">this</span>.plate = plate; }
+    <span class="k">public</span> <span class="k">double</span> tax() { <span class="k">return</span> <span class="n">50</span>; }
+    @Override <span class="k">public</span> String toString() { <span class="k">return</span> <span class="s">"Vehicle "</span> + plate; }
+}
+
+<span class="k">public</span> <span class="k">class</span> Truck <span class="k">extends</span> Vehicle {         <span class="c">// Truck É UM Vehicle</span>
+    <span class="k">private</span> <span class="k">double</span> load;
+    <span class="k">public</span> Truck(String plate, <span class="k">double</span> load) {
+        <span class="k">super</span>(plate);                        <span class="c">// construtor da superclasse: 1.ª instrução</span>
+        <span class="k">this</span>.load = load;
+    }
+    @Override                                <span class="c">// reescrita (overriding): mesma assinatura</span>
+    <span class="k">public</span> <span class="k">double</span> tax() { <span class="k">return</span> <span class="k">super</span>.tax() + load * <span class="n">2</span>; }   <span class="c">// super.metodo() chama a versão da mãe</span>
+    @Override <span class="k">public</span> String toString() { <span class="k">return</span> <span class="k">super</span>.toString() + <span class="s">" (truck, "</span> + load + <span class="s">" t)"</span>; }
+}</code></pre>
+<ul>
+<li>Java só tem herança <strong>simples</strong> de classes (<code>extends</code> uma). Uma classe pode implementar várias interfaces.</li>
+<li>Os construtores <strong>não se herdam</strong>. Se não chamares <code>super(...)</code>, o Java chama <code>super()</code> sem argumentos (erro se a mãe não o tiver).</li>
+<li>Ao reescrever um método <strong>não podes reduzir a visibilidade</strong> (um <code>public</code> não pode passar a <code>private</code>).</li>
+<li><code>@Override</code> faz o compilador confirmar que estás mesmo a reescrever (apanha erros de nome).</li>
+</ul>
+<div class="tw"><table>
+<thead><tr><th>Relação</th><th>Significado</th><th>Exemplo dos slides</th></tr></thead>
+<tbody>
+<tr><td>Herança (é um)</td><td><code>extends</code></td><td>Revista é uma Publicação</td></tr>
+<tr><td>Associação (usa / tem)</td><td>atributo que aponta para outro objeto</td><td>Car pode ter 1 ou mais Passenger</td></tr>
+<tr><td>Agregação</td><td>tem, mas as partes existem sem o todo</td><td>Quinta tem Árvores</td></tr>
+<tr><td>Composição</td><td>tem, e as partes morrem com o todo</td><td>Car tem 1 Engine; destruído o Car, destrói-se o Engine</td></tr>
+</tbody></table></div>
+<div class="box ex"><span class="t">ATP1 2016-17: modelar Árvore, ÁrvoreDeFruto, Latada, Quinta</span>
+<p><code>Arvore</code> (abstrata) com subclasses <code>Pinheiro</code>, <code>Eucalipto</code> e <code>ArvoreDeFruto</code>; <code>ArvoreDeFruto</code> com <code>Macieira</code>, <code>Oliveira</code>, <code>Pereira</code>. <code>Latada</code> é uma <strong>interface</strong> (<code>setSuporte</code>) implementada por <code>Macieira</code> e <code>Pereira</code>. <code>Quinta</code> agrega uma lista de <code>Arvore</code>; <code>QuintaComLatada</code> agrega uma lista de <code>Latada</code>. A capacidade que atravessa a hierarquia ("crescer em latada") é uma interface, porque só algumas árvores a têm.</p></div>
+</section>
+
+<section id="polimorfismo" data-nav="4 · Polimorfismo, abstratas, interfaces" data-grp="Linguagem" data-track>
+<h2>4 · Polimorfismo, classes abstratas e interfaces<span class="done-tag" hidden>estudado ✓</span></h2>
+<p><strong>Polimorfismo</strong>: uma referência do tipo da superclasse pode apontar para objetos de qualquer subclasse, e o método executado é o do <strong>objeto real</strong> (ligação dinâmica, decidida em execução).</p>
+<pre><code>Vehicle v = <span class="k">new</span> Truck(<span class="s">"AA-00-BB"</span>, <span class="n">3</span>);   <span class="c">// OK: um Truck é um Vehicle</span>
+System.out.println(v.tax());            <span class="c">// chama Truck.tax() (ligação dinâmica)</span>
+<span class="c">// v.getLoad();                         // ERRO de compilação: o tipo da referência é Vehicle</span>
+<span class="k">if</span> (v <span class="k">instanceof</span> Truck t) {             <span class="c">// confirmar antes de fazer cast</span>
+    System.out.println(t.getLoad());
+}
+Truck t2 = (Truck) <span class="k">new</span> Vehicle(<span class="s">"X"</span>);    <span class="c">// compila, mas dá ClassCastException em execução</span></code></pre>
+<div class="tw"><table>
+<thead><tr><th>Ligação</th><th>Quando se decide</th><th>Exemplos</th></tr></thead>
+<tbody>
+<tr><td>Estática</td><td>em compilação</td><td>métodos <code>static</code>, <code>private</code>, <code>final</code>; sobrecarga (overloading)</td></tr>
+<tr><td>Dinâmica</td><td>em execução</td><td>métodos reescritos (overriding)</td></tr>
+</tbody></table></div>
+<p>Uma referência de subclasse <strong>não</strong> pode apontar para um objeto da superclasse: <code>Pepino p = new Vegetal();</code> não compila.</p>
+
+<h3>Classe abstrata vs interface</h3>
+<pre><code><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> Shape {                  <span class="c">// não se pode fazer new Shape()</span>
+    <span class="k">protected</span> String color;
+    <span class="k">public</span> Shape(String color) { <span class="k">this</span>.color = color; }
+    <span class="k">public</span> <span class="k">abstract</span> <span class="k">double</span> area();             <span class="c">// sem corpo: as subclasses concretas TÊM de implementar</span>
+    <span class="k">public</span> String describe() { <span class="k">return</span> color + <span class="s">" shape with area "</span> + area(); }   <span class="c">// método concreto</span>
+}
+
+<span class="k">public</span> <span class="k">interface</span> Billable {                    <span class="c">// define uma capacidade</span>
+    <span class="k">double</span> price();                            <span class="c">// implicitamente public abstract</span>
+    <span class="k">default</span> String priceTag() {                <span class="c">// método default (com corpo)</span>
+        <span class="k">return</span> String.format(<span class="s">"%.2f €"</span>, price());
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> Circle <span class="k">extends</span> Shape <span class="k">implements</span> Billable, Comparable&lt;Circle&gt; {
+    <span class="k">private</span> <span class="k">double</span> r;
+    <span class="k">public</span> Circle(String color, <span class="k">double</span> r) { <span class="k">super</span>(color); <span class="k">this</span>.r = r; }
+    @Override <span class="k">public</span> <span class="k">double</span> area() { <span class="k">return</span> Math.PI * r * r; }
+    @Override <span class="k">public</span> <span class="k">double</span> price() { <span class="k">return</span> area() * <span class="n">0.1</span>; }
+    @Override <span class="k">public</span> <span class="k">int</span> compareTo(Circle o) { <span class="k">return</span> Double.compare(r, o.r); }
+}</code></pre>
+<div class="tw"><table>
+<thead><tr><th></th><th>Classe abstrata</th><th>Interface</th></tr></thead>
+<tbody>
+<tr><td>Instanciar</td><td>não</td><td>não</td></tr>
+<tr><td>Palavra-chave</td><td><code>extends</code> (só uma)</td><td><code>implements</code> (várias)</td></tr>
+<tr><td>Atributos</td><td>sim, de instância</td><td>só constantes (<code>public static final</code>)</td></tr>
+<tr><td>Métodos</td><td>abstratos e concretos</td><td>abstratos; <code>default</code> e <code>static</code> com corpo</td></tr>
+<tr><td>Construtores</td><td>sim</td><td>não</td></tr>
+<tr><td>Quando usar</td><td>classes muito relacionadas que partilham estado e código</td><td>definir uma capacidade que classes sem relação podem ter</td></tr>
+</tbody></table></div>
+<p>Uma subclasse de uma classe abstrata que não implemente todos os métodos abstratos tem de ser também <code>abstract</code> (por isso "um método abstrato tem de ser reescrito numa subclasse, mesmo abstrata" é <strong>falso</strong>).</p>
+</section>
+
+<section id="comparar" data-nav="5 · Comparable e Comparator" data-grp="Linguagem" data-track>
+<h2>5 · Comparable e Comparator<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th></th><th><code>Comparable&lt;T&gt;</code></th><th><code>Comparator&lt;T&gt;</code></th></tr></thead>
+<tbody>
+<tr><td>Onde</td><td>dentro da própria classe</td><td>objeto à parte (muitas vezes uma lambda)</td></tr>
+<tr><td>Método</td><td><code>int compareTo(T o)</code></td><td><code>int compare(T a, T b)</code></td></tr>
+<tr><td>Define</td><td>a ordem <strong>natural</strong> (uma só)</td><td>quantas ordens quiseres</td></tr>
+<tr><td>Usado por</td><td><code>Collections.sort(l)</code>, <code>TreeSet</code>, <code>TreeMap</code></td><td><code>l.sort(cmp)</code>, <code>new TreeSet&lt;&gt;(cmp)</code></td></tr>
+</tbody></table></div>
+<p>Devolve negativo se o primeiro vem antes, 0 se iguais, positivo se vem depois. Para <code>double</code> usa <code>Double.compare(a, b)</code>; para inteiros <code>Integer.compare(a, b)</code>; nunca <code>(int)(a - b)</code> com doubles.</p>
+<pre><code>List&lt;Person&gt; people = <span class="k">new</span> ArrayList&lt;&gt;();
+Collections.sort(people);                                   <span class="c">// ordem natural (compareTo)</span>
+people.sort(Comparator.comparing(Person::getName));         <span class="c">// por nome</span>
+people.sort(Comparator.comparingInt(Person::getAge).reversed());  <span class="c">// idade decrescente</span>
+people.sort(Comparator.comparing(Person::getCity)
+                      .thenComparing(Person::getName));     <span class="c">// dois critérios</span>
+people.sort((a, b) -&gt; Double.compare(b.getSalary(), a.getSalary()));   <span class="c">// lambda, decrescente</span></code></pre>
+</section>
+
+<section id="excecoes" data-nav="6 · Exceções" data-grp="Linguagem" data-track>
+<h2>6 · Exceções<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Exemplos</th><th>Obrigatório tratar ou declarar?</th></tr></thead>
+<tbody>
+<tr><td><strong>Checked</strong> (<code>Exception</code>, exceto Runtime)</td><td><code>IOException</code>, <code>FileNotFoundException</code></td><td><strong>sim</strong>: <code>try/catch</code> ou <code>throws</code> na assinatura</td></tr>
+<tr><td><strong>Unchecked</strong> (<code>RuntimeException</code>)</td><td><code>NullPointerException</code>, <code>ArrayIndexOutOfBoundsException</code>, <code>NumberFormatException</code>, <code>IllegalArgumentException</code>, <code>ClassCastException</code>, <code>ArithmeticException</code></td><td>não</td></tr>
+<tr><td><code>Error</code></td><td><code>OutOfMemoryError</code>, <code>StackOverflowError</code></td><td>não (não se trata)</td></tr>
+</tbody></table></div>
+<pre><code><span class="k">public</span> <span class="k">double</span> divide(<span class="k">int</span> a, <span class="k">int</span> b) {
+    <span class="k">if</span> (b == <span class="n">0</span>) <span class="k">throw</span> <span class="k">new</span> IllegalArgumentException(<span class="s">"b não pode ser 0"</span>);   <span class="c">// lançar</span>
+    <span class="k">return</span> (<span class="k">double</span>) a / b;
+}
+
+<span class="k">public</span> <span class="k">void</span> read(String path) <span class="k">throws</span> FileNotFoundException { ... }  <span class="c">// passa a responsabilidade a quem chama</span>
+
+<span class="k">try</span> {
+    <span class="k">int</span> n = Integer.parseInt(texto);
+    <span class="k">int</span>[] v = <span class="k">new</span> <span class="k">int</span>[<span class="n">3</span>];
+    v[n] = <span class="n">1</span>;
+} <span class="k">catch</span> (NumberFormatException e) {               <span class="c">// os catch mais ESPECÍFICOS primeiro</span>
+    System.out.println(<span class="s">"Não é número: "</span> + e.getMessage());
+} <span class="k">catch</span> (ArrayIndexOutOfBoundsException | NullPointerException e) {   <span class="c">// multi-catch</span>
+    System.out.println(<span class="s">"Erro: "</span> + e);
+} <span class="k">catch</span> (Exception e) {                           <span class="c">// o mais geral no fim</span>
+    e.printStackTrace();
+} <span class="k">finally</span> {
+    System.out.println(<span class="s">"Corre sempre, com ou sem exceção"</span>);
+}
+
+<span class="c">// exceção própria</span>
+<span class="k">public</span> <span class="k">class</span> TooSmallException <span class="k">extends</span> Exception {
+    <span class="k">public</span> TooSmallException(String msg) { <span class="k">super</span>(msg); }
+}</code></pre>
+<p>A ordem dos <code>catch</code> importa: se apanhares <code>Exception</code> antes de <code>IOException</code>, o segundo <code>catch</code> nunca é alcançado e o código nem compila.</p>
+</section>
+
+<section id="enum" data-nav="7 · Enumerados" data-grp="Linguagem" data-track>
+<h2>7 · Tipos enumerados<span class="done-tag" hidden>estudado ✓</span></h2>
+<pre><code><span class="k">public</span> <span class="k">enum</span> Season { SPRING, SUMMER, FALL, WINTER }
+
+<span class="k">public</span> <span class="k">enum</span> UnitType {                      <span class="c">// enum com atributos e construtor</span>
+    LOCKER(<span class="n">5.0</span>), GARAGE(<span class="n">12.5</span>), WAREHOUSE(<span class="n">40.0</span>);
+    <span class="k">private</span> <span class="k">final</span> <span class="k">double</span> dailyPrice;
+    UnitType(<span class="k">double</span> p) { <span class="k">this</span>.dailyPrice = p; }   <span class="c">// construtor é sempre privado</span>
+    <span class="k">public</span> <span class="k">double</span> getDailyPrice() { <span class="k">return</span> dailyPrice; }
+}
+
+Season s = Season.valueOf(<span class="s">"SUMMER"</span>);        <span class="c">// de String para enum (exceção se não existir)</span>
+s.name();       <span class="c">// "SUMMER"</span>
+s.ordinal();    <span class="c">// 1 (posição, começa em 0)</span>
+<span class="k">for</span> (Season x : Season.values()) { ... }    <span class="c">// percorrer todos</span>
+<span class="k">switch</span> (s) {
+    <span class="k">case</span> SPRING -&gt; System.out.println(<span class="s">"Primavera"</span>);
+    <span class="k">case</span> SUMMER -&gt; System.out.println(<span class="s">"Verão"</span>);
+    <span class="k">default</span> -&gt; System.out.println(<span class="s">"Outro"</span>);
+}
+UnitType t = UnitType.valueOf(campos[<span class="n">3</span>].trim().toUpperCase());   <span class="c">// ler um tipo de um ficheiro</span></code></pre>
+<p>Compara-se com <code>==</code> (cada constante existe uma só vez). <code>EnumMap</code> e <code>EnumSet</code> são coleções otimizadas para enums.</p>
+</section>
+
+<section id="colecoes" data-nav="8 · Coleções" data-grp="Bibliotecas" data-track>
+<h2>8 · Coleções (Java Collections)<span class="done-tag" hidden>estudado ✓</span></h2>
+<div class="tw"><table>
+<thead><tr><th>Interface</th><th>Implementação</th><th>Ordem</th><th>Repetidos</th><th>Notas</th></tr></thead>
+<tbody>
+<tr><td rowspan="2"><code>List</code></td><td><code>ArrayList</code></td><td>inserção</td><td>sim</td><td>acesso por índice rápido</td></tr>
+<tr><td><code>LinkedList</code></td><td>inserção</td><td>sim</td><td>inserir/remover nas pontas rápido</td></tr>
+<tr><td rowspan="3"><code>Set</code></td><td><code>HashSet</code></td><td>nenhuma</td><td>não</td><td>usa <code>equals</code> + <code>hashCode</code></td></tr>
+<tr><td><code>LinkedHashSet</code></td><td>inserção</td><td>não</td><td></td></tr>
+<tr><td><code>TreeSet</code></td><td><strong>ordenada</strong></td><td>não</td><td>usa <code>compareTo</code> ou um Comparator</td></tr>
+<tr><td rowspan="3"><code>Map&lt;K,V&gt;</code></td><td><code>HashMap</code></td><td>nenhuma</td><td>chaves únicas</td><td></td></tr>
+<tr><td><code>LinkedHashMap</code></td><td>inserção</td><td>chaves únicas</td><td></td></tr>
+<tr><td><code>TreeMap</code></td><td><strong>ordenada pela chave</strong></td><td>chaves únicas</td><td><code>firstKey</code>, <code>headMap</code>...</td></tr>
+<tr><td><code>Queue</code>/<code>Deque</code></td><td><code>ArrayDeque</code>, <code>LinkedList</code>, <code>PriorityQueue</code></td><td>FIFO / prioridade</td><td>sim</td><td><code>offer</code>, <code>poll</code>, <code>peek</code></td></tr>
+</tbody></table></div>
+<p><code>Map</code> <strong>não</strong> é uma <code>Collection</code> e <strong>não</strong> tem <code>iterator()</code>: percorre-se pelas suas vistas <code>keySet()</code> (um Set, sem repetidos), <code>values()</code> (Collection) e <code>entrySet()</code>. Declara sempre pela interface: <code>List&lt;String&gt; l = new ArrayList&lt;&gt;();</code>. Coleções guardam objetos: <code>List&lt;Integer&gt;</code>, não <code>List&lt;int&gt;</code>.</p>
+<pre><code>List&lt;String&gt; l = <span class="k">new</span> ArrayList&lt;&gt;(List.of(<span class="s">"b"</span>, <span class="s">"a"</span>, <span class="s">"c"</span>));
+l.add(<span class="s">"d"</span>); l.add(<span class="n">0</span>, <span class="s">"z"</span>); l.get(<span class="n">1</span>); l.set(<span class="n">1</span>, <span class="s">"x"</span>); l.remove(<span class="s">"c"</span>); l.remove(<span class="n">0</span>);
+l.size(); l.contains(<span class="s">"a"</span>); l.indexOf(<span class="s">"a"</span>); Collections.sort(l); Collections.reverse(l);
+l.removeIf(s -&gt; s.startsWith(<span class="s">"x"</span>));         <span class="c">// apagar dentro de um ciclo dá ConcurrentModificationException; usa isto</span>
+
+Map&lt;String, Integer&gt; stock = <span class="k">new</span> HashMap&lt;&gt;();
+stock.put(<span class="s">"toalha"</span>, <span class="n">3</span>);                     <span class="c">// inserir ou substituir</span>
+stock.get(<span class="s">"toalha"</span>);                        <span class="c">// 3   (null se não existir)</span>
+stock.getOrDefault(<span class="s">"chapéu"</span>, <span class="n">0</span>);            <span class="c">// 0</span>
+stock.containsKey(<span class="s">"toalha"</span>);
+stock.merge(<span class="s">"toalha"</span>, <span class="n">1</span>, Integer::sum);     <span class="c">// soma 1 ao valor existente (ou põe 1)</span>
+stock.putIfAbsent(<span class="s">"protetor"</span>, <span class="n">0</span>);
+stock.remove(<span class="s">"toalha"</span>);
+<span class="k">for</span> (Map.Entry&lt;String, Integer&gt; e : stock.entrySet()) {
+    System.out.println(e.getKey() + <span class="s">" = "</span> + e.getValue());
+    e.setValue(e.getValue() * <span class="n">2</span>);           <span class="c">// pode-se alterar o valor durante o ciclo</span>
+}
+
+<span class="c">// agrupar: mapa de listas (padrão que sai em todos os exames)</span>
+Map&lt;String, List&lt;Book&gt;&gt; porAutor = <span class="k">new</span> TreeMap&lt;&gt;();
+<span class="k">for</span> (Book b : livros) {
+    porAutor.computeIfAbsent(b.getAuthor(), k -&gt; <span class="k">new</span> ArrayList&lt;&gt;()).add(b);
+}</code></pre>
+<p>Utilitários: <code>Collections.sort</code>, <code>reverse</code>, <code>shuffle</code>, <code>max</code>, <code>min</code>, <code>unmodifiableList</code>; <code>Arrays.asList(3, 1, 8, 5)</code>, <code>Arrays.sort(v)</code>, <code>Arrays.toString(v)</code>; <code>List.of(...)</code> cria uma lista <strong>imutável</strong>.</p>
+</section>
+
+<section id="ficheiros" data-nav="9 · Ficheiros e datas" data-grp="Bibliotecas" data-track>
+<h2>9 · Ficheiros e datas<span class="done-tag" hidden>estudado ✓</span></h2>
+<h3>Ler</h3>
+<pre><code><span class="c">// Scanner linha a linha (o mais usado nos exames)</span>
+<span class="k">try</span> (Scanner sc = <span class="k">new</span> Scanner(<span class="k">new</span> File(<span class="s">"bookings.txt"</span>))) {    <span class="c">// try-with-resources: fecha sozinho</span>
+    <span class="k">while</span> (sc.hasNextLine()) {
+        String line = sc.nextLine().trim();
+        <span class="k">if</span> (line.isEmpty() || line.startsWith(<span class="s">"#"</span>)) <span class="k">continue</span>;   <span class="c">// saltar vazias e comentários/cabeçalho</span>
+        String[] f = line.split(<span class="s">";"</span>);
+        <span class="k">int</span> taxId = Integer.parseInt(f[<span class="n">0</span>].trim());
+        LocalDate start = LocalDate.parse(f[<span class="n">1</span>].trim());        <span class="c">// formato ISO yyyy-MM-dd</span>
+        <span class="k">int</span> days = Integer.parseInt(f[<span class="n">2</span>].trim());
+        UnitType type = UnitType.valueOf(f[<span class="n">3</span>].trim());
+        String[] dims = f[<span class="n">4</span>].split(<span class="s">"x"</span>);                        <span class="c">// "200x300x250"</span>
+    }
+} <span class="k">catch</span> (FileNotFoundException e) {
+    System.out.println(<span class="s">"Ficheiro não encontrado"</span>);
+}
+
+<span class="c">// alternativa: todas as linhas de uma vez (java.nio.file)</span>
+List&lt;String&gt; lines = Files.readAllLines(Paths.get(<span class="s">"dados.txt"</span>));   <span class="c">// lança IOException</span></code></pre>
+<h3>Escrever</h3>
+<pre><code><span class="k">try</span> (PrintWriter pw = <span class="k">new</span> PrintWriter(<span class="k">new</span> File(<span class="s">"result.txt"</span>))) {   <span class="c">// cria/apaga o ficheiro</span>
+    pw.println(<span class="s">"id;local;lucro"</span>);
+    pw.printf(<span class="s">"%d;%s;%.2f%n"</span>, <span class="n">1</span>, <span class="s">"Aveiro, Portugal"</span>, <span class="n">2250.0</span>);
+} <span class="k">catch</span> (FileNotFoundException e) { ... }
+
+<span class="k">new</span> FileWriter(<span class="s">"log.txt"</span>, <span class="k">true</span>);       <span class="c">// true = acrescentar no fim em vez de apagar</span>
+PrintStream fl = <span class="k">new</span> PrintStream(<span class="k">new</span> File(<span class="s">"out.txt"</span>));   <span class="c">// exame 2023-24: o mesmo código escreve na consola (System.out) ou num ficheiro</span></code></pre>
+<p><code>PrintWriter</code> é para <strong>escrever</strong>, não para ler. <code>File</code> representa um caminho: <code>exists()</code>, <code>isFile()</code>, <code>isDirectory()</code>, <code>listFiles()</code>, <code>getName()</code>, <code>mkdir()</code>. A classe <code>java.nio.file.Files</code> tem só métodos estáticos (<code>readAllLines</code>, <code>write</code>, <code>exists</code>, <code>copy</code>, <code>delete</code>).</p>
+<h3>Datas (java.time)</h3>
+<pre><code>DateTimeFormatter fmt = DateTimeFormatter.ofPattern(<span class="s">"yyyy-MM-dd HH:mm"</span>);
+LocalDateTime d = LocalDateTime.parse(<span class="s">"2025-05-29 16:00"</span>, fmt);
+d.format(fmt);                    <span class="c">// "2025-05-29 16:00"</span>
+d.getMonthValue();                <span class="c">// 5        d.getMonth() -&gt; MAY</span>
+d.plusDays(<span class="n">3</span>); d.isBefore(outra); d.toLocalDate();
+LocalDate a = LocalDate.of(<span class="n">2023</span>, <span class="n">6</span>, <span class="n">1</span>);
+<span class="k">long</span> dias = ChronoUnit.DAYS.between(a, a.plusMonths(<span class="n">1</span>));   <span class="c">// 30</span></code></pre>
+<p>Duas reservas [s1, e1] e [s2, e2] sobrepõem-se se <code>!(e1.isBefore(s2) || e2.isBefore(s1))</code> (padrão do exame 2022-23 <code>checkAvailable</code>).</p>
+</section>
+
+<section id="lambdas" data-nav="10 · Lambdas e interfaces funcionais" data-grp="Bibliotecas" data-track>
+<h2>10 · Lambdas e interfaces funcionais<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Uma <strong>interface funcional</strong> tem exatamente <strong>um método abstrato</strong> (pode ter <code>@FunctionalInterface</code>). Onde se espera uma, podes passar uma <strong>lambda</strong>.</p>
+<div class="tw"><table>
+<thead><tr><th>Interface (java.util.function)</th><th>Método</th><th>Recebe → devolve</th><th>Exemplo</th></tr></thead>
+<tbody>
+<tr><td><code>Predicate&lt;T&gt;</code></td><td><code>test</code></td><td>T → boolean</td><td><code>s -&gt; s.isEmpty()</code></td></tr>
+<tr><td><code>Function&lt;T,R&gt;</code></td><td><code>apply</code></td><td>T → R</td><td><code>s -&gt; s.length()</code></td></tr>
+<tr><td><code>Consumer&lt;T&gt;</code></td><td><code>accept</code></td><td>T → nada</td><td><code>s -&gt; System.out.println(s)</code></td></tr>
+<tr><td><code>Supplier&lt;T&gt;</code></td><td><code>get</code></td><td>nada → T</td><td><code>() -&gt; new ArrayList&lt;&gt;()</code></td></tr>
+<tr><td><code>BiFunction&lt;T,U,R&gt;</code></td><td><code>apply</code></td><td>T, U → R</td><td><code>(a, b) -&gt; a + b</code></td></tr>
+<tr><td><code>UnaryOperator&lt;T&gt;</code>, <code>BinaryOperator&lt;T&gt;</code></td><td><code>apply</code></td><td>T → T; T, T → T</td><td><code>String::toUpperCase</code></td></tr>
+</tbody></table></div>
+<pre><code>@FunctionalInterface
+<span class="k">interface</span> InspectionTest&lt;T&gt; {
+    <span class="k">boolean</span> inspectAction(T testedValue, T correctValue);
+}
+
+<span class="k">static</span> <span class="k">void</span> genericTest(InspectionTest&lt;Double&gt; test, String name, <span class="k">double</span> read, <span class="k">double</span> max) {
+    <span class="k">if</span> (test.inspectAction(read, max)) System.out.println(<span class="s">"Test "</span> + name + <span class="s">" passed!"</span>);
+    <span class="k">else</span> System.out.println(<span class="s">"Test "</span> + name + <span class="s">" failed!"</span>);
+}
+
+genericTest((v1, v2) -&gt; v1 &lt;= v2, <span class="s">"CO2"</span>, <span class="n">0.3</span>, <span class="n">0.5</span>);             <span class="c">// passa</span>
+genericTest((light, max) -&gt; light == <span class="n">0</span>, <span class="s">"Lights"</span>, <span class="n">10.0</span>, <span class="n">10.0</span>);   <span class="c">// falha</span></code></pre>
+<p><strong>Referências a métodos</strong>: <code>String::toUpperCase</code>, <code>System.out::println</code>, <code>Person::getName</code>, <code>ArrayList::new</code>. Escrevem-se <strong>sem parênteses</strong>: <code>list.replaceAll(String::toUpperCase())</code> não compila.</p>
+<pre><code>list.forEach(System.out::println);
+list.replaceAll(String::toUpperCase);
+list.removeIf(s -&gt; s.length() &lt; <span class="n">3</span>);
+map.forEach((k, v) -&gt; System.out.println(k + <span class="s">"="</span> + v));</code></pre>
+</section>
+
+<section id="streams" data-nav="11 · Streams" data-grp="Bibliotecas" data-track>
+<h2>11 · Streams<span class="done-tag" hidden>estudado ✓</span></h2>
+<p>Uma stream processa os dados de uma coleção em <strong>pipeline</strong>: fonte → operações <strong>intermédias</strong> (devolvem outra stream, são preguiçosas) → uma operação <strong>terminal</strong> (produz o resultado). Não altera a coleção original e só se percorre uma vez.</p>
+<div class="tw"><table>
+<thead><tr><th>Intermédias</th><th>Terminais</th></tr></thead>
+<tbody><tr>
+<td><code>filter(Predicate)</code>, <code>map(Function)</code>, <code>mapToInt</code>, <code>sorted()</code>, <code>sorted(Comparator)</code>, <code>distinct()</code>, <code>limit(n)</code>, <code>skip(n)</code></td>
+<td><code>collect(...)</code>, <code>forEach</code>, <code>count()</code>, <code>sum()</code>, <code>average()</code>, <code>max/min(Comparator)</code>, <code>anyMatch</code>, <code>allMatch</code>, <code>findFirst()</code>, <code>reduce</code>, <code>toList()</code></td>
+</tr></tbody></table></div>
+<pre><code>List&lt;String&gt; nomes = people.stream()
+        .filter(p -&gt; p.getAge() &gt;= <span class="n">18</span>)            <span class="c">// só adultos</span>
+        .sorted(Comparator.comparing(Person::getName))
+        .map(Person::getName)                     <span class="c">// map transforma com uma Function (não um Comparator)</span>
+        .collect(Collectors.toList());
+
+<span class="k">double</span> media = people.stream().mapToInt(Person::getAge).average().orElse(<span class="n">0</span>);
+<span class="k">long</span> n = people.stream().filter(p -&gt; p.getCity().equals(<span class="s">"Aveiro"</span>)).count();
+
+Map&lt;String, List&lt;Person&gt;&gt; porCidade = people.stream()
+        .collect(Collectors.groupingBy(Person::getCity));
+Map&lt;String, Long&gt; contagem = people.stream()
+        .collect(Collectors.groupingBy(Person::getCity, TreeMap::<span class="k">new</span>, Collectors.counting()));
+
+List&lt;String&gt; linhas = Files.lines(Paths.get(<span class="s">"dados.txt"</span>))   <span class="c">// stream de linhas de um ficheiro</span>
+        .filter(l -&gt; !l.startsWith(<span class="s">"#"</span>)).toList();</code></pre>
+</section>
+
+<section id="extra" data-nav="12 · JARs, Maven, sockets" data-grp="Bibliotecas" data-track>
+<h2>12 · JARs, Maven e sockets<span class="done-tag" hidden>estudado ✓</span></h2>
+<ul>
+<li><strong>JAR</strong>: ficheiro zip com as <code>.class</code> e um <code>MANIFEST.MF</code>. <code>jar cfe app.jar Main *.class</code> cria um jar executável (a linha <code>Main-Class: Main</code> no manifest); corre-se com <code>java -jar app.jar</code>.</li>
+<li><strong>Maven</strong>: gere o projeto com o <code>pom.xml</code> (groupId, artifactId, version, dependências). Estrutura <code>src/main/java</code> e <code>src/test/java</code>. Comandos: <code>mvn package</code> (gera o jar em <code>target/</code>), <code>mvn exec:java</code>. Um <em>fat jar</em> (plugin shade) inclui as dependências e indica a Main-Class.</li>
+<li><strong>Sockets</strong>: comunicação em rede como se fosse um ficheiro. Servidor: <code>ServerSocket ss = new ServerSocket(5000); Socket s = ss.accept();</code>. Cliente: <code>new Socket("localhost", 5000)</code>. Lê-se e escreve-se com <code>s.getInputStream()</code>/<code>getOutputStream()</code> (envolvidos em Scanner/PrintWriter).</li>
+</ul>
+</section>
+
+<section id="testes" data-nav="Testes escritos resolvidos" data-grp="Treino">
+<h2>Testes escritos resolvidos</h2>
+<h3>ATP1 2016-17: verdadeiro ou falso (resposta errada desconta)</h3>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Afirmação</th><th>V/F</th><th>Porquê</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Os modificadores de visibilidade implementam o encapsulamento</td><td>V</td><td></td></tr>
+<tr><td>2</td><td>Um método abstrato tem de ser reescrito numa subclasse, mesmo abstrata</td><td>F</td><td>uma subclasse abstrata pode deixá-lo por implementar</td></tr>
+<tr><td>3</td><td>Métodos <code>final</code> não podem ser reescritos</td><td>V</td><td></td></tr>
+<tr><td>4</td><td>Sem construtores, o compilador cria um sem argumentos</td><td>V</td><td></td></tr>
+<tr><td>5</td><td>Objetos <code>String</code> são imutáveis</td><td>V</td><td></td></tr>
+<tr><td>6</td><td>Variáveis estáticas são comuns a todos os objetos</td><td>V</td><td></td></tr>
+<tr><td>7</td><td>O menor <code>byte</code> é −128</td><td>V</td><td></td></tr>
+<tr><td>8</td><td>Pode-se invocar um método estático sem existirem objetos</td><td>V</td><td></td></tr>
+<tr><td>9</td><td>Pode-se reduzir a visibilidade de métodos herdados</td><td>F</td><td>só se pode manter ou aumentar</td></tr>
+<tr><td>10</td><td><code>c1 == c2</code> compara os dados dos objetos</td><td>F</td><td>compara referências; os dados comparam-se com <code>equals</code></td></tr>
+<tr><td>11</td><td>Uma referência <code>Pepino</code> (subclasse) pode apontar para um <code>Vegetal</code></td><td>F</td><td>é ao contrário</td></tr>
+<tr><td>12</td><td>Objetos da mesma classe têm o mesmo comportamento mas dados diferentes</td><td>V</td><td></td></tr>
+</tbody></table></div>
+<details><summary>ATP1 2016-17: o que é impresso (programa da String)</summary><div class="in">
+<pre><code>String x = <span class="s">"1-de-janeiro-2017"</span>;
+<span class="k">int</span> n = <span class="n">0</span>, p;
+<span class="k">for</span> (p = <span class="n">0</span>; p &lt; x.length(); p++) {
+    <span class="k">if</span> (Character.isDigit(x.charAt(p))) n++;
+}
+System.out.println(<span class="s">"n="</span> + n);          <span class="c">// dígitos: 1, 2, 0, 1, 7</span>
+System.out.println(<span class="s">"p="</span> + p);          <span class="c">// no fim do ciclo p == x.length()</span>
+String y[] = x.split(<span class="s">"-"</span>);
+System.out.println(y.length);
+<span class="k">for</span> (String s : y) System.out.print(s);
+System.out.println();</code></pre>
+<pre class="out"><code>n=5
+p=17
+4
+1dejaneiro2017</code></pre></div></details>
+<details><summary>ATP1 2016-17: o que é impresso (MyClass com static e equals)</summary><div class="in">
+<p>Cada construtor imprime o valor atual de <code>y</code> (partilhado) e soma-lhe 10. <code>obj1.equals(obj2)</code> é falso (5 ≠ 10), por isso imprime <code>obj2</code>. <code>K</code> é uma constante estática.</p>
+<pre class="out"><code>Novo=100
+Novo=110
+x = 10
+10</code></pre></div></details>
+<details><summary>ATP1 2016-17: completar OneClass e OtherClass</summary><div class="in">
+<pre><code><span class="k">class</span> OneClass {
+    <span class="k">private</span> <span class="k">int</span> s;
+    <span class="k">public</span> OneClass(<span class="k">int</span> s) { <span class="k">this</span>.s = s; }
+    <span class="k">public</span> <span class="k">int</span> getS() { <span class="k">return</span> s; }
+}
+
+<span class="k">class</span> OtherClass <span class="k">extends</span> OneClass {
+    <span class="k">private</span> <span class="k">int</span> x;
+    <span class="k">public</span> OtherClass(<span class="k">int</span> s, <span class="k">int</span> x) {
+        <span class="k">super</span>(s);                       <span class="c">// s é private em OneClass: só lá chegamos pelo construtor</span>
+        <span class="k">this</span>.x = x;
+    }
+    <span class="k">public</span> String getInfo() { <span class="k">return</span> <span class="s">"AllInfo:"</span> + getS() + x; }   <span class="c">// "AllInfo:" + 10 + 20 = "AllInfo:1020"</span>
+}</code></pre>
+<p><code>OneClass obj3 = new OtherClass(100, 50)</code> funciona por polimorfismo e <code>obj3.getS()</code> dá 100.</p></div></details>
+
+<h3>ATP2 2019-20 (Moodle): respostas corretas</h3>
+<div class="tw"><table>
+<thead><tr><th>Afirmação</th><th>V/F</th></tr></thead>
+<tbody>
+<tr><td>ArrayList guarda a ordem de inserção</td><td>V</td></tr>
+<tr><td><code>Set&lt;Student&gt; tab</code> tem o método <code>getName()</code></td><td>F (o Set não; cada Student sim)</td></tr>
+<tr><td>TreeSet guarda os elementos ordenados</td><td>V</td></tr>
+<tr><td><code>java.util.List</code> é uma interface implementada por ArrayList</td><td>V</td></tr>
+<tr><td><code>Map&lt;K,V&gt;</code> disponibiliza <code>iterator()</code></td><td>F</td></tr>
+<tr><td><code>Map&lt;String, Map&lt;String, List&lt;Integer&gt;&gt;&gt; m = new HashMap&lt;&gt;();</code> é válido</td><td>V</td></tr>
+<tr><td><code>m.keySet()</code> pode ter elementos repetidos</td><td>F</td></tr>
+<tr><td>Com try-with-resources ainda é preciso fechar o Scanner</td><td>F</td></tr>
+<tr><td><code>java.nio.file.Files</code> tem métodos estáticos para ficheiros e pastas</td><td>V</td></tr>
+<tr><td>Podemos ler ficheiros com PrintWriter</td><td>F</td></tr>
+<tr><td><code>list.replaceAll(String::toUpperCase());</code> usa uma referência a método</td><td>F (com parênteses nem compila)</td></tr>
+<tr><td>Predicate recebe um argumento e devolve boolean</td><td>V</td></tr>
+<tr><td>Uma função que aceita uma interface funcional pode receber uma lambda</td><td>V</td></tr>
+<tr><td><code>list.sort(Comparing.comparator(p -&gt; p.getName()))</code> ordena por nome</td><td>F (é <code>Comparator.comparing</code>)</td></tr>
+<tr><td><code>map</code> de uma stream transforma usando um Comparator</td><td>F (usa uma Function)</td></tr>
+</tbody></table></div>
+<details><summary>ATP2 2019-20: completar código (listas, TreeMap, juntar ficheiros)</summary><div class="in">
+<pre><code>List&lt;Integer&gt; list = <span class="k">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="n">3</span>, <span class="n">1</span>, <span class="n">8</span>, <span class="n">5</span>));
+Collections.reverse(list);                 <span class="c">// [5, 8, 1, 3]</span>
+list.sort(Collections.reverseOrder());     <span class="c">// [8, 5, 3, 1]</span>
+
+Map&lt;Character, Integer&gt; pares = <span class="k">new</span> TreeMap&lt;&gt;();
+<span class="c">// ... puts ...</span>
+System.out.println(pares.get(<span class="s">'a'</span>));        <span class="c">// 3</span>
+<span class="k">for</span> (Map.Entry&lt;Character, Integer&gt; e : pares.entrySet())
+    <span class="k">if</span> (e.getKey() == <span class="s">'e'</span>) e.setValue(<span class="n">7</span>);  <span class="c">// {a=3, e=7, i=4, o=2, u=5}</span>
+
+File directorio = <span class="k">new</span> File(<span class="s">"a1"</span>);
+File[] arquivos = directorio.listFiles();
+PrintWriter merge = <span class="k">new</span> PrintWriter(<span class="k">new</span> File(<span class="s">"merge.txt"</span>));
+<span class="k">for</span> (File f : arquivos) {
+    <span class="k">if</span> (f.isFile()) {
+        Scanner input = <span class="k">new</span> Scanner(f);
+        <span class="k">while</span> (input.hasNextLine()) merge.println(input.nextLine());
+        input.close();
+    }
+}
+merge.close();</code></pre>
+<p>Todos testados: dão exatamente os resultados indicados no enunciado.</p></div></details>
+</section>
+
+<section id="exame" data-nav="Exame prático 2024-25 resolvido" data-grp="Treino">
+<h2>Exame prático 2024-25 resolvido</h2>
+<p><strong>Gestão de concertos de uma banda</strong> (1h30). Cada concerto tem id automático a começar em 1, duração em minutos, local "Cidade, País" e data/hora (<code>LocalDateTime</code>). Lucro: 1500 €/hora; duplica fora de Portugal; menos 800 € fora da península ibérica.</p>
+<div class="box bad"><span class="t">Cuidado com a "resolução" que circula</span>
+<p>Está incompleta (faltam <code>readFile</code> e <code>sortConcertsByProfit</code>) e tem erros que custam pontos: compara Strings com <code>==</code>; usa <code>country != "Portugal" || country != "Espanha"</code>, que é <strong>sempre</strong> verdadeiro; nunca inicializa a calculadora (daria <code>NullPointerException</code>); guarda a data como String. A versão abaixo foi compilada e testada com o <code>classicpimba.txt</code> do exame.</p></div>
+<details open><summary>Concert.java</summary><div class="in">
+<pre><code><span class="k">public</span> <span class="k">class</span> Concert {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">final</span> DateTimeFormatter FMT = DateTimeFormatter.ofPattern(<span class="s">"yyyy-MM-dd HH:mm"</span>);
+    <span class="k">private</span> <span class="k">static</span> <span class="k">int</span> nextId = <span class="n">1</span>;          <span class="c">// contador partilhado por todos os concertos</span>
+
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> id;
+    <span class="k">private</span> <span class="k">double</span> duration;                <span class="c">// minutos</span>
+    <span class="k">private</span> String location;                <span class="c">// "Cidade, País"</span>
+    <span class="k">private</span> LocalDateTime start;
+
+    <span class="k">public</span> Concert(<span class="k">double</span> duration, String location, LocalDateTime start) {
+        <span class="k">this</span>(nextId, duration, location, start);        <span class="c">// id automático</span>
+    }
+
+    <span class="k">public</span> Concert(<span class="k">int</span> id, <span class="k">double</span> duration, String location, LocalDateTime start) {
+        <span class="k">this</span>.id = id;                                    <span class="c">// id vindo do ficheiro</span>
+        <span class="k">this</span>.duration = duration;
+        <span class="k">this</span>.location = location;
+        <span class="k">this</span>.start = start;
+        <span class="k">if</span> (id &gt;= nextId) nextId = id + <span class="n">1</span>;               <span class="c">// nota #3: contador acima do maior id</span>
+    }
+
+    <span class="k">public</span> <span class="k">int</span> getId() { <span class="k">return</span> id; }
+    <span class="k">public</span> <span class="k">double</span> getDuration() { <span class="k">return</span> duration; }
+    <span class="k">public</span> <span class="k">void</span> setDuration(<span class="k">double</span> duration) { <span class="k">this</span>.duration = duration; }
+    <span class="k">public</span> String getLocation() { <span class="k">return</span> location; }
+    <span class="k">public</span> <span class="k">void</span> setLocation(String location) { <span class="k">this</span>.location = location; }
+    <span class="k">public</span> LocalDateTime getStart() { <span class="k">return</span> start; }
+    <span class="k">public</span> <span class="k">void</span> setStart(LocalDateTime start) { <span class="k">this</span>.start = start; }
+
+    <span class="k">public</span> String getCountry() {                        <span class="c">// texto depois da última vírgula</span>
+        String[] parts = location.split(<span class="s">","</span>);
+        <span class="k">return</span> parts[parts.length - <span class="n">1</span>].trim();
+    }
+
+    @Override
+    <span class="k">public</span> String toString() {
+        <span class="k">return</span> String.format(<span class="s">"Concert #%d: %s, %s, %.1f min"</span>, id, location, start.format(FMT), duration);
+    }
+}</code></pre></div></details>
+<details><summary>IConcertProfitCalculator e StandardConcertProfitCalculator</summary><div class="in">
+<pre><code><span class="k">public</span> <span class="k">interface</span> IConcertProfitCalculator {
+    <span class="k">double</span> calculateConcertProfit(Concert c);
+}
+
+<span class="k">public</span> <span class="k">class</span> StandardConcertProfitCalculator <span class="k">implements</span> IConcertProfitCalculator {
+    @Override
+    <span class="k">public</span> <span class="k">double</span> calculateConcertProfit(Concert c) {
+        <span class="k">double</span> profit = <span class="n">1500</span> * (c.getDuration() / <span class="n">60.0</span>);
+        String country = c.getCountry();
+        <span class="k">if</span> (!country.equalsIgnoreCase(<span class="s">"Portugal"</span>)) {
+            profit *= <span class="n">2</span>;                                   <span class="c">// fora de Portugal</span>
+        }
+        <span class="k">if</span> (!country.equalsIgnoreCase(<span class="s">"Portugal"</span>) &amp;&amp; !country.equalsIgnoreCase(<span class="s">"Espanha"</span>)) {
+            profit -= <span class="n">800</span>;                                 <span class="c">// fora da península ibérica (repara no &amp;&amp;)</span>
+        }
+        <span class="k">return</span> profit;
+    }
+}</code></pre></div></details>
+<details><summary>ConcertManager.java</summary><div class="in">
+<pre><code><span class="k">public</span> <span class="k">class</span> ConcertManager {
+    <span class="k">private</span> Map&lt;Integer, Concert&gt; concerts = <span class="k">new</span> TreeMap&lt;&gt;();      <span class="c">// id -&gt; concerto, ordenado por id</span>
+    <span class="k">private</span> IConcertProfitCalculator calculator = <span class="k">new</span> StandardConcertProfitCalculator();
+
+    <span class="k">public</span> <span class="k">void</span> addConcert(Concert c) { concerts.put(c.getId(), c); }   <span class="c">// id repetido: substitui</span>
+    <span class="k">public</span> <span class="k">void</span> removeConcert(<span class="k">int</span> id) { concerts.remove(id); }
+    <span class="k">public</span> Concert getConcert(<span class="k">int</span> id) { <span class="k">return</span> concerts.get(id); }      <span class="c">// null se não existir</span>
+
+    <span class="k">public</span> <span class="k">double</span> calculateConcertProfit(<span class="k">int</span> id) {
+        Concert c = concerts.get(id);
+        <span class="k">if</span> (c == <span class="k">null</span>) <span class="k">return</span> -<span class="n">1</span>;
+        <span class="k">return</span> calculator.calculateConcertProfit(c);
+    }
+
+    <span class="k">public</span> <span class="k">void</span> printAllConcerts() {
+        <span class="k">for</span> (Concert c : concerts.values()) System.out.println(c);
+    }
+
+    <span class="k">public</span> <span class="k">void</span> sortConcertsByProfit() {                <span class="c">// por mês; dentro do mês, lucro decrescente</span>
+        Map&lt;Integer, List&lt;Concert&gt;&gt; byMonth = <span class="k">new</span> TreeMap&lt;&gt;();
+        <span class="k">for</span> (Concert c : concerts.values()) {
+            <span class="k">int</span> month = c.getStart().getMonthValue();
+            byMonth.putIfAbsent(month, <span class="k">new</span> ArrayList&lt;&gt;());
+            byMonth.get(month).add(c);
+        }
+        <span class="k">for</span> (Map.Entry&lt;Integer, List&lt;Concert&gt;&gt; e : byMonth.entrySet()) {
+            List&lt;Concert&gt; list = e.getValue();
+            list.sort((a, b) -&gt; Double.compare(calculator.calculateConcertProfit(b),
+                                               calculator.calculateConcertProfit(a)));
+            System.out.println(<span class="s">"Mês "</span> + e.getKey() + <span class="s">":"</span>);
+            <span class="k">for</span> (Concert c : list)
+                System.out.printf(<span class="s">"  %s -&gt; %.2f €%n"</span>, c, calculator.calculateConcertProfit(c));
+        }
+    }
+
+    <span class="k">public</span> <span class="k">void</span> readFile(String fich) {
+        <span class="k">try</span> (Scanner sc = <span class="k">new</span> Scanner(<span class="k">new</span> File(fich))) {
+            <span class="k">while</span> (sc.hasNextLine()) {
+                String line = sc.nextLine().trim();
+                <span class="k">if</span> (line.isEmpty() || line.startsWith(<span class="s">"ID"</span>)) <span class="k">continue</span>;   <span class="c">// cabeçalho</span>
+                String[] f = line.split(<span class="s">";"</span>);
+                <span class="k">int</span> id = Integer.parseInt(f[<span class="n">0</span>].trim());
+                <span class="k">double</span> duration = Double.parseDouble(f[<span class="n">1</span>].trim());
+                String location = f[<span class="n">2</span>].trim();                           <span class="c">// "Aveiro, Portugal" (a vírgula não estraga o split por ;)</span>
+                LocalDateTime start = LocalDateTime.parse(f[<span class="n">3</span>].trim(), Concert.FMT);
+                addConcert(<span class="k">new</span> Concert(id, duration, location, start));  <span class="c">// nota #2: substitui se existir</span>
+            }
+        } <span class="k">catch</span> (FileNotFoundException e) {
+            System.out.println(<span class="s">"Ficheiro não encontrado: "</span> + fich);
+        }
+    }
+
+    <span class="k">public</span> <span class="k">void</span> writeFile(String fich) {
+        <span class="k">try</span> (PrintWriter pw = <span class="k">new</span> PrintWriter(fich)) {
+            <span class="k">for</span> (Concert c : concerts.values()) {
+                pw.printf(<span class="s">"%d;%.1f;%s;%s;%.2f%n"</span>, c.getId(), c.getDuration(), c.getLocation(),
+                          c.getStart().format(Concert.FMT), calculator.calculateConcertProfit(c));
+            }
+        } <span class="k">catch</span> (FileNotFoundException e) {
+            System.out.println(<span class="s">"Erro ao escrever "</span> + fich);
+        }
+    }
+}</code></pre>
+<p>Resultados com o ficheiro do exame: Madrid 25 min → 1250 €; Oslo 35 min → 950 €; Vigo 125 min → 6250 €; Frankfurt 16 min → 0 €. Depois de ler o ficheiro (ids até 30), o próximo id automático é 31.</p></div></details>
+
+<h3>Os outros exames práticos (para treinar)</h3>
+<div class="tw"><table>
+<thead><tr><th>Ano</th><th>Tema</th><th>O que exige</th></tr></thead>
+<tbody>
+<tr><td>2023-24</td><td>Bilheteira (Cinema, Theatre, Concert, Place, Ticket)</td><td>Herança de <code>Event</code>; implementar <code>ITicketBookingSystem</code> (não deixar dois eventos no mesmo local e hora; reservar e cancelar bilhetes); escrever num <code>PrintStream</code></td></tr>
+<tr><td>2022-23</td><td>Aluguer de armazenamento (Garage, Locker, Warehouse)</td><td>Subclasses <code>GarageStorage</code>, <code>LockerStorage</code>, <code>WarehouseStorage</code> de <code>StorageUnit</code>; enums <code>ClientType</code> e <code>CaravanType</code>; implementar <code>StorageServiceInterface</code>; verificar disponibilidade entre datas (<code>LocalDate</code>); ler <code>bookings.txt</code> com dimensões <code>200x300x250</code></td></tr>
+<tr><td>2021-22</td><td>Gestão de eventos (Sport, Culture, Catering)</td><td>Interface <code>IEvent</code> implementada por <code>Event</code>, com subclasses <code>Sport</code>, <code>Culture</code>, <code>Catering</code>; <code>Client</code> e um gestor <code>EventManager</code></td></tr>
+<tr><td>2020-21</td><td>Agência turística (Restaurante, Passeio de bicicleta)</td><td>Interface <code>PontosdeInteresse</code>, classe abstrata <code>Atividade</code>, enum <code>TipoComida</code>, ler <code>uafest.txt</code></td></tr>
+<tr><td>2019-20</td><td>Loja (Livro, Documentário, Eletrodoméstico, Telemóvel)</td><td>Classe abstrata <code>Produto</code> que implementa a interface <code>PVP</code>, subclasses de produtos, enum <code>ClasseEnergetica</code></td></tr>
+</tbody></table></div>
+<p>As resoluções desses anos estão nas pastas "Resolução" do teu zip. Usa-as para comparar a estrutura, mas confirma sempre que compilam: a de 2024-25 mostra que nem todas estão corretas.</p>
+</section>
+
+<section id="erros" data-nav="Erros clássicos" data-grp="Treino">
+<h2>Erros clássicos</h2>
+<div class="cols">
+<div><h4>Que dão erro ou pontos perdidos</h4>
+<ul>
+<li>Comparar Strings com <code>==</code> (usa <code>equals</code>).</li>
+<li>Condições com <code>!=</code> ligadas por <code>||</code> que são sempre verdadeiras.</li>
+<li>Atributo de objeto não inicializado → <code>NullPointerException</code>.</li>
+<li>Remover de uma lista dentro de um for-each → <code>ConcurrentModificationException</code>.</li>
+<li><code>nextInt()</code> seguido de <code>nextLine()</code> devolve linha vazia.</li>
+<li>Redefinir <code>equals</code> sem <code>hashCode</code> (HashSet deixa de funcionar).</li>
+<li><code>catch (Exception e)</code> antes de exceções mais específicas.</li>
+</ul></div>
+<div><h4>De desenho</h4>
+<ul>
+<li>Atributos <code>public</code> (perde-se o encapsulamento).</li>
+<li>Usar herança onde é composição ("tem um", não "é um").</li>
+<li>Declarar pelo tipo concreto (<code>ArrayList&lt;X&gt; l</code>) em vez da interface.</li>
+<li>Guardar datas como String em vez de <code>LocalDate</code>.</li>
+<li>Esquecer o <code>toString</code> (os testes imprimem os objetos).</li>
+<li>Não testar no <code>main</code> todas as funcionalidades pedidas.</li>
+</ul></div>
+</div>
+</section>
+
+<section id="checklist" data-nav="Lista de verificação final" data-grp="Treino">
+<h2>Lista de verificação final</h2>
+<ul class="chk">
+<li><label><input type="checkbox" data-k="p1"> Escrever uma classe com id automático, construtores, getters/setters validados e toString</label></li>
+<li><label><input type="checkbox" data-k="p2"> Explicar static, final, visibilidades e construtor por omissão</label></li>
+<li><label><input type="checkbox" data-k="p3"> Redefinir equals e hashCode corretamente</label></li>
+<li><label><input type="checkbox" data-k="p4"> Usar herança com super e @Override; distinguir composição, agregação e herança</label></li>
+<li><label><input type="checkbox" data-k="p5"> Prever o resultado de chamadas polimórficas e casts</label></li>
+<li><label><input type="checkbox" data-k="p6"> Escolher entre classe abstrata e interface e implementar ambas</label></li>
+<li><label><input type="checkbox" data-k="p7"> Ordenar com Comparable e com Comparator de vários critérios</label></li>
+<li><label><input type="checkbox" data-k="p8"> Lançar, apanhar e criar exceções; saber checked vs unchecked</label></li>
+<li><label><input type="checkbox" data-k="p9"> Usar enums com atributos e valueOf</label></li>
+<li><label><input type="checkbox" data-k="p10"> Escolher a coleção certa e agrupar com Map&lt;K, List&lt;V&gt;&gt;</label></li>
+<li><label><input type="checkbox" data-k="p11"> Ler um ficheiro com Scanner e split, e escrever com PrintWriter</label></li>
+<li><label><input type="checkbox" data-k="p12"> Trabalhar com LocalDate e LocalDateTime</label></li>
+<li><label><input type="checkbox" data-k="p13"> Escrever lambdas, referências a métodos e streams com groupingBy</label></li>
+<li><label><input type="checkbox" data-k="p14"> Fazer um exame prático completo em 1h30</label></li>
+</ul>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var KEY='guia-poo', state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('.chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var tag=document.querySelector('#'+id+' .done-tag'); if(tag) tag.hidden=!on;
+    });
+    pbar.style.width=(secBoxes.length?100*n/secBoxes.length:0)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){ cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); }); });
+  var rst=document.getElementById('rst'), cf=document.getElementById('cf');
+  rst.addEventListener('click',function(){
+    if(cf.hidden){ cf.hidden=false; rst.textContent='Confirmar limpeza'; return; }
+    state={}; save(); refresh(); cf.hidden=true; rst.textContent='Limpar progresso';
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){ if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+        if(links[en.target.id]) links[en.target.id].classList.add('on'); } });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>

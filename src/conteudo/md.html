@@ -1,0 +1,1244 @@
+<hero><h1>Matemática Discreta</h1><p>Lógica de 1.ª ordem, enumeração, agrupamentos, recorrências, funções geradoras e grafos, com os testes de 2023/24 resolvidos.</p></hero>
+<extracss>
+.fm{font-family:var(--mono);font-size:14px;line-height:1.75;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:10px 0;overflow-x:auto;white-space:pre-wrap;max-width:100%}
+.fm.nw{white-space:normal}
+.fm.center{text-align:center}
+.box .fm{background:var(--card)}
+.fm .cm{color:var(--cm);font-style:italic}
+.lead{color:var(--muted)}
+.kicker{font-family:var(--sans);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:24px 0 0}
+.box.row{display:flex;gap:10px;align-items:flex-start}
+.box.row>.ic{flex:none}
+.ckl{list-style:none;padding-left:0}
+.ckl li::before{content:"☐ ";color:var(--accent)}
+.q{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:12px 16px 6px;margin:14px 0;min-width:0}
+.q-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-family:var(--sans);font-weight:600;color:var(--accent);margin-bottom:4px}
+.q-num{font-family:var(--sans);font-weight:600;color:var(--accent)}
+.q-pts,.q-head span{font-weight:400;color:var(--muted);font-size:13px}
+.q-head .q-num{color:var(--accent);font-weight:600;font-size:15px}
+.ans{display:inline-block;margin:4px 0;padding:2px 10px;border-radius:6px;background:var(--teo-bg);border:1px solid var(--teo);color:var(--teo);font-family:var(--sans);font-weight:600;font-size:14.5px}
+.sn{font-family:var(--mono);font-size:12px;color:var(--muted);margin-right:6px}
+em{font-style:italic}
+main{overflow-wrap:break-word}
+mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;max-width:100%}
+</extracss>
+<section id="prop" data-nav="Lógica Proposicional" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Fórmulas e Conectivos</h2>
+<p class="lead">Proposicional · Sintaxe · Semântica · Formas Normais · Unificação · Resolução</p><span id="cap1"></span>
+<div class="kicker">1 · Lógica Proposicional — Revisão</div>
+
+<p>Uma <strong>proposição</strong> é uma afirmação que é verdadeira ou falsa (mas nunca ambas). Variáveis proposicionais: p, q, r, φ, ψ…</p>
+<div class="box def"><div class="t">Conectivos e notação</div>
+<div class="tw"><table>
+<tr><th>Símbolo</th><th>Nome</th><th>Leitura</th></tr>
+<tr><td><strong>¬φ</strong></td><td>Negação</td><td>não φ</td></tr>
+<tr><td><strong>φ ∧ ψ</strong></td><td>Conjunção</td><td>φ e ψ</td></tr>
+<tr><td><strong>φ ∨ ψ</strong></td><td>Disjunção</td><td>φ ou ψ (inclusivo!)</td></tr>
+<tr><td><strong>φ → ψ</strong></td><td>Implicação</td><td>se φ então ψ</td></tr>
+<tr><td><strong>φ ↔ ψ</strong></td><td>Equivalência</td><td>φ se e só se ψ</td></tr>
+<tr><td><strong>⊤</strong></td><td>Tautologia</td><td>verdadeiro</td></tr>
+<tr><td><strong>⊥</strong></td><td>Contradição</td><td>falso</td></tr>
+</table></div></div>
+<p><strong>Prioridade:</strong> ¬ &gt; ∧ &gt; ∨ &gt; → &gt; ↔ (¬ aplica-se primeiro)</p>
+<h4>Tabelas de Verdade dos Conectivos</h4>
+<div class="cols">
+<div class="box ex">
+<div class="tw"><table>
+<tr><th>φ</th><th>ψ</th><th>φ∧ψ</th><th>φ∨ψ</th><th>φ→ψ</th><th>φ↔ψ</th></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td><strong>1</strong></td><td>1</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td><strong>1</strong></td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td><strong>0</strong></td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td><strong>1</strong></td><td>1</td></tr>
+</table></div>
+</div>
+<div class="box def">
+<h4>⚠️ Implicação — Atenção!</h4>
+<ul><li>φ → ψ só é <strong>falsa</strong> quando φ=1 e ψ=0</li><li>«Se 2+2=5, então o céu é azul» → <strong>VERDADEIRO</strong> (premissa falsa → implicação verdadeira)</li><li>φ → ψ ≡ ¬φ ∨ ψ</li></ul>
+</div>
+</div>
+
+</section>
+<section id="tautologias" data-nav="Tautologias e Equiv." data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Classificar Fórmulas</h2>
+
+<div class="kicker">2 · Tautologias, Contradições e Equivalências</div>
+
+<div class="cols">
+<div class="box def"><div class="t">Tautologia (válida)</div><p>Verdadeira em <strong>todas</strong> as interpretações.</p><div class="fm nw">p ∨ ¬p  ← sempre verdade</div></div>
+<div class="box def"><div class="t">Consistente</div><p>Verdadeira em <strong>alguma</strong> interpretação.</p><div class="fm nw">p ∧ q  ← v. quando p=q=1</div></div>
+<div class="box def"><div class="t">Contradição (inconsistente)</div><p>Falsa em <strong>todas</strong> as interpretações.</p><div class="fm nw">p ∧ ¬p  ← nunca verdade</div></div>
+</div>
+<div class="box def"><div class="t">Equivalência</div><p>φ ≡ ψ quando φ ↔ ψ é tautologia (valores de verdade iguais em toda a interpretação).</p></div>
+<h4>Equivalências Fundamentais — MEMORIZAR</h4>
+<div class="box met">
+<div class="fm nw">
+Comutatividade:   (p∧q) ≡ (q∧p)       (p∨q) ≡ (q∨p)
+Associatividade:  (p∧q)∧r ≡ p∧(q∧r)   (p∨q)∨r ≡ p∨(q∨r)
+Idempotência:     p∧p ≡ p              p∨p ≡ p
+Identidade:       p∧⊤ ≡ p             p∨⊥ ≡ p
+Dominação:        p∧⊥ ≡ ⊥             p∨⊤ ≡ ⊤
+
+De Morgan:        ¬(p∨q) ≡ ¬p∧¬q      ¬(p∧q) ≡ ¬p∨¬q
+Implicação:       (p→q) ≡ ¬p∨q
+Contraposição:    (p→q) ≡ (¬q→¬p)
+Dupla negação:    ¬¬p ≡ p
+
+Distributividade:
+  p∧(q∨r) ≡ (p∧q)∨(p∧r)
+  p∨(q∧r) ≡ (p∨q)∧(p∨r)
+    </div>
+</div>
+<div class="box met row"><span class="ic">⚠️</span><span><strong>Consequência semântica:</strong> φ₁,...,φₙ |= ψ significa que em toda a interpretação onde φ₁,...,φₙ são verdadeiras, ψ também é verdadeira. Equivalente a: {φ₁,...,φₙ,¬ψ} é inconsistente.</span></div>
+
+</section>
+<section id="fnc" data-nav="Formas Normais (CNF/DNF)" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Normalizar Fórmulas</h2>
+
+<div class="kicker">3 · Formas Normais (CNF e DNF)</div>
+
+<div class="box def"><div class="t">Literal</div><p>Uma variável (p) ou a sua negação (¬p).</p></div>
+<div class="cols">
+<div class="box def"><h4>CNF — Forma Normal Conjuntiva</h4><p>Conjunção de cláusulas. Cada cláusula é disjunção de literais.</p><div class="fm nw">(p∨q) ∧ (¬p∨r) ∧ (¬r)</div><p>← 3 cláusulas em conjunção</p></div>
+<div class="box exa"><h4>DNF — Forma Normal Disjuntiva</h4><p>Disjunção de cláusulas. Cada cláusula é conjunção de literais.</p><div class="fm nw">(p∧q) ∨ (¬p∧r) ∨ (¬r)</div><p>← 3 cláusulas em disjunção</p></div>
+</div>
+<h4>Como Obter a CNF — Algoritmo</h4>
+<div class="box ex">
+<ol>
+<li><strong>Eliminar ↔:</strong> φ↔ψ ≡ (φ→ψ)∧(ψ→φ)</li>
+<li><strong>Eliminar →:</strong> φ→ψ ≡ ¬φ∨ψ</li>
+<li><strong>Mover ¬ para dentro (De Morgan):</strong> ¬(φ∨ψ) ≡ ¬φ∧¬ψ e ¬(φ∧ψ) ≡ ¬φ∨¬ψ, ¬¬φ ≡ φ</li>
+<li><strong>Distribuir ∨ sobre ∧:</strong> φ∨(ψ∧θ) ≡ (φ∨ψ)∧(φ∨θ)</li>
+</ol>
+</div>
+<div class="box exa"><div class="t">Exemplo</div>
+<div class="fm nw">Fórmula: ¬(p→q)
+Passo 1: ¬(¬p∨q)         (eliminar →)
+Passo 2: ¬¬p ∧ ¬q         (De Morgan)
+Passo 3: p ∧ ¬q            (dupla negação) ← já é CNF (e DNF!)</div>
+</div>
+
+</section>
+<section id="resolucao-prop" data-nav="Resolução Proposicional" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Provar φ₁,...,φₙ |= ψ por Refutação</h2>
+
+<div class="kicker">4 · Método de Resolução (Proposicional)</div>
+
+<div class="box met"><div class="t">⚡ Estratégia de Resolução</div>
+<ol>
+<li>Converter φ₁,...,φₙ para CNF</li>
+<li>Negar ψ e converter ¬ψ para CNF</li>
+<li>Aplicar a <strong>regra de resolução</strong> repetidamente</li>
+<li>Se obtemos ⊥ → demonstrado. Se não há mais resolventes sem ⊥ → não se verifica</li>
+</ol>
+<div class="box teo"><div class="t">Regra de Resolução</div>
+<div class="fm nw">  ¬ψ ∨ θ     φ ∨ γ
+  ─────────────────────
+       θ ∨ γ
+
+Caso especial:
+  ¬ψ     ψ
+  ─────────  →  ⊥ (contradição)</div></div>
+</div>
+<div class="box exa"><div class="t">Exemplo Completo — p→q, q→r |= p→r</div>
+<div class="fm nw">Cláusulas das hipóteses: ¬p∨q, ¬q∨r
+Negar conclusão: ¬(p→r) = p∧¬r → cláusulas {p}, {¬r}
+
+Dedução:
+1. ¬p∨q       (Hip)
+2. ¬q∨r       (Hip)
+3. p           (Hip — negação de conclusão)
+4. ¬r          (Hip — negação de conclusão)
+5. q           (Res 1,3: resolver em p)
+6. r           (Res 2,5: resolver em q)
+7. ⊥           (Res 4,6: resolver em r)  ✓ Logo p→q,q→r |= p→r</div>
+</div>
+<div class="box bad"><div class="t">🎯 Foco de Exame</div><ul class="ckl">
+<li>Converter qualquer fórmula para CNF (os 4 passos)</li>
+<li>Aplicar o método de resolução até ⊥ ou parar</li>
+<li>Identificar tautologias vs. consistentes vs. contradições</li>
+</ul></div>
+
+</section>
+<section id="log1" data-nav="Lógica 1ª Ordem — Sintaxe" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Quantificadores e Termos</h2>
+
+<div class="kicker">5 · Lógica de 1ª Ordem — Sintaxe</div>
+
+<p>A lógica de 1ª ordem permite expressar propriedades sobre objetos num domínio, usando <strong>quantificadores</strong>:</p>
+<div class="cols">
+<div class="box def"><div class="t">Quantificador Universal</div><div class="fm nw">∀x φ    "para todo x, φ"</div><p>Ex: ∀x (gato(x) → garras(x))</p></div>
+<div class="box def"><div class="t">Quantificador Existencial</div><div class="fm nw">∃x φ    "existe x tal que φ"</div><p>Ex: ∃y amigo(y, Ana)</p></div>
+</div>
+<div class="box ex">
+<h4>Componentes de um Alfabeto de 1ª Ordem</h4>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Exemplos</th><th>Descrição</th></tr>
+<tr><td><strong>Variáveis</strong></td><td>x, y, z</td><td>Representam elementos do domínio</td></tr>
+<tr><td><strong>Constantes</strong></td><td>Ana, 0, a</td><td>Denotam elementos fixos</td></tr>
+<tr><td><strong>Funções</strong></td><td>f(x), +(x,y), pai(x)</td><td>Mapeiam n argumentos a 1 resultado</td></tr>
+<tr><td><strong>Predicados</strong></td><td>P(x), gato(x), &lt;(x,y)</td><td>Relações — verdadeiras ou falsas</td></tr>
+</table></div>
+</div>
+<h4>Termos e Fórmulas (definição recursiva)</h4>
+<div class="box def"><div class="t">Termos</div><ul><li>Variável ou constante → termo</li><li>Se f é função de n argumentos e t₁,...,tₙ são termos → f(t₁,...,tₙ) é termo</li></ul></div>
+<div class="box def"><div class="t">Fórmulas</div><ul><li>P(t₁,...,tₙ) com predicado P e termos tᵢ → fórmula (átomo)</li><li>t₁ = t₂ → fórmula</li><li>⊤, ⊥ → fórmulas</li><li>Se φ,ψ são fórmulas → ¬φ, φ∧ψ, φ∨ψ, φ→ψ são fórmulas</li><li>Se φ é fórmula e x variável → ∀x φ e ∃x φ são fórmulas</li></ul></div>
+
+</section>
+<section id="semantica" data-nav="Semântica" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Variáveis Livres, Ligadas e Interpretação</h2>
+
+<div class="kicker">6 · Semântica de 1ª Ordem</div>
+
+<div class="cols">
+<div class="box def"><div class="t">Variável Ligada</div><p>Ocorrência dentro do alcance de um quantificador dessa variável.</p><div class="fm nw">∀x (gato(x) → garras(x))
+       ↑ x ocorre ligada</div></div>
+<div class="box def"><div class="t">Variável Livre</div><p>Ocorrência NÃO dentro do alcance do quantificador.</p><div class="fm nw">(∀x x &lt; y) ∧ (a &lt; x)
+                ↑ x livre aqui</div></div>
+</div>
+<p>Uma fórmula <strong>fechada</strong> não tem variáveis livres.</p>
+<div class="box def">
+<h4>Interpretação de Fórmulas — Regras</h4>
+<div class="fm nw">
+(M,V) |= P(t₁,...,tₙ)    quando (V(t₁),...,V(tₙ)) ∈ Pᴹ
+(M,V) |= t₁ = t₂         quando V(t₁) = V(t₂)
+(M,V) |= φ∧ψ             quando (M,V)|=φ E (M,V)|=ψ
+(M,V) |= φ∨ψ             quando (M,V)|=φ OU (M,V)|=ψ
+(M,V) |= φ→ψ             quando (M,V)|=φ implica (M,V)|=ψ
+(M,V) |= ¬φ              quando NÃO (M,V)|=φ
+(M,V) |= ∃x ψ            quando EXISTE a∈D: (M,Vₓᵃ)|=ψ
+(M,V) |= ∀x ψ            quando PARA TODO a∈D: (M,Vₓᵃ)|=ψ
+    </div>
+</div>
+
+</section>
+<section id="skolem" data-nav="Skolemização" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Prenex e Skolem</h2>
+
+<div class="kicker">7 · Formas Normais de 1ª Ordem</div>
+
+<div class="cols">
+<div class="box teo"><div class="t">Forma Normal Prenex</div><p>Todos os quantificadores no início: Qx₁...Qxₙ φ onde φ é sem quantificadores.</p><p><strong>Para obter:</strong></p><ul><li>¬∀x φ ≡ ∃x ¬φ</li><li>¬∃x φ ≡ ∀x ¬φ</li><li>Mover quantificadores para fora</li></ul></div>
+<div class="box teo"><div class="t">Forma Normal de Skolem</div><p>∀x₁...∀xₙ φ com φ em CNF (sem quantificadores).</p><p><strong>Eliminar ∃:</strong></p><ul><li>∃x φ → substituir x por nova constante c</li><li>∀x₁...∀xₖ₋₁ ∃xₖ φ → substituir xₖ por f(x₁,...,xₖ₋₁) (nova função)</li></ul></div>
+</div>
+<div class="box exa"><div class="t">Exemplo de Skolemização</div>
+<div class="fm nw">¬∃x (B(x)∧¬S(x)) ≡ ∀x (¬B(x)∨S(x))   ← já está em forma de Skolem
+
+∃x (P(x)∧B(x)) ⟝ P(c)∧B(c)   ← c é nova constante de Skolem
+Cláusulas: {P(c)}, {B(c)}</div>
+</div>
+<div class="box met row"><span class="ic">⚠️</span><span>{φ₁,...,φₙ} é consistente se e só se as suas skolemizações {ψ₁,...,ψₙ} são consistentes.</span></div>
+
+</section>
+<section id="unificacao" data-nav="Unificação (mgu)" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Algoritmo de Unificação Mais Geral</h2>
+
+<div class="kicker">8 · Unificação — Encontrar o mgu</div>
+
+<div class="box def"><div class="t">Substituição</div><p>σ = {t₁/v₁,...,tₙ/vₙ} substitui cada variável vᵢ pelo termo tᵢ. Escrevemos Eσ para aplicar σ à expressão E.</p></div>
+<div class="box def"><div class="t">Unificador Mais Geral (mgu)</div><p>Um unificador σ de E = {E₁,...,Eₙ} tal que E₁σ = E₂σ = ... = Eₙσ e todo o outro unificador θ = λ △ σ para algum λ.</p></div>
+<div class="box met">
+<h4>Algoritmo do mgu — Passo a Passo</h4>
+<ol>
+<li>Começar: k=0, E₀=E, σ₀=ε (substituição identidade)</li>
+<li>Se Eₖ tem apenas 1 expressão → <strong>σₖ é o mgu</strong>, PARAR</li>
+<li>Determinar Dₖ = conjunto das diferenças (primeiras sub-expressões onde as expressões divergem)</li>
+<li>Se existe variável v e termo t em Dₖ e v NÃO ocorre em t → σₖ₊₁ = {t/v} △ σₖ, Eₖ₊₁ = Eₖ{t/v}, k++, voltar a 2</li>
+<li>Caso contrário → <strong>NÃO É UNIFICÁVEL</strong></li>
+</ol>
+</div>
+<div class="box bad row"><span class="ic">🔴</span><span><strong>Condição de ocorrência:</strong> Se v ocorre em t (ex: v=x, t=f(x)) → NÃO é unificável! (f(x)≠x para nenhuma substituição)</span></div>
+<div class="box exa"><div class="t">Exemplo: E = {P(y,z), P(x,h(y)), P(A,h(A))}</div>
+<div class="fm nw">D₀ = {y, x, A}  →  σ₁ = {x/y},  E₁ = {P(x,z), P(x,h(x)), P(A,h(A))}
+D₁ = {x, A}    →  σ₂ = {A/x,A/y},  E₂ = {P(A,z), P(A,h(A)), P(A,h(A))}
+D₂ = {z, h(A)} →  σ₃ = {h(A)/z,A/x,A/y},  E₃ = {P(A,h(A))}
+
+mgu = {A/x, A/y, h(A)/z}  ✓</div>
+</div>
+
+</section>
+<section id="resolucao-fo" data-nav="Resolução 1ª Ordem" data-grp="I · Lógica de Primeira Ordem e Demonstração Automática" data-track>
+<h2>Provar Consequências com Quantificadores</h2>
+
+<div class="kicker">9 · Resolução de 1ª Ordem</div>
+
+<div class="box def">
+<h4>Regras da Resolução de 1ª Ordem</h4>
+<div class="fm nw">
+RESOLVENTE BINÁRIA:
+  ¬ψ ∨ θ      φ ∨ γ       (sem variáveis comuns!)
+  ─────────────────────── BR
+    (θ ∨ γ) · mgu(ψ, φ)
+
+FATOR:
+  φ ∨ ψ ∨ θ
+  ────────────────── Fator
+  (φ ∨ θ) · mgu(φ, ψ)
+    </div>
+</div>
+<div class="box ex">
+<h4>Procedimento Completo</h4>
+<ol>
+<li>Converter {φ₁,...,φₙ, ¬ψ} para Forma Normal de Skolem</li>
+<li>Ignorar quantificadores ∀ (todas as variáveis estão universalmente quantificadas)</li>
+<li><strong>Renomear variáveis</strong> em cada cláusula para serem distintas</li>
+<li>Aplicar Resolvente Binária e Fator até obter ⊥</li>
+</ol>
+</div>
+<div class="box exa"><div class="t">Exemplo Clássico (Lewis Carroll) — Porquinhos e Beethoven</div>
+<div class="fm nw">Hipóteses em cláusulas:
+  ¬B(x) ∨ S(x)    (quem aprecia Beethoven mantém silêncio)
+  ¬P(y) ∨ I(y)    (porquinhos são ignorantes)
+  ¬I(z) ∨ ¬S(z)  (ignorantes não mantêm silêncio)
+  P(c), B(c)       (skolemização de ∃x P(x)∧B(x))
+
+Dedução:
+1. P(c)           (Hip)
+2. ¬P(y)∨I(y)    (Hip)
+3. I(c)           (BR 1,2: mgu={c/y})
+4. ¬I(z)∨¬S(z)   (Hip)
+5. ¬S(c)          (BR 3,4: mgu={c/z})
+6. ¬B(x)∨S(x)   (Hip)
+7. ¬B(c)          (BR 5,6: mgu={c/x})
+8. B(c)           (Hip)
+9. ⊥              (BR 7,8) ✓</div>
+</div>
+<div class="box bad"><div class="t">🎯 Foco de Exame</div><ul class="ckl">
+<li>Converter para Forma de Skolem (eliminar ∃ com constantes/funções de Skolem)</li>
+<li>Renomear variáveis antes de aplicar resolução</li>
+<li>Calcular mgu entre dois predicados e aplicar à resolvente</li>
+<li>Saber quando NOT é unificável (símbolos diferentes, condição de ocorrência)</li>
+</ul></div>
+
+</section>
+<section id="pombos" data-nav="Princípio dos Pombos" data-grp="II · Princípios de Enumeração Combinatória" data-track>
+<h2>Dirichlet: n Pombos em m Gaiolas</h2>
+<p class="lead">Pombos · Bijeção · Adição · Multiplicação · Inclusão-Exclusão</p><span id="cap2"></span>
+<div class="kicker">10 · Princípio da Gaiola dos Pombos</div>
+
+<div class="box met"><div class="t">🐦 Princípio dos Pombos</div>
+<p>Se n pombos voam para m gaiolas e <strong>n &gt; m</strong>, então pelo menos uma gaiola tem mais do que um pombo.</p>
+<div class="fm nw">Se f: A → B e |A| &gt; |B|, então f NÃO é injetiva
+(existem x₁≠x₂ com f(x₁)=f(x₂))</div>
+<p><strong>Generalização:</strong> Se km &lt; |A| e f: A→B com |B|=m, então existem k+1 elementos de A com a mesma imagem.</p>
+</div>
+<div class="box exa"><div class="t">Exemplos Tipo</div>
+<ul>
+<li><strong>Meses:</strong> Num grupo &gt;12 pessoas, duas fazem anos no mesmo mês.</li>
+<li><strong>Sala 7×7:</strong> 50 pessoas numa sala 7×7 → existe um quadrado 1×1 com 2 pessoas a distância ≤ √2 &lt; 1,5m</li>
+<li><strong>Cabelos:</strong> Max. 200 000 fios → com 2 870 208 pessoas, existem ≥15 com o mesmo número</li>
+</ul>
+</div>
+
+</section>
+<section id="bijecao" data-nav="Princípio da Bijeção" data-grp="II · Princípios de Enumeração Combinatória" data-track>
+<h2>Transportar Problemas</h2>
+
+<div class="kicker">11 · Princípio da Bijeção</div>
+
+<div class="box teo"><div class="t">Princípio</div><p>Se existe uma bijeção f: A → B entre conjuntos finitos, então |A| = |B|.</p><p>Usar quando é mais fácil contar B do que A.</p></div>
+<div class="box exa"><div class="t">Exemplos Importantes</div>
+<div class="fm nw">
+Subconjuntos de {1,...,n}  ↔  Sequências binárias de comprimento n
+  A ⊆ X  ↦  a₁a₂...aₙ onde aᵢ=1 se i∈A, 0 caso contrário
+→ |P(X)| = 2ⁿ
+
+Soluções de x₁+...+xₙ=k (xᵢ∈N)  ↔  Sequências com k uns e n-1 zeros
+→ nº de soluções = C(n+k-1, k)
+    </div>
+</div>
+
+</section>
+<section id="adicao-mult" data-nav="Adição e Multiplicação" data-grp="II · Princípios de Enumeração Combinatória" data-track>
+<h2>Os Princípios Base</h2>
+
+<div class="kicker">12 · Adição e Multiplicação</div>
+
+<div class="cols">
+<div class="box teo">
+<h4>Princípio da Adição</h4>
+<p>Conjuntos A₁,...,Aₙ <strong>dois a dois disjuntos</strong>:</p>
+<div class="fm nw">|A₁ ∪ ... ∪ Aₙ| = |A₁| + ... + |Aₙ|</div>
+</div>
+<div class="box teo">
+<h4>Princípio da Multiplicação</h4>
+<div class="fm nw">|A₁ × A₂ × ... × Aₙ| = |A₁|·|A₂|·...·|Aₙ|</div>
+<p>Para procedimentos com escolhas independentes: r₁·r₂·...·rₙ maneiras.</p>
+</div>
+</div>
+
+</section>
+<section id="ie" data-nav="Inclusão-Exclusão" data-grp="II · Princípios de Enumeração Combinatória" data-track>
+<h2>Para Conjuntos Não Disjuntos</h2>
+
+<div class="kicker">13 · Inclusão-Exclusão</div>
+
+<div class="fm nw center"><span class="t">Fórmula Geral</span>
+|A₁∪...∪Aₙ| = Σ|Aᵢ| − Σ|Aᵢ∩Aⱼ| + Σ|Aᵢ∩Aⱼ∩Aₖ| − ... + (−1)ⁿ⁺¹|A₁∩...∩Aₙ|
+
+Para 2 conjuntos: |A₁∪A₂| = |A₁| + |A₂| − |A₁∩A₂|
+Para 3 conjuntos: |A₁∪A₂∪A₃| = |A₁|+|A₂|+|A₃| − |A₁∩A₂|−|A₁∩A₃|−|A₂∩A₃| + |A₁∩A₂∩A₃|
+  </div>
+<div class="box exa"><div class="t">Exemplo — Números entre 1 e 1000 divisíveis por 3 ou 5</div>
+<div class="fm nw">|A₃| = ⌊1000/3⌋ = 333
+|A₅| = ⌊1000/5⌋ = 200
+|A₃∩A₅| = |A₁₅| = ⌊1000/15⌋ = 66
+|A₃∪A₅| = 333 + 200 − 66 = 467</div>
+</div>
+<div class="box ex row"><span class="ic">💡</span><span><strong>Nenhuma das propriedades:</strong> |X \ (A₁∪...∪Aₙ)| = |X| − |A₁∪...∪Aₙ| (complemento)</span></div>
+
+</section>
+<section id="arranjos" data-nav="Arranjos" data-grp="III · Agrupamentos e Identidades Combinatórias" data-track>
+<h2>A Ordem Importa</h2>
+<p class="lead">Arranjos · Combinações · Permutações · Pascal · Binomial</p><span id="cap3"></span>
+<div class="kicker">14 · Arranjos</div>
+
+<div class="cols">
+<div class="box ex">
+<h4>Arranjos COM Repetição</h4>
+<p>Escolher k elementos de n <strong>com repetição e com ordem</strong>:</p>
+<div class="fm nw">Ar(n,k) = nᵏ</div>
+<p>Ex: Sequências binárias de comprimento n = Ar(2,n) = 2ⁿ</p>
+</div>
+<div class="box ex">
+<h4>Arranjos SEM Repetição</h4>
+<p>Escolher k elementos de n <strong>sem repetição, com ordem</strong> (função injetiva):</p>
+<div class="fm nw">As(n,k) = n·(n−1)·...·(n−k+1) = n!/(n−k)!</div>
+<p>Caso especial n=k: As(n,n) = n! (permutações)</p>
+</div>
+</div>
+<div class="box exa"><div class="t">Exemplos</div><ul>
+<li>Números de 4 algarismos com dígitos 1..9: Ar(9,4) = 9⁴ = 6561</li>
+<li>Números de 4 algarismos <strong>distintos</strong>: As(9,4) = 9·8·7·6 = 3024</li>
+<li>Sentar k pessoas de n num banco corrido: As(n,k)</li>
+<li>Sentar k pessoas de n numa mesa redonda: As(n,k)/k</li>
+</ul></div>
+
+</section>
+<section id="combinacoes" data-nav="Combinações" data-grp="III · Agrupamentos e Identidades Combinatórias" data-track>
+<h2>A Ordem Não Importa</h2>
+
+<div class="kicker">15 · Combinações</div>
+
+<div class="cols">
+<div class="box ex">
+<h4>Combinações SEM Repetição</h4>
+<p>Subconjuntos de k elementos de n (sem repetição, sem ordem):</p>
+<div class="fm nw">C(n,k) = (n k) = As(n,k)/k! = n!/((n−k)!·k!)</div>
+</div>
+<div class="box ex">
+<h4>Combinações COM Repetição</h4>
+<p>Multiconjuntos de k elementos de n (com repetição, sem ordem):</p>
+<div class="fm nw">Cr(n,k) = ((n k)) = C(n+k−1, k) = C(n+k−1, n−1)</div>
+<p>= Soluções de x₁+...+xₙ=k com xᵢ∈N</p>
+</div>
+</div>
+<div class="fm nw center"><span class="t">Tabela Resumo</span>
+              │ COM repetição        │ SEM repetição
+  ────────────┼──────────────────────┼────────────────────────
+  COM ordem   │ Ar(n,k) = nᵏ        │ As(n,k) = n!/(n−k)!
+  (arranjos)  │                      │
+  ────────────┼──────────────────────┼────────────────────────
+  SEM ordem   │ Cr(n,k) = C(n+k−1,k)│ C(n,k) = n!/(k!(n−k)!)
+  (combinações)│                     │
+  </div>
+<h4>Propriedades dos Coeficientes Binomiais</h4>
+<div class="box met">
+<div class="fm nw">
+C(n,0) = C(n,n) = 1
+C(n,k) = C(n, n−k)                          ← simetria
+C(n,k) = C(n−1,k−1) + C(n−1,k)             ← triângulo de Pascal
+Σₖ C(n,k) = 2ⁿ                              ← soma linha Pascal
+(a+b)ⁿ = Σₖ C(n,k)·aᵏ·bⁿ⁻ᵏ               ← fórmula binomial de Newton
+    </div>
+</div>
+<div class="box exa"><div class="t">Exemplos Tipo</div><ul>
+<li>Comprar 3 bilhetes de 6 tipos diferentes: C(6,3) = 20</li>
+<li>Grupo de 16♀ e 15♂, grupos de 5 com ≥3♂: C(15,3)·C(16,2) + C(15,4)·C(16,1) + C(15,5) = 79443</li>
+<li>20 bolas indistinguíveis em 5 caixas, ≥2 cada: colocar 2 em cada → distribuir 10 em 5 → Cr(5,10) = C(14,4) = 1001</li>
+</ul></div>
+
+</section>
+<section id="permrep" data-nav="Permutações com Repetição" data-grp="III · Agrupamentos e Identidades Combinatórias" data-track>
+<h2>Arranjar Objetos Iguais</h2>
+
+<div class="kicker">16 · Permutações com Repetição e Coeficiente Multinomial</div>
+
+<div class="box teo"><div class="t">Teorema — Permutações com Repetição</div>
+<p>Número de permutações do multiconjunto {x₁ⁿ¹,...,xₖⁿᵏ} de tamanho n = n₁+...+nₖ:</p>
+<div class="fm nw">n! / (n₁! · n₂! · ... · nₖ!)</div>
+</div>
+<div class="box def"><div class="t">Coeficiente Multinomial</div>
+<div class="fm nw">C(n; n₁,n₂,...,nₖ) = n! / (n₁!·n₂!·...·nₖ!)
+= número de sequências de k subconjuntos disjuntos com tamanhos n₁,...,nₖ</div>
+<p><strong>Fórmula Multinomial:</strong> (a₁+...+aₖ)ⁿ = Σ C(n;n₁,...,nₖ) · a₁ⁿ¹·...·aₖⁿᵏ</p>
+</div>
+<div class="box exa"><div class="t">Exemplo — Números de telefone</div>
+<div class="fm nw">Telefone com 2 dois, 4 três, 2 seis, 1 nove (8 dígitos livres):
+= 8! / (1!·4!·2!·1!) = 40320 / 48 = 840</div>
+</div>
+
+</section>
+<section id="identidades" data-nav="Identidades Combinatórias" data-grp="III · Agrupamentos e Identidades Combinatórias" data-track>
+<h2>Relações entre Coeficientes</h2>
+
+<div class="kicker">17 · Identidades Combinatórias</div>
+
+<div class="box ex">
+<div class="fm nw">
+Vandermonde: Σₖ C(n,k)·C(m,l−k) = C(n+m, l)
+Em particular: Σₖ C(n,k)² = C(2n,n)
+
+Diagonal de Pascal: Σₖ₌ₙᵐ C(k,n) = C(m+1, n+1)
+
+Recursão multinomial:
+  C(n; n₁,...,nₖ) = Σᵢ C(n−1; n₁,...,nᵢ−1,...,nₖ)
+    </div>
+</div>
+<div class="box bad"><div class="t">🎯 Foco de Exame</div><ul class="ckl">
+<li>Distinguir os 4 tipos de agrupamento (Ar, As, Cr, C) pela lógica do problema</li>
+<li>Aplicar inclusão-exclusão com mais de 2 conjuntos</li>
+<li>Calcular coeficientes binomiais e usar as suas propriedades</li>
+<li>Bijeção: mostrar que dois conjuntos têm o mesmo tamanho encontrando uma bijeção explícita</li>
+</ul></div>
+
+</section>
+<section id="nocoesrec" data-nav="Noções Gerais" data-grp="IV · Recorrência e Funções Geradoras" data-track>
+<h2>Equações de Recorrência — O Que São</h2>
+<p class="lead">Equações de Recorrência · Homogéneas · Não Homogéneas · Não Lineares · Séries Formais</p><span id="cap4"></span>
+<div class="kicker">18 · Noções Gerais</div>
+
+<div class="box def"><div class="t">Definição</div><p>Uma equação de recorrência de ordem k é uma equação da forma xₙ = f(n, xₙ₋₁, ..., xₙ₋ₖ). Uma solução é uma sucessão (aₙ)ₙ∈ℕ que satisfaz a equação para todo o n ≥ k.</p></div>
+<div class="box ex">
+<h4>Exemplos Clássicos</h4>
+<ul>
+<li><strong>Torre de Hanói:</strong> a₁=1, aₙ=2aₙ₋₁+1 → solução: aₙ = 2ⁿ−1 → a₆₄ ≈ 1,8×10¹⁹</li>
+<li><strong>Fibonacci:</strong> F₀=1, F₁=1, Fₙ=Fₙ₋₁+Fₙ₋₂ → Fₙ = (φⁿ⁺¹−ψⁿ⁺¹)/√5 (fórmula de Binet)</li>
+<li><strong>Factorial:</strong> a₀=1, aₙ₊₁=(n+1)aₙ → aₙ=n!</li>
+</ul>
+</div>
+<div class="box teo"><div class="t">Teorema Fundamental</div>
+<p>Soluções de xₙ = c₁xₙ₋₁+...+cₖxₙ₋ₖ+dₙ = <strong>solução particular</strong> + <strong>todas as soluções da equação homogénea associada</strong>.</p>
+</div>
+
+</section>
+<section id="homogeneas" data-nav="Eq. Lineares Homogéneas" data-grp="IV · Recorrência e Funções Geradoras" data-track>
+<h2>Caso com k Raízes Distintas</h2>
+
+<div class="kicker">19 · Equações Lineares Homogéneas</div>
+
+<div class="box met"><div class="t">⚡ Algoritmo — Raízes Distintas</div>
+<ol>
+<li>Escrever a <strong>equação caraterística:</strong> 0 = qᵏ − c₁qᵏ⁻¹ − ... − cₖ</li>
+<li>Encontrar as <strong>k raízes distintas</strong> q₁,...,qₖ</li>
+<li>Solução geral: (C₁q₁ⁿ + C₂q₂ⁿ + ... + Cₖqₖⁿ)ₙ∈ℕ</li>
+<li>Determinar C₁,...,Cₖ pelas <strong>condições iniciais</strong> (sistema de k equações)</li>
+</ol>
+</div>
+<div class="box exa"><div class="t">Exemplo — xₙ = xₙ₋₁ + 2xₙ₋₂, x₀=5, x₁=4</div>
+<div class="fm nw">Eq. caraterística: q²−q−2 = (q−2)(q+1) = 0 → q₁=2, q₂=−1
+
+Solução geral: aₙ = α·2ⁿ + β·(−1)ⁿ
+
+Condições iniciais:
+  n=0: α + β = 5
+  n=1: 2α − β = 4
+  Somar: 3α = 9 → α=3, β=2
+
+Solução: aₙ = 3·2ⁿ + 2·(−1)ⁿ  ✓</div>
+</div>
+
+</section>
+<section id="raizes-mult" data-nav="Raízes Múltiplas" data-grp="IV · Recorrência e Funções Geradoras" data-track>
+<h2>Quando a Equação Caraterística Tem Raízes Repetidas</h2>
+
+<div class="kicker">20 · Raízes Múltiplas</div>
+
+<div class="box teo"><div class="t">Teorema Geral</div>
+<p>Se q é raiz de multiplicidade m da equação caraterística, contribui com as m soluções:</p>
+<div class="fm nw">qⁿ,  n·qⁿ,  n²·qⁿ,  ...,  nᵐ⁻¹·qⁿ</div>
+</div>
+<div class="box exa"><div class="t">Exemplo — xₙ = 5xₙ₋₁ − 8xₙ₋₂ + 4xₙ₋₃, x₀=0, x₁=4, x₂=18</div>
+<div class="fm nw">Eq. caraterística: q³−5q²+8q−4 = (q−1)(q−2)² = 0
+  q=1 com mult. 1, q=2 com mult. 2
+
+Solução geral: aₙ = α·1ⁿ + β·2ⁿ + γ·n·2ⁿ = α + β·2ⁿ + γ·n·2ⁿ
+
+Condições: α+β=0, α+2β+2γ=4, α+4β+8γ=18
+  → α=2, β=−2, γ=3
+
+Solução: aₙ = 2 − 2·2ⁿ + 3·n·2ⁿ  ✓</div>
+</div>
+
+</section>
+<section id="complexas" data-nav="Raízes Complexas" data-grp="IV · Recorrência e Funções Geradoras" data-track>
+<h2>Par de Raízes Conjugadas</h2>
+
+<div class="kicker">21 · Raízes Complexas</div>
+
+<p>Se a equação caraterística tem raízes complexas z = a+ib e z̄ = a−ib, com r=√(a²+b²) e tan(φ)=b/a:</p>
+<div class="fm nw center">
+<span class="t">Contribuição das raízes complexas</span>
+    rⁿ·cos(nφ)   e   rⁿ·sin(nφ)
+  </div>
+<div class="box exa"><div class="t">Exemplo — aₙ₊₂ = aₙ₊₁ − aₙ, a₀=0, a₁=1</div>
+<div class="fm nw">q²−q+1=0 → z = ½ + i(√3/2),  z̄ = ½ − i(√3/2)
+r = 1,  φ = π/3
+
+Solução geral: α·cos(nπ/3) + β·sin(nπ/3)
+a₀=0 → α=0
+a₁=1 → β·sin(π/3) = β·(√3/2) = 1 → β = 2/√3
+
+Solução: aₙ = (2/√3)·sin(nπ/3)</div>
+</div>
+
+</section>
+<section id="nao-homogeneas" data-nav="Não Homogéneas" data-grp="IV · Recorrência e Funções Geradoras" data-track>
+<h2>Encontrar uma Solução Particular</h2>
+
+<div class="kicker">22 · Equações Não Homogéneas</div>
+
+<div class="box met">
+<h4>Casos A e B para Solução Particular</h4>
+<div class="cols">
+<div>
+<h4>Caso A: dₙ = c·pⁿ</h4>
+<div class="fm nw">Se p NÃO é raiz: bₙ = A·pⁿ
+Se p é raiz mult. m: bₙ = A·nᵐ·pⁿ
+Determinar A substituindo na equação</div>
+</div>
+<div>
+<h4>Caso B: dₙ = polinómio grau j</h4>
+<div class="fm nw">Se 1 NÃO é raiz: bₙ = A₀+A₁n+...+Aⱼnʲ
+Se 1 é raiz mult. m: bₙ = (A₀+...+Aⱼnʲ)·nᵐ
+Determinar Aᵢ substituindo</div>
+</div>
+</div>
+</div>
+<div class="box exa"><div class="t">Exemplo — xₙ = 3xₙ₋₁ − 2xₙ₋₂ + 2ⁿ, x₀=0, x₁=−2</div>
+<div class="fm nw">Eq. homogénea: q²−3q+2=(q−2)(q−1)=0 → q=1,2
+Solução homogénea: α + β·2ⁿ
+
+Solução particular: como dₙ=2ⁿ e p=2 é raiz simples → bₙ = A·n·2ⁿ
+  Substituir: A=1 → bₙ = n·2ⁿ⁺¹
+
+Solução geral: α + β·2ⁿ + n·2ⁿ⁺¹
+Cond. iniciais: x₀=0→ α+β=0, x₁=−2→ α+2β+4=−2
+  → β=−6, α=6
+
+Solução: aₙ = 6 − 6·2ⁿ + n·2ⁿ⁺¹</div>
+</div>
+
+</section>
+<section id="nao-lineares" data-nav="Não Lineares" data-grp="IV · Recorrência e Funções Geradoras" data-track>
+<h2>Linearizar por Substituição</h2>
+
+<div class="kicker">23 · Equações Não Lineares</div>
+
+<div class="box ex">
+<h4>Técnicas de Linearização</h4>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Substituição</th><th>Resultado</th></tr>
+<tr><td>xₙ² = f(xₙ₋₁)</td><td>yₙ = xₙ²</td><td>Eq. linear em yₙ</td></tr>
+<tr><td>xₙ = xₙ₋₁·xₙ₋₂</td><td>yₙ = log(xₙ)</td><td>yₙ = yₙ₋₁+yₙ₋₂ (Fibonacci!)</td></tr>
+<tr><td>xₙ = n·xₙ₋₁</td><td>xₙ = n!·yₙ</td><td>yₙ = yₙ₋₁ → solução c·n!</td></tr>
+</table></div>
+</div>
+<div class="box exa"><div class="t">Exemplo — xₙ² = 2xₙ₋₁² + 1, x₀=2</div>
+<div class="fm nw">Seja yₙ = xₙ² → yₙ = 2yₙ₋₁ + 1, y₀=4
+Solução particular: yₙ=A → A=2A+1 → A=−1
+Solução homogénea: c·2ⁿ
+Solução geral: c·2ⁿ − 1; cond.: y₀=4=c−1 → c=5
+Solução: yₙ = 5·2ⁿ − 1 → xₙ = √(5·2ⁿ − 1)</div>
+</div>
+
+</section>
+<section id="series" data-nav="Funções Geradoras" data-grp="IV · Recorrência e Funções Geradoras" data-track>
+<h2>Codificar Sucessões em Polinómios Infinitos</h2>
+
+<div class="kicker">24 · Funções Geradoras (Séries Formais)</div>
+
+<div class="box def"><div class="t">Série Formal de Potências</div><div class="fm nw">A = a₀ + a₁x + a₂x² + ... = Σ aₙxⁿ</div></div>
+<div class="box ex">
+<h4>Operações com Séries</h4>
+<div class="fm nw">
+Soma:   (Σaₙxⁿ) + (Σbₙxⁿ) = Σ(aₙ+bₙ)xⁿ
+Produto:(Σaₙxⁿ)·(Σbₙxⁿ) = Σcₙxⁿ  onde cₙ = Σₖ aₖ·bₙ₋ₖ
+    </div>
+</div>
+<div class="box def">
+<h4>Séries Importantes</h4>
+<div class="fm nw">
+Série uniforme:   Σxⁿ = 1/(1−x)          (inversa de 1−x)
+Mais geral:       ΣαⁿXⁿ = 1/(1−αx)
+Binomial:         (1+x)ⁿ = ΣC(n,k)xᵏ
+Exponencial:      exp = Σxⁿ/n!
+Fibonacci:        fib = 1/(1−x−x²)         (!)
+    </div>
+</div>
+<div class="box teo"><div class="t">Usar funções geradoras para resolver recorrências</div>
+<p>1. Escrever a série F = Σaₙxⁿ. 2. Usar a equação de recorrência para obter F em termos de si própria. 3. Resolver para F. 4. Expandir em série de potências para obter aₙ.</p>
+</div>
+
+</section>
+<section id="grafosdefs" data-nav="Definições Básicas" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Grafos Orientados e Não Orientados</h2>
+<p class="lead">Conceitos Básicos · Caminhos · Conexidade · Dijkstra · Árvores · Kruskal · Prim</p><span id="cap5"></span>
+<div class="kicker">25 · Definições Básicas</div>
+
+<div class="cols">
+<div class="box def"><div class="t">Grafo Não Orientado G=(V,E,ψ)</div><ul><li>V = conjunto de <strong>vértices</strong></li><li>E = conjunto de <strong>arestas</strong></li><li>ψ: E → {A⊆V | 1≤|A|≤2} (função de incidência)</li><li>Se ψ(a)={u,v}: u e v são extremos de a</li></ul></div>
+<div class="box def"><div class="t">Digrafo (Grafo Orientado)</div><ul><li>ψ: E → V×V (arcos com direção)</li><li>Se ψ(a)=(u,v): u é <strong>cauda</strong>, v é <strong>cabeça</strong></li></ul></div>
+</div>
+<div class="box ex">
+<h4>Terminologia Essencial</h4>
+<div class="tw"><table>
+<tr><th>Termo</th><th>Definição</th></tr>
+<tr><td><strong>Lacete</strong></td><td>Aresta com extremos iguais (u=v)</td></tr>
+<tr><td><strong>Arestas paralelas</strong></td><td>Duas arestas com os mesmos extremos</td></tr>
+<tr><td><strong>Grafo simples</strong></td><td>Sem lacetes nem arestas paralelas</td></tr>
+<tr><td><strong>Adjacentes (vértices)</strong></td><td>Existe aresta entre eles</td></tr>
+<tr><td><strong>Adjacentes (arestas)</strong></td><td>Partilham um vértice</td></tr>
+<tr><td><strong>Ordem ν(G)</strong></td><td>|V| = número de vértices</td></tr>
+<tr><td><strong>Dimensão ε(G)</strong></td><td>|E| = número de arestas</td></tr>
+<tr><td><strong>Complementar G∁</strong></td><td>Mesmo V, arestas exactamente onde G não tem</td></tr>
+</table></div>
+</div>
+<h4>Matrizes de Representação</h4>
+<div class="cols">
+<div class="box ex"><h4>Matriz de Incidência (ν × ε)</h4><p>Entrada (v,a): 0 se v∉ψ(a); 1 se v extremo simples; 2 se lacete. Soma de linha = grau. Soma de coluna = 2.</p></div>
+<div class="box ex"><h4>Matriz de Adjacência (ν × ν)</h4><p>Entrada (u,v) = número de arestas entre u e v. Simétrica para grafos não-orientados. Soma de linha/coluna = grau.</p></div>
+</div>
+
+</section>
+<section id="graus" data-nav="Vizinhança e Grau" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Grau dos Vértices</h2>
+
+<div class="kicker">26 · Vizinhança e Grau</div>
+
+<div class="box def"><div class="t">Grau d(v)</div><p>Número de arestas incidentes em v (lacetes contam 2 vezes). Para digrafos: d⁻(v) = semigrau de entrada, d⁺(v) = semigrau de saída, d(v) = d⁻+d⁺.</p></div>
+<div class="box teo"><div class="t">Lema do Aperto de Mão</div>
+<div class="fm nw">Σ d(v) = 2|E|     (grafo não orientado)
+Σ d⁺(v) = Σ d⁻(v) = |E|    (digrafo)
+
+Corolário: O número de vértices de grau ímpar é SEMPRE PAR.</div>
+</div>
+<div class="box def"><div class="t">Notações</div><ul><li>N(v) = vizinhança de v (vértices adjacentes)</li><li>∆(G) = grau máximo</li><li>δ(G) = grau mínimo</li></ul></div>
+
+</section>
+<section id="caminhos" data-nav="Caminhos e Ciclos" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Percursos em Grafos</h2>
+
+<div class="kicker">27 · Passeios, Caminhos e Ciclos</div>
+
+<div class="box ex">
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Definição</th></tr>
+<tr><td><strong>Passeio</strong></td><td>Sequência v₀,e₁,v₁,...,eₖ,vₖ (arestas e vértices podem repetir)</td></tr>
+<tr><td><strong>Trajeto</strong></td><td>Passeio sem arestas repetidas</td></tr>
+<tr><td><strong>Caminho</strong></td><td>Trajeto sem vértices repetidos (mais restritivo)</td></tr>
+<tr><td><strong>Circuito</strong></td><td>Trajeto fechado (v₀=vₖ)</td></tr>
+<tr><td><strong>Ciclo</strong></td><td>Circuito sem vértices intermédios repetidos (num grafo simples: ≥3 vértices)</td></tr>
+</table></div>
+</div>
+<div class="box def"><div class="t">Distância e Diâmetro</div>
+<div class="fm nw">dist(x,y) = comprimento do caminho mais curto entre x e y
+            = ∞ se não existe caminho
+diam(G) = max dist(x,y) para todos x,y∈V</div>
+</div>
+
+</section>
+<section id="conexidade" data-nav="Conexidade e Euler" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Grafos Conexos e Percursos de Euler</h2>
+
+<div class="kicker">28 · Conexidade e Teorema de Euler</div>
+
+<div class="box def"><div class="t">Conexidade</div><ul><li>Vértices u,v são <strong>conexos</strong> se existe caminho entre eles</li><li>Grafo G é <strong>conexo</strong> se todos os pares de vértices são conexos</li><li>cc(G) = número de componentes conexas</li><li>Aresta <strong>ponte</strong>: a sua remoção aumenta cc(G) (não pertence a nenhum ciclo)</li></ul></div>
+<div class="cols">
+<div class="box teo"><div class="t">Teorema de Euler — Circuito</div><p>Grafo G finito e conexo tem <strong>circuito de Euler</strong> (passa por todas as arestas) ↔ todos os vértices têm <strong>grau par</strong>.</p></div>
+<div class="box teo"><div class="t">Teorema de Euler — Trajeto</div><p>Grafo G finito e conexo tem <strong>trajeto de Euler</strong> ↔ o número de vértices de grau ímpar é <strong>0 ou 2</strong>.</p></div>
+</div>
+<div class="box met row"><span class="ic">⚠️</span><span><strong>Pontes de Königsberg:</strong> Os vértices têm graus 3, 5, 3, 3 — todos ímpares (4 vértices de grau ímpar) → Não existe trajeto de Euler → Não é possível cruzar todas as pontes uma só vez!</span></div>
+<div class="box teo"><div class="t">Grafos Bipartidos</div><p>G é bipartido (V=X∪Y, arestas só entre X e Y) ↔ G não tem ciclos de comprimento ímpar.</p></div>
+
+</section>
+<section id="grafostipos" data-nav="Grafos Particulares" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Famílias de Grafos</h2>
+
+<div class="kicker">29 · Grafos Particulares e Isomorfismos</div>
+
+<div class="cols">
+<div class="box ex"><h4>Grafo Completo Kₙ</h4><p>Todos os pares de vértices adjacentes. ε(Kₙ) = C(n,2). É (n−1)-regular.</p></div>
+<div class="box ex"><h4>Grafo Nulo Kₙ∁</h4><p>Sem arestas (0-regular). Complementar do Kₙ.</p></div>
+<div class="box ex"><h4>Grafo k-Regular</h4><p>Todos os vértices têm grau k. Cúbico = 3-regular.</p></div>
+</div>
+<div class="box def"><div class="t">Isomorfismo de Grafos</div>
+<p>G≃H quando existe bijeção f: Vɢ→Vʜ preservando adjacências: uv∈Eɢ ↔ f(u)f(v)∈Eʜ.</p>
+<p>Grafos isomorfos têm a mesma ordem, dimensão, graus dos vértices, ∆, δ.</p>
+</div>
+
+</section>
+<section id="dijkstra" data-nav="Algoritmo de Dijkstra" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Caminho de Custo Mínimo</h2>
+
+<div class="kicker">30 · Algoritmo de Dijkstra</div>
+
+<div class="box met"><div class="t">⚡ Algoritmo de Dijkstra</div>
+<p><strong>Input:</strong> grafo com custos W(u,v)≥0, vértice inicial <em>start</em>.</p>
+<ol>
+<li>Inicializar: marca(v)=∞ para todo v; marca(start)=0; temp=V\{start}; menor=start</li>
+<li>Para cada v em temp: se marca(v) &gt; marca(menor)+W(menor,v) → atualizar marca(v) e ant(v)=menor</li>
+<li>Remover de temp o vértice vaux com menor marca; menor=vaux</li>
+<li>Repetir até menor=vértice final</li>
+</ol>
+<p><strong>Resultado:</strong> marca(v) = custo do caminho mínimo de start a v. Reconstruir caminho via ant(v).</p>
+</div>
+<div class="box exa"><div class="t">Exemplo — Grafo 1→2(W=1), 1→3(W=3), 2→3(W=1), 3→4(W=1), 2→4(W=3)</div>
+<div class="fm nw">
+Passo 0: marca={1:0, 2:∞, 3:∞, 4:∞}, temp={2,3,4}, menor=1
+Passo 1 (menor=1): marca(2)=0+1=1, marca(3)=0+3=3 → menor=2
+Passo 2 (menor=2): marca(3)=min(3,1+1)=2, marca(4)=min(∞,1+3)=4 → menor=3
+Passo 3 (menor=3): marca(4)=min(4,2+1)=3 → menor=4
+
+Caminho mínimo 1→4: custo=3, percurso 1→2→3→4</div>
+</div>
+
+</section>
+<section id="arvores" data-nav="Árvores e Florestas" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Grafos Sem Ciclos</h2>
+
+<div class="kicker">31 · Árvores e Florestas</div>
+
+<div class="cols">
+<div class="box def"><div class="t">Floresta</div><p>Grafo simples sem ciclos.</p></div>
+<div class="box def"><div class="t">Árvore</div><p>Floresta conexa (floresta com uma só componente).</p></div>
+</div>
+<div class="box def">
+<h4>Caracterizações Equivalentes de Árvore (Teorema)</h4>
+<p>As seguintes afirmações são equivalentes para G simples com ≥1 vértice:</p>
+<ul>
+<li>(i) G é uma árvore</li>
+<li>(ii) Entre cada par de vértices existe um único caminho</li>
+<li>(iii) G é conexo e cada aresta é uma ponte (minimamente conexo)</li>
+<li>(iv) G não tem ciclos e acrescentar uma aresta cria um ciclo (maximalmente acíclico)</li>
+</ul>
+</div>
+<div class="box ex">
+<h4>Propriedades Numéricas</h4>
+<div class="fm nw">
+Árvore com n vértices tem exatamente n−1 arestas.
+Floresta: ε(G) = ν(G) − cc(G)
+Cada árvore com ≥2 vértices tem pelo menos 2 folhas (vértices de grau 1).
+τ(G) = número de árvores abrangentes.
+    </div>
+</div>
+<div class="box teo"><div class="t">Fórmula de Cayley</div>
+<div class="fm nw">τ(Kₙ) = nⁿ⁻² = número de árvores etiquetadas com n vértices</div>
+</div>
+<div class="box ex">
+<h4>Código de Prüfer — Bijeção com Sequências</h4>
+<div class="cols">
+<div>
+<p><strong>Codificação (pruefer):</strong></p>
+<ol><li>Encontrar menor folha v</li><li>Registar o único vizinho de v</li><li>Remover v</li><li>Repetir n−2 vezes</li></ol>
+</div>
+<div>
+<p><strong>Decodificação (unpruefer):</strong></p>
+<ol><li>Dado P=(a₁,...,aₙ₋₂) e L=vértices ordenados</li><li>Menor em L não em P → ligar ao a₁; remover ambos</li><li>Repetir até restar 2</li></ol>
+</div>
+</div>
+<div class="fm nw">
+Propriedade: v aparece d(v)−1 vezes no código.
+Folha ↔ não aparece no código.
+|{sequências de comprimento n−2}| = nⁿ⁻² = |{árvores com V}|</div>
+</div>
+<div class="fm nw">
+Fórmula recursiva: τ(G) = τ(G−a) + τ(G//a)
+(G−a = remover aresta a;  G//a = contrair aresta a, fundir extremos)
+  </div>
+
+</section>
+<section id="kruskal" data-nav="Kruskal e Prim" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>Algoritmos de Kruskal e Prim</h2>
+
+<div class="kicker">32 · Árvores Abrangentes de Custo Mínimo</div>
+
+<div class="cols">
+<div class="box teo">
+<h4>Algoritmo de Kruskal</h4>
+<ol>
+<li>Ordenar arestas por custo crescente</li>
+<li>E'=∅</li>
+<li>Para cada aresta (por ordem): adicionar a E' SE não cria ciclo</li>
+<li>Parar quando T=(V,E') é conexo</li>
+</ol>
+<p><em>Estratégia:</em> escolher arestas mais baratas sem criar ciclos.</p>
+</div>
+<div class="box exa">
+<h4>Algoritmo de Prim</h4>
+<ol>
+<li>Escolher vértice inicial u</li>
+<li>V'={u}, E'=∅</li>
+<li>Enquanto V'≠V: adicionar a aresta mais barata entre V' e V\V'</li>
+</ol>
+<p><em>Estratégia:</em> crescer uma árvore a partir de um vértice.</p>
+</div>
+</div>
+<div class="box exa"><div class="t">Exemplo Kruskal</div>
+<div class="fm nw">Ordenar arestas: eg(5), fg(5), de(6), ef(7), ad(7), ce(8), df(8), ab(9), be(9), bc(11), bd(15)
+  (riscar arestas que criam ciclos)
+Selecionar: eg, fg (espera...) ad, ce, df, ab, be, eg → T com custo 39</div>
+</div>
+<div class="box bad"><div class="t">🎯 Foco de Exame — Grafos</div><ul class="ckl">
+<li>Determinar graus, ∆, δ; verificar o Lema do Aperto de Mão</li>
+<li>Verificar se existe circuito/trajeto de Euler (graus pares/ímpares)</li>
+<li>Executar Dijkstra passo a passo com tabela</li>
+<li>Identificar árvore: ε=ν−1 E conexo</li>
+<li>Executar Kruskal: ordenar arestas e selecionar sem ciclos</li>
+<li>Calcular τ(G) com a fórmula τ(G)=τ(G−a)+τ(G//a)</li>
+<li>Codificar/decodificar um código de Prüfer</li>
+</ul></div>
+
+</section>
+<section id="resumo-final" data-nav="V · Elementos de Teoria dos Grafos" data-grp="V · Elementos de Teoria dos Grafos" data-track>
+<h2>V · Elementos de Teoria dos Grafos</h2>
+
+<hr/>
+<div class="box bad row"><span class="ic">🔥</span><div><strong>Última Dica:</strong> Os exames de MD têm sempre problemas de lógica (resolução/unificação), contagem (identificar tipo de agrupamento), recorrências (equação caraterística) e grafos (Dijkstra, árvores, Euler). Pratica um de cada e estarás bem preparado.</div></div>
+<div class="box teo row"><span class="ic">✅</span><div><strong>Check-list Final:</strong><br/>
+  ☐ Sei construir tabela de verdade e verificar tautologias<br/>
+  ☐ Sei converter para CNF (4 passos)<br/>
+  ☐ Sei aplicar resolução proposicional até ⊥<br/>
+  ☐ Sei identificar variáveis livres e ligadas<br/>
+  ☐ Sei skolemizar (eliminar ∃ com constantes/funções)<br/>
+  ☐ Sei calcular mgu (algoritmo passo a passo)<br/>
+  ☐ Sei aplicar resolução de 1ª ordem (renomear variáveis!)<br/>
+  ☐ Sei distinguir Ar, As, C, Cr e escolher o correto<br/>
+  ☐ Sei aplicar inclusão-exclusão com 2 e 3 conjuntos<br/>
+  ☐ Sei resolver equação caraterística e construir solução geral<br/>
+  ☐ Sei tratar raízes múltiplas (n·qⁿ, n²·qⁿ,...)<br/>
+  ☐ Sei encontrar solução particular (casos A e B)<br/>
+  ☐ Sei executar Dijkstra com tabela<br/>
+  ☐ Sei verificar critério de Euler<br/>
+  ☐ Sei executar Kruskal (ordenar e selecionar)<br/>
+  ☐ Sei calcular τ(G) com a fórmula recursiva
+  </div></div>
+
+</section>
+<section id="t-md-t1" data-nav="Teste T1" data-grp="VI · Testes Resolvidos 2023/24" data-track>
+<h2>Teste T1 — Lógica e Contagem</h2>
+<p class="lead">Teste T1, Teste T2, Exame Final e os dois mini-testes do Moodle — com resolução passo a passo</p><span id="testes"></span><div class="box ex row"><span class="ic">🧭</span><div><strong>Como estão organizados:</strong> T1 = lógica de 1.ª ordem + contagem; T2 = recorrências + funções geradoras + grafos; o Exame mistura os dois (e repete perguntas do T2). Tenta cada pergunta antes de abrir a resolução. Todas as contas foram confirmadas por computador (contagens por força bruta, Dijkstra e τ(H) pelo teorema matriz-árvore).</div></div>
+<div class="kicker">Teste T1 · 12/04/2024 · 2h</div>
+
+<div class="q">
+<div class="q-head">1. Formalização <span>2,0 val.</span></div>
+<p>A(x): x é artista; F(x): x é famoso; C(x,y): x conhece y. (a) "Um artista é famoso só se todos o conhecem." (b) "Banksy é um artista famoso que ninguém conhece."</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(a)</strong> "p só se q" é p → q. O "o" refere-se ao artista x; "todos o conhecem" = ∀y C(y,x).</p>
+<div class="fm">∀x ( (A(x) ∧ F(x)) → ∀y C(y,x) )</div>
+<p><strong>(b)</strong> Banksy é um indivíduo concreto ⟹ usa-se um símbolo de constante, b.</p>
+<div class="fm">A(b) ∧ F(b) ∧ ¬∃y C(y,b)        <span class="cm">(equivalente: … ∧ ∀y ¬C(y,b))</span></div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">2. Resolução <span>5,0 val.</span></div>
+<p>φ₁ ≡ ∀x (H(x) → ∃y (H(y) ∧ P(y,x))), φ₂ ≡ H(a), ψ ≡ ∃z (H(z) ∧ P(z,a)). Mostre que φ₁, φ₂ ⊨ ψ.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Prova-se que {φ₁, φ₂, ¬ψ} é inconsistente (deriva-se a cláusula vazia □).</p>
+<div class="fm">φ₁ ≡ ∀x (¬H(x) ∨ ∃y (H(y) ∧ P(y,x)))
+   Skolem: y = f(x)  (o ∃y está dentro de ∀x ⟹ função)
+   ≡ ∀x ( (¬H(x) ∨ H(f(x))) ∧ (¬H(x) ∨ P(f(x),x)) )
+¬ψ ≡ ∀z (¬H(z) ∨ ¬P(z,a))
+
+C1: ¬H(x) ∨ H(f(x))
+C2: ¬H(x) ∨ P(f(x),x)
+C3: H(a)
+C4: ¬H(z) ∨ ¬P(z,a)
+
+C5: P(f(a),a)       de C2,C3    σ = {a/x}
+C6: H(f(a))         de C1,C3    σ = {a/x}
+C7: ¬H(f(a))        de C4,C5    σ = {f(a)/z}
+C8: □               de C6,C7</div>
+<p>Logo φ₁, φ₂, ¬ψ é inconsistente ⟹ <span class="ans">φ₁, φ₂ ⊨ ψ</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">3. Interpretação <span>3,0 val.</span></div>
+<p>D = {1, 3, 5, 15}; L(x,y): "x &lt; y"; M(y,x): "y é múltiplo de x"; v(z) = 3, v(w) = 5. Avalie: (a) ∀x (M(x,z) ∨ L(x,w)); (b) ∀z ∃w (L(z,w) → M(w,z)).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(a)</strong> z e w são livres: usa-se a valoração. Fica "∀x (x é múltiplo de 3 ∨ x &lt; 5)".</p>
+<div class="tw"><table><tr><th>x</th><th>múltiplo de 3?</th><th>x &lt; 5?</th><th>disjunção</th></tr>
+<tr><td>1</td><td>não</td><td>sim</td><td>V</td></tr><tr><td>3</td><td>sim</td><td>sim</td><td>V</td></tr>
+<tr><td>5</td><td>não</td><td>não</td><td><strong>F</strong></td></tr><tr><td>15</td><td>sim</td><td>não</td><td>V</td></tr></table></div>
+<p>x = 5 é contraexemplo ⟹ <span class="ans">Não válida</span></p>
+<p><strong>(b)</strong> z e w estão ligados (a valoração não interessa). Para cada z basta escolher w = 15: 15 é múltiplo de 1, 3, 5 e 15, logo o consequente M(15,z) é sempre verdadeiro e a implicação também. (Ou w = z, que torna L(z,w) falso.)</p>
+<p><span class="ans">Válida</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">4. Inclusão-exclusão <span>3,0 val.</span></div>
+<p>70 pessoas frequentam Areão, Barra, Costa Nova ou Vagueira. V = 20, C = 35, B = 47, B∩V = 12, B∩C = 23, C∩V = 11, B∩C∩V = 5. Quantas frequentam o Areão e nenhuma das outras três?</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">|B ∪ C ∪ V| = |B| + |C| + |V| − |B∩C| − |B∩V| − |C∩V| + |B∩C∩V|
+            = 47 + 35 + 20 − 23 − 12 − 11 + 5 = 61</div>
+<p>Todos os 70 frequentam pelo menos uma praia; quem não está em B ∪ C ∪ V só pode frequentar o Areão: 70 − 61 = <span class="ans">9 pessoas</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">5. Princípio da gaiola dos pombos <span>2,0 val.</span></div>
+<p>x₁ &lt; x₂ &lt; … &lt; x₂₀ naturais, x₁ = 1, x₂₀ = 30. Mostre que há dois termos cuja diferença é 8.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Considera os 40 números</p>
+<div class="fm">x₁, x₂, …, x₂₀           ∈ {1, …, 30}
+x₁+8, x₂+8, …, x₂₀+8    ∈ {9, …, 38}</div>
+<p>Todos estão em {1, …, 38}: <strong>40 pombos em 38 gaiolas</strong> ⟹ dois são iguais. Os xᵢ são distintos entre si (sequência estritamente crescente) e os xᵢ+8 também; logo a coincidência é do tipo xᵢ = xⱼ + 8, ou seja, <span class="ans">xᵢ − xⱼ = 8</span>.</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">6. Soluções inteiras <span>2,5 val.</span></div>
+<p>Número de soluções de x₁ + x₂ + x₃ + x₄ + x₅ &lt; 20 com xᵢ ∈ {0, 1, 2, …}.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Com inteiros, "&lt; 20" é "≤ 19". Junta-se uma variável de folga x₆ = 19 − (x₁+…+x₅) ≥ 0:</p>
+<div class="fm">x₁ + x₂ + x₃ + x₄ + x₅ + x₆ = 19,   xᵢ ≥ 0
+Combinações com repetição de 6 tipos, 19 objetos:
+C(19 + 6 − 1, 19) = C(24, 5) = 42 504</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">7. Coeficiente multinomial <span>2,5 val.</span></div>
+<p>Coeficiente de x¹⁰ em p(x) = (1 + x + x²)⁵².</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Termo geral do multinómio: 52!/(a! b! c!) · 1ᵃ xᵇ (x²)ᶜ com a + b + c = 52. Precisamos de b + 2c = 10:</p>
+<div class="fm">c = 0..5,   b = 10 − 2c,   a = 42 + c
+
+coef(x¹⁰) = Σ_{c=0}^{5}  52! / [ (42+c)! (10−2c)! c! ]
+          = 74 993 207 380</div>
+<p>Num teste sem calculadora basta deixar a soma indicada com os seis termos (c = 0, …, 5) — é isso que a cotação pede.</p>
+</div></details>
+</div>
+
+</section>
+<section id="t-md-t2" data-nav="Teste T2" data-grp="VI · Testes Resolvidos 2023/24" data-track>
+<h2>Teste T2 — Recorrências, Geradoras e Grafos</h2>
+
+<div class="kicker">Teste T2 · 19/06/2024 · 2h</div>
+
+<div class="q">
+<div class="q-head">1. Recorrência não homogénea <span>3,0 val.</span></div>
+<p>aₙ = 6aₙ₋₁ − 9aₙ₋₂ + (−3)ⁿ, n ≥ 2, a₀ = 1, a₁ = 3. Fórmula fechada.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">Homogénea: x² − 6x + 9 = (x − 3)² = 0  ⟹  raiz 3 dupla
+aₙ⁽ʰ⁾ = (C₀ + C₁n)·3ⁿ
+
+Particular: (−3)ⁿ e −3 não é raiz  ⟹  aₙ⁽ᵖ⁾ = A(−3)ⁿ
+A(−3)ⁿ = 6A(−3)ⁿ⁻¹ − 9A(−3)ⁿ⁻² + (−3)ⁿ      <span class="cm">÷ (−3)ⁿ⁻²</span>
+9A = −18A − 9A + 9  ⟹  36A = 9  ⟹  A = 1/4
+
+aₙ = (C₀ + C₁n)3ⁿ + (1/4)(−3)ⁿ
+a₀ = C₀ + 1/4 = 1                ⟹ C₀ = 3/4
+a₁ = 3(C₀ + C₁) − 3/4 = 3        ⟹ C₁ = 1/2
+
+aₙ = (3/4 + n/2)·3ⁿ + (1/4)(−3)ⁿ,   n ≥ 0</div>
+<p>Verificação: a₂ = 6·3 − 9·1 + 9 = 18 e a fórmula dá (3/4 + 1)·9 + 9/4 = 18 ✓</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">2. Função geradora — 4 dados <span>5,0 val.</span></div>
+<p>Lançam-se 4 dados iguais. (a) Mostre que a função geradora do número de maneiras de obter n pontos é A(x) = x⁴(1 − x⁶)⁴/(1 − x)⁴. (b) Calcule o número de possibilidades para n = 15.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(a)</strong> Cada dado contribui com 1 a 6 pontos: x + x² + … + x⁶. Quatro dados ⟹ produto:</p>
+<div class="fm">A(x) = (x + x² + … + x⁶)⁴ = [x(1 + x + … + x⁵)]⁴ = x⁴·[(1 − x⁶)/(1 − x)]⁴
+     = x⁴(1 − x⁶)⁴ / (1 − x)⁴</div>
+<p><strong>(b)</strong> coef(x¹⁵) em A = coef(x¹¹) em (1 − x⁶)⁴·(1 − x)⁻⁴.</p>
+<div class="fm">(1 − x⁶)⁴ = 1 − 4x⁶ + 6x¹² − …
+(1 − x)⁻⁴ = Σ C(m+3, 3) xᵐ
+
+coef(x¹¹) = 1·C(11+3,3) − 4·C(5+3,3) = C(14,3) − 4·C(8,3)
+          = 364 − 4·56 = 140</div>
+<p><span class="ans">140 possibilidades</span> (o termo 6x¹² já não contribui, pois 12 &gt; 11).</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">3. Estabelecer a recorrência <span>2,0 val.</span></div>
+<p>Sₙ = n ⊕ (n+3): 0⊕3 = 3, 1⊕4 = 8, 2⊕5 = 15, 3⊕6 = 24, 4⊕7 = 35, …, n⊕(n+3) = n(n+4) + 3. Estabeleça uma recorrência para Sₙ e mostre que Sₙ é solução.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>Diferenças entre termos consecutivos: 8−3 = 5, 15−8 = 7, 24−15 = 9, 35−24 = 11 ⟹ aumentam 2 de cada vez; a diferença de ordem n é 2n + 3.</p>
+<div class="fm">Sₙ = Sₙ₋₁ + 2n + 3,  n ≥ 1,      S₀ = 3
+
+Verificação com Sₙ = n(n+4) + 3:
+Sₙ₋₁ + 2n + 3 = (n−1)(n+3) + 3 + 2n + 3
+              = n² + 2n − 3 + 2n + 6 = n² + 4n + 3 = n(n+4) + 3 = Sₙ  ✓
+S₀ = 0·4 + 3 = 3  ✓</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">4. Grafos <span>10,0 val.</span></div>
+<p>Matriz de custos (∞ = sem aresta) com V = {u, v, w, x, y, z}:</p>
+<div class="tw"><table>
+<tr><th></th><th>u</th><th>v</th><th>w</th><th>x</th><th>y</th><th>z</th></tr>
+<tr><th>u</th><td>0</td><td>5</td><td>3</td><td>6</td><td>∞</td><td>4</td></tr>
+<tr><th>v</th><td>5</td><td>0</td><td>1</td><td>1</td><td>3</td><td>∞</td></tr>
+<tr><th>w</th><td>3</td><td>1</td><td>0</td><td>4</td><td>∞</td><td>∞</td></tr>
+<tr><th>x</th><td>6</td><td>1</td><td>4</td><td>0</td><td>1</td><td>∞</td></tr>
+<tr><th>y</th><td>∞</td><td>3</td><td>∞</td><td>1</td><td>0</td><td>3</td></tr>
+<tr><th>z</th><td>4</td><td>∞</td><td>∞</td><td>∞</td><td>3</td><td>0</td></tr>
+</table></div>
+<p>(a) Desenhe G e aplique Dijkstra para o caminho de menor custo de u a y. (b) H = subgrafo induzido por {u,v,w,x,y}: verifique que tem 8 arestas e calcule τ(H) com τ(H) = τ(H − α) + τ(H//α). (c) Subgrafo abrangente de G conexo e bipartido, com a bipartição.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(a)</strong> Arestas (10): uv 5, uw 3, ux 6, uz 4, vw 1, vx 1, vy 3, wx 4, xy 1, yz 3. Tabela de Dijkstra (custo provisório / antecessor; ✓ = vértice fixado):</p>
+<div class="tw"><table>
+<tr><th>Passo</th><th>u</th><th>v</th><th>w</th><th>x</th><th>y</th><th>z</th><th>fixa</th></tr>
+<tr><td>0</td><td>0 ✓</td><td>5/u</td><td>3/u</td><td>6/u</td><td>∞</td><td>4/u</td><td>u</td></tr>
+<tr><td>1</td><td>—</td><td>4/w</td><td>3/u ✓</td><td>6/u</td><td>∞</td><td>4/u</td><td>w</td></tr>
+<tr><td>2</td><td>—</td><td>4/w</td><td>—</td><td>6/u</td><td>7/z</td><td>4/u ✓</td><td>z</td></tr>
+<tr><td>3</td><td>—</td><td>4/w ✓</td><td>—</td><td>5/v</td><td>7/z</td><td>—</td><td>v</td></tr>
+<tr><td>4</td><td>—</td><td>—</td><td>—</td><td>5/v ✓</td><td>6/x</td><td>—</td><td>x</td></tr>
+<tr><td>5</td><td>—</td><td>—</td><td>—</td><td>—</td><td>6/x ✓</td><td>—</td><td>y</td></tr>
+</table></div>
+<p>(Empate v/z no passo 2 com custo 4: tanto faz a ordem.) Recuando pelos antecessores: y ← x ← v ← w ← u.</p>
+<p><span class="ans">u → w → v → x → y, custo 3 + 1 + 1 + 1 = 6</span></p>
+<p><strong>(b)</strong> Arestas de G entre vértices de {u,v,w,x,y}: uv, uw, ux, vw, vx, vy, wx, xy = <strong>8</strong> (saem uz e yz). Escolhe-se α = vy (não é lacete):</p>
+<div class="fm">H − vy: y fica pendente (só xy); u,v,w,x formam K₄
+   τ(H − vy) = τ(K₄) = 4^{4−2} = 16
+
+H // vy: v e y fundem-se em v'; arestas: uv', uw, ux, v'w, wx, e v'x DUPLA (vinha de vx e de yx)
+   τ(H//vy) = τ(K₄) + τ(K₄ com v'x contraída)   <span class="cm">(aplicando a fórmula a uma das cópias de v'x)</span>
+            = 16 + 8 = 24
+   <span class="cm">contrair v'x dá 3 vértices {m,u,w} com 2 arestas m–u, 2 arestas m–w, 1 aresta u–w:</span>
+<span class="cm">árvores = 2·2 + 2·1 + 2·1 = 8</span>
+
+τ(H) = 16 + 24 = 40</div>
+<p><span class="ans">τ(H) = 40</span> (confirmado pelo teorema matriz-árvore).</p>
+<p><strong>(c)</strong> Qualquer árvore abrangente é conexa e bipartida (não tem ciclos, logo não tem ciclos ímpares). Por exemplo o caminho:</p>
+<div class="fm">u – w – v – x – y – z     (arestas uw, wv, vx, xy, yz)
+Bipartição:  V₁ = {u, v, y},   V₂ = {w, x, z}</div>
+<p>Cada aresta liga V₁ a V₂ ✓ e passa por todos os vértices ✓.</p>
+</div></details>
+</div>
+
+</section>
+<section id="t-md-ex" data-nav="Exame Final" data-grp="VI · Testes Resolvidos 2023/24" data-track>
+<h2>Exame Final</h2>
+
+<div class="kicker">Exame Final · 19/06/2024 · 2h30</div>
+
+<div class="box met row"><span class="ic">♻️</span><div><strong>Repetidas:</strong> a pergunta 4 (recorrência, 3,0 val.) é a pergunta 1 do T2 e a pergunta 5 (grafos, 7,0 val.) é a pergunta 4 do T2. Só as perguntas 1–3 são novas.</div></div>
+<div class="q">
+<div class="q-head">1. Resolução <span>3,5 val.</span></div>
+<p>φ₁ ≡ ∀x (E(x) → ∀y (P(y) → (A(x,y) ∨ ¬C(x,y)))), φ₂ ≡ ∃x ∃y (E(x) ∧ P(y) ∧ C(x,y)), ψ ≡ ∃x ∃y A(x,y). Mostre que φ₁, φ₂ ⊨ ψ.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">φ₁ ≡ ∀x ∀y (¬E(x) ∨ ¬P(y) ∨ A(x,y) ∨ ¬C(x,y))
+φ₂: ∃x ∃y sem ∀ antes  ⟹  constantes de Skolem a, b
+¬ψ ≡ ∀x ∀y ¬A(x,y)
+
+C1: ¬E(x) ∨ ¬P(y) ∨ A(x,y) ∨ ¬C(x,y)
+C2: E(a)      C3: P(b)      C4: C(a,b)
+C5: ¬A(x',y')                         <span class="cm">(renomear variáveis!)</span>
+
+C6: ¬P(y) ∨ A(a,y) ∨ ¬C(a,y)    C1,C2   {a/x}
+C7: A(a,b) ∨ ¬C(a,b)            C6,C3   {b/y}
+C8: A(a,b)                      C7,C4
+C9: □                           C8,C5   {a/x', b/y'}</div>
+<p><span class="ans">φ₁, φ₂ ⊨ ψ</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">2. Contagem <span>4,0 val.</span></div>
+<p>(a) Passwords de 6 caracteres de um alfabeto com 11 letras e 4 dígitos, com exatamente 2 dígitos (pode haver repetições). (b) Sacos de 7 frutas escolhidas entre ameixas, bananas, laranjas, maçãs e pêras (frutas da mesma espécie não se distinguem).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(a)</strong> Escolher as 2 posições dos dígitos (ordem não importa), depois preencher com repetição:</p>
+<div class="fm">C(6,2) · 4² · 11⁴ = 15 · 16 · 14 641 = 3 513 840</div>
+<p><strong>(b)</strong> 7 objetos de 5 tipos, ordem irrelevante, com repetição ⟹ combinações com repetição:</p>
+<div class="fm">C(7 + 5 − 1, 7) = C(11, 7) = C(11, 4) = 330</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">3. Multinómio <span>2,5 val.</span></div>
+<p>Coeficiente de x²y²z³ em (2x − y + z³/x)⁶.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">Termo geral: 6!/(m₁! m₂! m₃!) · (2x)^{m₁} (−y)^{m₂} (z³/x)^{m₃},  m₁+m₂+m₃ = 6
+           = 6!/(m₁! m₂! m₃!) · 2^{m₁} (−1)^{m₂} · x^{m₁−m₃} y^{m₂} z^{3m₃}
+
+z³ ⟹ m₃ = 1;   y² ⟹ m₂ = 2;   m₁ = 3   (x^{3−1} = x² ✓)
+
+coef = 6!/(3! 2! 1!) · 2³ · (−1)² = 60 · 8 = 480</div>
+</div></details>
+</div>
+
+</section>
+<section id="t-md-mt" data-nav="Mini-testes MT1/MT2" data-grp="VI · Testes Resolvidos 2023/24" data-track>
+<h2>Mini-testes MT1 (Lógica) e MT2 (Recorrências)</h2>
+
+<div class="kicker">Mini-testes Moodle</div>
+
+<div class="q">
+<div class="q-head">MT1 · 1. Forma clausal</div>
+<p>Cláusulas de ∃y ∀x (P(x,y) → Q(y)), ∀x ∀y ((P(x,y) ∧ Q(x)) ∨ ¬P(y,y)) e ∀x ∃y ∃z R(x,y,z).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<ul>
+<li>∃y à cabeça, sem ∀ antes ⟹ constante b: <strong>¬P(x,b) ∨ Q(b)</strong>.</li>
+<li>Distributividade: (P ∧ Q) ∨ ¬P(y,y) ≡ (P(x,y) ∨ ¬P(y,y)) ∧ (Q(x) ∨ ¬P(y,y)) ⟹ <strong>duas cláusulas</strong>.</li>
+<li>∃y ∃z dentro de ∀x ⟹ funções de x diferentes: <strong>R(x, g(x), h(x))</strong> (não pode ser a mesma g nem uma constante).</li>
+</ul>
+<p><span class="ans">{¬P(x,b) ∨ Q(b), P(x,y) ∨ ¬P(y,y), Q(x) ∨ ¬P(y,y), R(x,g(x),h(x))}</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">MT1 · 2. Formalização (animais)</div>
+<p>leão(x), ruge(x), maisvelho(x), zebra(x), caça(y,z): "y caça z". (a) Os leões mais velhos não rugem. (b) Há zebras que não são caçadas por leões. (c) Existe um leão que não caça zebras. (d) Qualquer animal que é caçado não ruge.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">(a) ∀x ((leão(x) ∧ maisvelho(x)) → ¬ruge(x))
+(b) ∃z ∀x (zebra(z) ∧ (leão(x) → ¬caça(x,z)))
+(c) ∃x ∀z (leão(x) ∧ (zebra(z) → ¬caça(x,z)))
+(d) ∀x ∀y (caça(y,x) → ¬ruge(x))</div>
+<p>Repara no padrão: "todo o A é B" usa → dentro de ∀; "existe A que …" usa ∧ dentro de ∃.</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">MT1 · 3. Validade de deduções</div>
+<p>(1) "Vou dar um mergulho só se a bandeira não estiver vermelha. Não fui dar um mergulho. Logo, a bandeira estava vermelha." (2) p ↔ q ⊨ q → p.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(1)</strong> m: mergulho; b: bandeira não vermelha. Premissas m → b e ¬m; conclusão ¬b. Contraexemplo m = F, b = V: premissas verdadeiras, conclusão falsa (falácia da negação do antecedente) ⟹ <span class="ans">F (não válida)</span></p>
+<p><strong>(2)</strong> p ↔ q ≡ (p → q) ∧ (q → p), que implica q → p ⟹ <span class="ans">V (válida)</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">MT1 · 4. Unificador mais geral</div>
+<p>W = {P(f(x), x, y), P(f(f(y)), z, a)}.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">1.º argumento: f(x) = f(f(y))  ⟹  x = f(y)        σ₁ = {f(y)/x}
+   aplicar:  P(f(f(y)), f(y), y)  e  P(f(f(y)), z, a)
+2.º argumento: f(y) = z                            σ₂ = {f(y)/z}
+3.º argumento: y = a                               σ₃ = {a/y}
+Compor e aplicar a/y a tudo:  σ = {f(a)/x, a/y, f(a)/z}</div>
+<div class="box bad"><div class="t">Erro comum</div>Responder {f(y)/x, a/y, x/z} esquecendo que, depois de y = a, também x e z ficam f(a). No fim o unificador não pode ter na direita variáveis que ele próprio substitui.</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">MT1 · 5. Interpretação</div>
+<p>D = {1,…,6}, a = 2, f(x) = x+1 se x ímpar e x−1 se x par; P: par, I: ímpar, M(x,y): x &gt; y; V(x) = 4, V(y) = 3. Avalie: (1) ∃x ∀y M(x,y); (2) ∀x ∃y (I(x) → M(x,y)); (3) ¬P(y) → M(f(y), y); (4) P(x) ∧ ¬M(f(x), f(y)).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<div class="fm">(1) precisaria de x &gt; x para y = x               ⟹ Não válida
+(2) x = 1 é ímpar e não há y ∈ D com 1 &gt; y       ⟹ Não válida
+(3) y = 3: ¬P(3) = V;  f(3) = 4 &gt; 3 = V          ⟹ Válida
+(4) x = 4: P(4) = V;  f(4) = 3, f(3) = 4, 3 &gt; 4 é F ⟹ ¬F = V  ⟹ Válida</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head">MT2 · 1–4. Recorrências e funções geradoras</div>
+<details><summary>Ver resoluções</summary><div class="in">
+<p><strong>1.</strong> aₙ = 2n − 1 é solução de aₙ = aₙ₋₁ + 1? aₙ₋₁ + 1 = 2n − 3 + 1 = 2n − 2 ≠ 2n − 1 ⟹ <span class="ans">Falso</span></p>
+<p><strong>2.</strong> aₙ = −2aₙ₋₁ − aₙ₋₂ + 1, homogénea (C₀ + C₁n)(−1)ⁿ. O termo 1 = 1ⁿ e 1 não é raiz ⟹ <span class="ans">aₙ⁽ᵖ⁾ = A</span> (dá A = −3A + 1, A = 1/4).</p>
+<p><strong>3.</strong> Σaₙxⁿ = 1/(1−x)² + 2/(1−2x):</p>
+<div class="fm">1/(1−x)² = Σ (n+1) xⁿ          2/(1−2x) = Σ 2·2ⁿ xⁿ = Σ 2ⁿ⁺¹ xⁿ
+aₙ = 2ⁿ⁺¹ + n + 1,  n ≥ 0</div>
+<p><strong>4.</strong> 45 bolas iguais em 6 caixas: 3 caixas não vazias com nº par, 2 com pelo menos 6, 1 com no máximo 2. Cada restrição dá um fator:</p>
+<div class="fm">par e não vazia:  x² + x⁴ + … + x⁴⁴     (3 caixas ⟹ ao cubo)
+pelo menos 6:     x⁶ + x⁷ + … + x⁴²     (2 caixas ⟹ ao quadrado)
+no máximo 2:      1 + x + x²            (pode ser 0!)
+
+resposta = coef. de x⁴⁵ em (x² + … + x⁴⁴)³ (x⁶ + … + x⁴²)² (1 + x + x²)</div>
+<div class="box bad"><div class="t">Armadilhas das opções</div>Coeficiente de x⁶ (errado: é o total de bolas que conta, não o nº de caixas); começar o fator par em 1 (caixa vazia não é permitida); usar (x + x²) na última caixa (exclui 0 bolas, que é permitido).</div>
+</div></details>
+</div>
+
+</section>

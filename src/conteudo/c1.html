@@ -1,0 +1,971 @@
+<hero><h1>Cálculo I</h1><p>Resumo completo de Cálculo I (funções, primitivas, integrais, impróprios e Laplace, EDO) e testes resolvidos de 2023/24.</p></hero>
+<extracss>
+.fm{font-family:var(--mono);font-size:14px;line-height:1.75;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:10px 0;overflow-x:auto;white-space:pre-wrap;max-width:100%}
+.fm.nw{white-space:normal}
+.fm.center{text-align:center}
+.box .fm{background:var(--card)}
+.fm .cm{color:var(--cm);font-style:italic}
+.lead{color:var(--muted)}
+.kicker{font-family:var(--sans);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:24px 0 0}
+.box.row{display:flex;gap:10px;align-items:flex-start}
+.box.row>.ic{flex:none}
+.ckl{list-style:none;padding-left:0}
+.ckl li::before{content:"☐ ";color:var(--accent)}
+.q{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:12px 16px 6px;margin:14px 0;min-width:0}
+.q-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-family:var(--sans);font-weight:600;color:var(--accent);margin-bottom:4px}
+.q-num{font-family:var(--sans);font-weight:600;color:var(--accent)}
+.q-pts,.q-head span{font-weight:400;color:var(--muted);font-size:13px}
+.q-head .q-num{color:var(--accent);font-weight:600;font-size:15px}
+.ans{display:inline-block;margin:4px 0;padding:2px 10px;border-radius:6px;background:var(--teo-bg);border:1px solid var(--teo);color:var(--teo);font-family:var(--sans);font-weight:600;font-size:14.5px}
+.sn{font-family:var(--mono);font-size:12px;color:var(--muted);margin-right:6px}
+em{font-style:italic}
+main{overflow-wrap:break-word}
+mjx-container[display="true"]{display:block;overflow-x:auto;overflow-y:hidden;max-width:100%}
+</extracss>
+<section id="rev-top" data-nav="Topologia/Limites" data-grp="Capítulo 1 · Revisões e Complementos de Funções Reais de Variável Real" data-track>
+<h2>Noções Topológicas e Limites</h2>
+<p class="lead">Consolidação de noções topológicas, limites, continuidade e derivadas do secundário, complementadas com funções trigonométricas inversas, funções hiperbólicas, os grandes teoremas do cálculo diferencial (Bolzano-Cauchy, Weierstrass, Fermat, Rolle, Lagrange, Cauchy) e a fórmula de Taylor.</p>
+
+<div class="box def">
+<span class="t">Vizinhança e Pontos Notáveis</span>
+      Para <b>a ∈ ℝ</b>, <b>ε ∈ ℝ⁺</b> e <b>S ⊆ ℝ</b>:
+      <div class="fm">Vε(a) = {x ∈ ℝ : |x−a| &lt; ε} = ]a−ε, a+ε[   (vizinhança-ε de a)</div>
+<b>a é ponto interior</b> de S se ∃ε&gt;0: Vε(a) ⊆ S.<br/>
+<b>a é ponto exterior</b> de S se a é ponto interior de ℝ\S.<br/>
+<b>a é ponto fronteiro</b> de S se não é interior nem exterior: ∀ε&gt;0 (Vε(a)∩S≠∅ ∧ Vε(a)∩(ℝ\S)≠∅).<br/>
+<b>a é ponto de acumulação</b> de S se toda a Vε(a) contém um ponto de S distinto de a: ∀ε&gt;0, (Vε(a)\{a})∩S≠∅.<br/>
+<b>a∈S é ponto isolado</b> de S se não é ponto de acumulação de S.
+    </div>
+<div class="box ex">
+<span class="t">Nota — Derivado de um Conjunto</span>
+      Ao conjunto de todos os pontos de acumulação de S chama-se <b>derivado de S</b>, denotado S′. Todo o ponto interior de S é ponto de acumulação de S.<br/>
+<b>Exemplo:</b> A=[−2,1[∪{3}: 1 é ponto de acumulação de A, 3 é ponto isolado. S={1/n : n∈ℕ}: todo o ponto de S é isolado e 0 é ponto de acumulação de S.
+    </div>
+<div class="box def">
+<span class="t">Domínio, Contradomínio, Restrição, Composta</span>
+      f:A→ℝ associa a cada x∈A um único f(x)∈ℝ. Df = domínio, CDf = f(A) = contradomínio, Gf = {(x,f(x)) : x∈Df} = gráfico.<br/>
+      Restrição de f a B⊆Df: g=f|B tal que g(x)=f(x), ∀x∈B.<br/>
+      Composta: (g∘f)(x)=g(f(x)), com Dg∘f = {x∈Df : f(x)∈Dg}.
+    </div>
+<div class="box def">
+<span class="t">Limite Segundo Cauchy</span>
+      Seja a ponto de acumulação de Df e ℓ∈ℝ:
+      <div class="fm">lim f(x) = ℓ  ⟺  ∀ε&gt;0 ∃δ&gt;0 ∀x∈Df  0&lt;|x−a|&lt;δ ⟹ |f(x)−ℓ|&lt;ε
+x→a</div>
+</div>
+<div class="box teo">
+<span class="t">Teorema de Heine &amp; Unicidade do Limite</span>
+      lim f(x)=ℓ sse lim f(xₙ)=ℓ para toda a sucessão (xₙ)⊂Df\{a} convergente para a.<br/>
+      O limite de uma função num ponto, quando existe, é <b>único</b>.<br/>
+<b>Exercício clássico:</b> mostrar que não existe lim<sub>x→0</sub> sen(1/x).
+    </div>
+<div class="box teo">
+<span class="t">Propriedades Operatórias e Enquadramento</span>
+      Se lim f(x)=ℓ₁ e lim g(x)=ℓ₂ (x→a): lim(f±g)=ℓ₁±ℓ₂; lim(αf)=αℓ₁; lim(fg)=ℓ₁ℓ₂; se ℓ₂≠0, lim(f/g)=ℓ₁/ℓ₂.<br/>
+<b>Lei do Enquadramento:</b> se f(x)≤g(x)≤h(x) perto de a e lim f=lim h=ℓ, então lim g=ℓ.<br/>
+<b>Infinitésimo × limitada = infinitésimo:</b> se lim f(x)=0 e g é limitada perto de a, então lim f(x)g(x)=0. (⚠ g tem de ser limitada — contraexemplo: f(x)=x, g(x)=1/x.)
+    </div>
+<div class="box def">
+<span class="t">Limites Laterais, no Infinito e Infinitos</span>
+<div class="fm">lim f(x)=ℓ ⟺ lim f(x)=ℓ=lim f(x)   (limites laterais à esq./dir.)
+x→a          x→a⁻        x→a⁺
+
+lim f(x)=+∞: ∀L&gt;0 ∃δ&gt;0 ∀x∈Df  0&lt;|x−a|&lt;δ ⟹ f(x)&gt;L
+x→a</div>
+      Se lim f(x)=±∞ então lim 1/f(x)=0; se lim f(x)=0⁺ então lim 1/f(x)=+∞; se lim f(x)=0⁻ então lim 1/f(x)=−∞.
+    </div>
+<div class="box def">
+<span class="t">Continuidade</span>
+      f é <b>contínua em a</b> se a∈Df e lim<sub>x→a</sub> f(x)=f(a). f é contínua em a sse é contínua à esquerda e à direita de a.<br/>
+      Se f, g contínuas em a: f+g, αf, fg contínuas em a; se g(a)≠0, f/g contínua em a. Se f contínua em a e g contínua em f(a), então g∘f contínua em a.
+    </div>
+
+</section>
+<section id="rev-der" data-nav="Derivadas/Extremos" data-grp="Capítulo 1 · Revisões e Complementos de Funções Reais de Variável Real" data-track>
+<h2>Derivadas, Extremos e Estudo Gráfico</h2>
+
+
+<div class="box def">
+<span class="t">Derivada num Ponto</span>
+<div class="fm">f'(a) = lim [f(a+h)−f(a)]/h  =  lim [f(x)−f(a)]/(x−a)
+        h→0                    x→a</div>
+      Se f′(a) é finita, f é <b>diferenciável</b> em a. f′(a) é o declive da reta tangente em (a,f(a)); se f′(a)=±∞, a tangente é a reta vertical x=a.
+    </div>
+<div class="box def">
+<span class="t">Derivadas Laterais e Diferenciabilidade</span>
+      f é diferenciável em a sse existem f′₋(a) e f′₊(a), são finitas e f′₋(a)=f′₊(a).<br/>
+<b>Diferenciável ⟹ contínua</b> (recíproco falso — ex: f(x)=|x| é contínua mas não diferenciável em 0).
+    </div>
+<div class="box teo">
+<span class="t">Propriedades Operatórias e Derivadas Elementares</span>
+      (f±g)′=f′±g′; (fg)′=f′g+fg′; (αf)′=αf′; (f/g)′=(f′g−fg′)/g².
+      <div class="fm">(xᵖ)'=pxᵖ⁻¹  (eˣ)'=eˣ  (ln x)'=1/x  (aˣ)'=aˣln a  (loga x)'=1/(x ln a)
+(sen x)'=cos x  (cos x)'=−sen x  (tg x)'=sec²x  (cotg x)'=−cosec²x
+(sec x)'=sec x·tg x  (cosec x)'=−cosec x·cotg x</div>
+<b>Regra da cadeia:</b> (g∘f)′(a) = g′(f(a))·f′(a).
+    </div>
+<div class="box def">
+<span class="t">Extremos e Extremantes</span>
+      a é <b>maximizante local</b> (resp. minimizante) se ∃δ&gt;0: f(a)≥f(x) (resp. ≤) ∀x∈]a−δ,a+δ[∩Df.<br/>
+      a é <b>maximizante global</b> se f(x)≤f(a), ∀x∈Df. Máximos/mínimos locais = extremos locais; global = extremos globais.
+    </div>
+<div class="box def">
+<span class="t">Concavidades e Pontos de Inflexão</span>
+      Se f″(x)&gt;0 em ]a,b[, concavidade voltada para cima; se f″(x)&lt;0, voltada para baixo. (c,f(c)) é <b>ponto de inflexão</b> se f″ muda de sinal em c.
+    </div>
+<div class="box def">
+<span class="t">Assíntotas</span>
+      Reta y=mx+b é assíntota à direita se lim<sub>x→+∞</sub>(f(x)−mx−b)=0, com
+      <div class="fm">m = lim f(x)/x ,   b = lim (f(x) − mx)     (x→+∞)</div>
+      x=a é assíntota vertical se algum dos limites laterais em a for ±∞. (Análogo à esquerda, x→−∞.)
+    </div>
+<div class="box met">
+<span class="t">Roteiro — Esboço do Gráfico de uma Função</span>
+<ol>
+<li>Domínio da função</li>
+<li>Interseções com os eixos OX e OY</li>
+<li>Sinal da função</li>
+<li>Pontos de descontinuidade</li>
+<li>Assíntotas ao gráfico</li>
+<li>Intervalos de monotonia (sinal de f′)</li>
+<li>Extremantes locais</li>
+<li>Pontos de inflexão e concavidades (sinal de f″)</li>
+</ol>
+</div>
+
+</section>
+<section id="rev-inv" data-nav="Funções Inversas" data-grp="Capítulo 1 · Revisões e Complementos de Funções Reais de Variável Real" data-track>
+<h2>Função Inversa e Funções Trigonométricas Inversas</h2>
+
+
+<div class="box def">
+<span class="t">Injetividade e Função Inversa</span>
+      f é <b>injetiva</b> se f(x₁)=f(x₂)⟹x₁=x₂. Sendo f injetiva, f⁻¹: CDf→ℝ associa a cada y o (único) x tal que f(x)=y.<br/>
+      Consequências: f invertível sse injetiva; Df⁻¹=CDf; CDf⁻¹=Df; f⁻¹∘f(x)=x; f∘f⁻¹(y)=y; gráficos de f e f⁻¹ simétricos relativamente a y=x.<br/>
+      Se f estritamente monótona ⟹ injetiva. Se f contínua e estrit. crescente/decrescente em [a,b] ⟹ f⁻¹ é estrit. crescente/decrescente e contínua.
+    </div>
+<div class="box def">
+<span class="t">Restrições Principais e Definição das Inversas Trigonométricas</span>
+      A restrição principal de cada função trigonométrica é a que garante injetividade:
+      <div class="fm">sen: [−π/2, π/2] → [−1,1]     arcsen: [−1,1] → [−π/2, π/2]
+cos:  [0, π]     → [−1,1]     arccos: [−1,1] → [0, π]
+tg:  ]−π/2,π/2[ → ℝ           arctg: ℝ → ]−π/2, π/2[
+cotg: ]0, π[    → ℝ           arccotg: ℝ → ]0, π[</div>
+      arcsen x lê-se "arco cujo seno é x"; análogo para arccos, arctg, arccotg.
+    </div>
+<div class="tw"><table>
+<tr><th>Função</th><th>Domínio</th><th>Contradomínio</th></tr>
+<tr><td>arcsen x</td><td>[−1, 1]</td><td>[−π/2, π/2]</td></tr>
+<tr><td>arccos x</td><td>[−1, 1]</td><td>[0, π]</td></tr>
+<tr><td>arctg x</td><td>ℝ</td><td>]−π/2, π/2[</td></tr>
+<tr><td>arccotg x</td><td>ℝ</td><td>]0, π[</td></tr>
+</table></div>
+<div class="box def">
+<span class="t">Secante e Cossecante</span>
+      sec x = 1/cos x (D={x≠π/2+kπ}, par, período 2π); cosec x = 1/sen x (D={x≠kπ}, ímpar, período 2π). Ambas com contradomínio ]−∞,−1]∪[1,+∞[.
+    </div>
+<div class="box teo">
+<span class="t">Derivadas das Funções Trigonométricas Inversas</span>
+      Pelo Teorema da derivada da função inversa, (f⁻¹)′(f(x₀)) = 1/f′(x₀):
+      <div class="fm">(arcsen x)' = 1/√(1−x²) , x∈]−1,1[        (arccos x)' = −1/√(1−x²) , x∈]−1,1[
+(arctg x)' = 1/(1+x²) , x∈ℝ              (arccotg x)' = −1/(1+x²) , x∈ℝ
+
+Com regra da cadeia (f diferenciável):
+(arcsen(f(x)))' = f'(x)/√(1−f(x)²)       (arctg(f(x)))' = f'(x)/(1+f(x)²)</div>
+</div>
+
+</section>
+<section id="rev-hip" data-nav="Hiperbólicas" data-grp="Capítulo 1 · Revisões e Complementos de Funções Reais de Variável Real" data-track>
+<h2>Funções Hiperbólicas</h2>
+
+
+<div class="box def">
+<span class="t">Seno e Cosseno Hiperbólicos</span>
+<div class="fm">senh x = (eˣ − e⁻ˣ)/2      (função ímpar, CD=ℝ)
+cosh x = (eˣ + e⁻ˣ)/2      (função par, CD=[1,+∞[)
+
+Identidade fundamental:  cosh²x − senh²x = 1</div>
+</div>
+<div class="box def">
+<span class="t">Funções Hiperbólicas Derivadas</span>
+<div class="fm">tgh x = senh x / cosh x            cotgh x = cosh x / senh x  (x≠0)
+sech x = 1 / cosh x                cosech x = 1 / senh x    (x≠0)</div>
+</div>
+<div class="box teo">
+<span class="t">Fórmulas das Funções Hiperbólicas</span>
+<div class="fm">1 − tgh²x = sech²x                cotgh²x − 1 = cosech²x
+senh(x±y) = senh x cosh y ± cosh x senh y
+cosh(x±y) = cosh x cosh y ± senh x senh y
+tgh(x±y) = (tgh x ± tgh y)/(1 ± tgh x tgh y)
+senh(2x) = 2 senh x cosh x        cosh(2x) = cosh²x + senh²x
+tgh(2x) = 2tgh x/(1+tgh²x)</div>
+</div>
+
+</section>
+<section id="rev-teo" data-nav="Teoremas Fundamentais" data-grp="Capítulo 1 · Revisões e Complementos de Funções Reais de Variável Real" data-track>
+<h2>Teoremas Fundamentais do Cálculo Diferencial</h2>
+
+
+<div class="box teo">
+<span class="t">Teorema de Bolzano-Cauchy (Valores Intermédios)</span>
+      Se f contínua em [a,b] e f(a)≠f(b), então ∀y entre f(a) e f(b), ∃c∈]a,b[: f(c)=y.<br/>
+<b>Corolário:</b> se f(a)·f(b)&lt;0, então ∃c∈]a,b[: f(c)=0 (existência de zero).<br/>
+<b>Corolário:</b> se f contínua num intervalo I, então f(I) é também um intervalo.
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Weierstrass (Valores Máximo e Mínimo)</span>
+      Se f é contínua e Df é fechado e limitado (compacto), então f atinge em Df o máximo e o mínimo globais: ∃x₁,x₂∈Df: f(x₁)≤f(x)≤f(x₂), ∀x∈Df.
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Fermat (Condição Necessária de Extremo)</span>
+      Se f é diferenciável em c∈]a,b[ e c é extremante local de f, então <b>f′(c)=0</b> (c diz-se <b>ponto crítico</b>).<br/>
+      ⚠ Recíproco falso: f(x)=x³ tem f′(0)=0 mas 0 não é extremante. Um extremante também pode ocorrer onde f′ não existe (ex: f(x)=|x| em x=0).
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Rolle</span>
+      f contínua em [a,b], diferenciável em ]a,b[. Se f(a)=f(b), então ∃c∈]a,b[: f′(c)=0.<br/>
+<b>Corolários:</b> entre dois zeros de f existe pelo menos um zero de f′; entre dois zeros consecutivos de f′ existe no máximo um zero de f.
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Lagrange (Valor Médio)</span>
+      f contínua em [a,b], diferenciável em ]a,b[. Então ∃c∈]a,b[:
+      <div class="fm">f'(c) = [f(b) − f(a)] / (b − a)</div>
+      Rolle é caso particular de Lagrange (quando f(a)=f(b)).
+    </div>
+<div class="box teo">
+<span class="t">Consequências do Teorema de Lagrange</span>
+      Sendo f contínua em I e diferenciável em int(I):
+      <ul>
+<li>f′(x)=0 ∀x ⟹ f constante em I</li>
+<li>f′(x)≥0 (resp. ≤0) ∀x ⟹ f crescente (resp. decrescente) em I</li>
+<li>f′(x)&gt;0 (resp. &lt;0) ∀x ⟹ f estritamente crescente (resp. decrescente) em I</li>
+</ul>
+</div>
+<div class="box teo">
+<span class="t">Teorema de Cauchy</span>
+      f, g contínuas em [a,b], diferenciáveis em ]a,b[, g′(x)≠0 ∀x. Então ∃c∈]a,b[:
+      <div class="fm">f'(c)/g'(c) = [f(b) − f(a)] / [g(b) − g(a)]</div>
+      Para g=id obtém-se o Teorema de Lagrange. Do Teorema de Cauchy resulta a <b>Regra de Cauchy</b> (secção seguinte).
+    </div>
+
+</section>
+<section id="rev-cau" data-nav="Regra de Cauchy" data-grp="Capítulo 1 · Revisões e Complementos de Funções Reais de Variável Real" data-track>
+<h2>Regra de Cauchy (L'Hôpital)</h2>
+
+
+<div class="box teo">
+<span class="t">Regra de Cauchy — Formas (A), (B), (C)</span>
+      Para indeterminações 0/0 ou ∞/∞, com g,g′≠0 numa vizinhança apropriada:
+      <div class="fm">(A) x→a⁺ (ou b⁻):  se lim f, lim g ambos 0 ou ambos ±∞, e existe lim f'/g',
+    então lim f/g = lim f'/g'
+
+(B) x→c (c interior a I, f,g diferenciáveis em I\{c}): mesma conclusão
+
+(C) x→+∞ (ou −∞): mesma conclusão, com f,g diferenciáveis em ]a,+∞[</div>
+      Aplica-se sucessivamente enquanto persistir a indeterminação e o limite das derivadas existir.
+    </div>
+<div class="box ex">⚠ A Regra de Cauchy só se aplica quando <b>existe</b> lim f′/g′. Se esse limite não existir, nada se pode concluir sobre lim f/g por esta via (pode mesmo assim existir, calculável por outro método). Exemplo clássico: lim<sub>x→+∞</sub> (x−sen x)/(x+sen x) existe e vale 1, mas a Regra de Cauchy não é aplicável (o limite das derivadas não existe).</div>
+<div class="box exa">
+<span class="t">Exemplos de Aplicação</span>
+      Indeterminações típicas resolvidas por Cauchy: lim<sub>x→0⁺</sub> x ln x (forma 0·∞, reescrever como ln x/(1/x)); lim<sub>x→0</sub> arctg(x²)/(3x²); lim<sub>x→1</sub> (1−x)/ln(2−x); lim<sub>x→+∞</sub> (x+1)<sup>1/ln x</sup> (forma exponencial, usar ln).
+    </div>
+
+</section>
+<section id="rev-tay" data-nav="Fórmula de Taylor" data-grp="Capítulo 1 · Revisões e Complementos de Funções Reais de Variável Real" data-track>
+<h2>Aproximação Linear e Fórmula de Taylor</h2>
+
+
+<div class="box def">
+<span class="t">Aproximação Linear</span>
+      Se f diferenciável em a, a aproximação linear de f numa vizinhança de a é
+      <div class="fm">g(x) = f(a) + f'(a)(x − a)     [reta tangente]     f(x) ≈ g(x)</div>
+</div>
+<div class="box def">
+<span class="t">Polinómio de Taylor / MacLaurin</span>
+      Se f admite derivadas finitas até ordem n em c:
+      <div class="fm">Tⁿc f(x) = Σₖ₌₀ⁿ f⁽ᵏ⁾(c)/k! · (x−c)ᵏ
+       = f(c) + f'(c)(x−c) + f''(c)/2! (x−c)² + ... + f⁽ⁿ⁾(c)/n! (x−c)ⁿ</div>
+      Se c=0, chama-se <b>polinómio de MacLaurin</b>, T₀ⁿf(x).
+    </div>
+<div class="box exa">
+<span class="t">Desenvolvimentos de MacLaurin Notáveis</span>
+<div class="fm">T₀ⁿ(eˣ) = Σ xᵏ/k! = 1 + x + x²/2! + ... + xⁿ/n!
+T₀ⁿ(1/(1−x)) = Σ xᵏ = 1 + x + x² + ... + xⁿ
+T₀²ⁿ⁺¹(sen x) = Σ (−1)ᵏ x²ᵏ⁺¹/(2k+1)! = x − x³/3! + x⁵/5! − ...
+T₀²ⁿ(cos x) = Σ (−1)ᵏ x²ᵏ/(2k)! = 1 − x²/2! + x⁴/4! − ...</div>
+</div>
+<div class="box teo">
+<span class="t">Teorema de Taylor (Fórmula com Resto de Lagrange)</span>
+      f com derivadas contínuas até ordem n+1 em I aberto, c∈I. Para x∈I\{c}, existe θ entre c e x:
+      <div class="fm">f(x) = Σₖ₌₀ⁿ f⁽ᵏ⁾(c)/k! (x−c)ᵏ  +  f⁽ⁿ⁺¹⁾(θ)/(n+1)! (x−c)ⁿ⁺¹
+                    = Tⁿc f(x)  +  Rⁿc f(x)      [Rⁿc f = resto de Lagrange]</div>
+      Se x=c, o erro é nulo. O Teorema de Lagrange é o caso particular n=0 do Teorema de Taylor.
+    </div>
+<div class="box met">
+<span class="t">Majoração do Resto de Lagrange</span>
+      Se f⁽ⁿ⁺¹⁾ é contínua em [a,b]∋c, pelo Teorema de Weierstrass existe M≥max|f⁽ⁿ⁺¹⁾(y)|, y∈[a,b], e
+      <div class="fm">|Rⁿc f(x)| ≤ M · |x−c|ⁿ⁺¹/(n+1)!  ≤  M · (b−a)ⁿ⁺¹/(n+1)!,   x∈[a,b]</div>
+      Esta majoração permite estimar o erro cometido ao aproximar f(x) por Tⁿc f(x), sem conhecer exatamente f(x).
+    </div>
+
+</section>
+<section id="prim-def" data-nav="Primitiva/Integral Indef." data-grp="Capítulo 2 · Primitivas e Integrais Indefinidos" data-track>
+<h2>Primitiva e Integral Indefinido</h2>
+<p class="lead">Operação inversa da derivação: dada f, procurar F tal que F′=f. Estudam-se as primitivas imediatas e quase-imediatas, e os métodos de integração por partes, por substituição e para funções racionais.</p>
+
+<div class="box def">
+<span class="t">Primitiva / Antiderivada</span>
+      F é <b>primitiva</b> de f em I se F é diferenciável em I e F′(x)=f(x), ∀x∈I. Se f admite primitiva em I, f diz-se <b>primitivável</b> em I. Toda a primitiva é uma função contínua.
+    </div>
+<div class="box teo">
+<span class="t">Família de Primitivas</span>
+      Se F é primitiva de f em I, então G(x)=F(x)+C também é primitiva, ∀C∈ℝ. Se F,G são ambas primitivas de f, existe C∈ℝ: F(x)−G(x)=C, ∀x∈I.
+    </div>
+<div class="box def">
+<span class="t">Integral Indefinido</span>
+      À família de todas as primitivas de f chama-se <b>integral indefinido</b> de f, denotado ∫f(x)dx. f diz-se função integranda, x variável de integração (muda: pode usar-se t, z, ...).
+      <div class="fm">∫ f(x) dx = F(x) + C,  C ∈ ℝ     (F primitiva de f)
+∫ f'(x) dx = f(x) + C,  C ∈ ℝ</div>
+</div>
+
+</section>
+<section id="integrais-imediatos-e-quase-imediatos" data-nav="Integrais Imediatos e Quase-Imediatos" data-grp="Capítulo 2 · Primitivas e Integrais Indefinidos" data-track>
+<h2>Integrais Imediatos e Quase-Imediatos</h2>
+
+
+<div class="box def">
+<span class="t">Integrais Imediatos</span>
+<div class="fm">∫xᵖdx = xᵖ⁺¹/(p+1) + C   (p≠−1)        ∫(1/x)dx = ln|x| + C
+∫sen x dx = −cos x + C                  ∫cos x dx = sen x + C
+∫sec²x dx = tg x + C                    ∫cosec²x dx = −cotg x + C
+∫1/√(1−x²) dx = arcsen x + C            ∫1/(1+x²) dx = arctg x + C
+∫sec x tg x dx = sec x + C              ∫cosec x cotg x dx = −cosec x + C
+∫eˣdx = eˣ + C                          ∫aˣdx = aˣ/ln a + C  (a∈ℝ⁺\{1})</div>
+</div>
+<div class="box teo">
+<span class="t">Linearidade</span>
+      ∫(αf(x)+βg(x))dx = α∫f(x)dx + β∫g(x)dx, para f,g primitiváveis em I e α,β∈ℝ.
+    </div>
+<div class="box def">
+<span class="t">Integração "Quase Imediata" (Regra da Cadeia ao Contrário)</span>
+      Se g diferenciável e f primitivável, com F primitiva de f:
+      <div class="fm">∫f(g(x))g'(x)dx = F(g(x)) + C
+
+∫g'(x)gᵖ(x)dx = gᵖ⁺¹(x)/(p+1) + C        ∫g'(x)/g(x) dx = ln|g(x)| + C
+∫g'(x)sen(g(x))dx = −cos(g(x)) + C       ∫g'(x)cos(g(x))dx = sen(g(x)) + C
+∫g'(x)/√(1−g(x)²) dx = arcsen(g(x))+C    ∫g'(x)/(1+g(x)²) dx = arctg(g(x))+C
+∫g'(x)eᵍ⁽ˣ⁾dx = eᵍ⁽ˣ⁾ + C</div>
+</div>
+<div class="box ex">
+<span class="t">Fórmulas Trigonométricas Úteis</span>
+<div class="fm">1+tg²α=sec²α    1+cotg²α=cosec²α    sen(2α)=2sen α cos α
+cos²α=(1+cos2α)/2       sen²α=(1−cos2α)/2
+cos α cos β = ½[cos(α+β)+cos(α−β)]    sen α sen β = ½[cos(α−β)−cos(α+β)]</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplos com Funções Trigonométricas</span>
+<div class="fm">∫cos²(2x)dx = x/2 + sen(2x)/8 + C
+∫sen³x dx = ∫sen x(1−cos²x)dx = −cos x + cos³x/3 + C</div>
+      Também: ∫sec x dx = ln|sec x+tg x|+C;  ∫cosec x dx = −ln|cosec x+cotg x|+C.
+    </div>
+
+</section>
+<section id="integra-o-por-partes-e-por-substitui-o" data-nav="Integração por Partes e por Substituição" data-grp="Capítulo 2 · Primitivas e Integrais Indefinidos" data-track>
+<h2>Integração por Partes e por Substituição</h2>
+
+
+<div class="box teo">
+<span class="t">Integração por Partes</span>
+<div class="fm">∫f'(x)g(x)dx = f(x)g(x) − ∫f(x)g'(x)dx</div>
+      Útil quando a integranda é produto de duas funções e se conhece primitiva de pelo menos uma. Deriva-se a função que mais se simplifica; por vezes é necessário aplicar duas vezes, tratando o integral resultante como incógnita.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Partes</span>
+<div class="fm">∫ x ln x dx = x²/2 · ln x − ∫ x²/2 · 1/x dx = x²/2 ln x − x²/4 + C</div>
+</div>
+<div class="box teo">
+<span class="t">Integração por Substituição</span>
+      Sejam φ diferenciável e invertível, φ(J)⊆I, f primitivável em I:
+      <div class="fm">∫f(x)dx = ∫f(φ(t))φ'(t)dt = (H∘φ⁻¹)(x) + C    (x=φ(t))</div>
+</div>
+<div class="tw"><table>
+<tr><th>Radical na integranda</th><th>Substituição</th></tr>
+<tr><td>√(a²+x²), a&gt;0</td><td>x = a tg t, t∈]−π/2, π/2[</td></tr>
+<tr><td>√(a²−x²), a&gt;0</td><td>x = a sen t, t∈]−π/2, π/2[</td></tr>
+<tr><td>√(x²−a²), a&gt;0</td><td>x = a sec t, t∈]0, π/2[</td></tr>
+<tr><td>a²+b²x², a²−b²x², −a²+b²x²</td><td>reduz-se aos casos acima</td></tr>
+<tr><td>ax²+bx+c (a≠0)</td><td>completar quadrado; reduz-se a um dos casos</td></tr>
+</table></div>
+<div class="box exa">
+<span class="t">Exemplo Completo — Substituição Trigonométrica</span>
+      ∫3/(x²√(x²−9)) dx, com x=3sec t, t∈]0,π/2[:
+      <div class="fm">= (1/3)∫cos t dt = (1/3)sen t + C
+Como cos t=3/x, sen t=√(1−9/x²), logo:
+∫3/(x²√(x²−9)) dx = √(x²−9)/(3x) + C</div>
+</div>
+
+</section>
+<section id="integra-o-de-fun-es-racionais" data-nav="Integração de Funções Racionais" data-grp="Capítulo 2 · Primitivas e Integrais Indefinidos" data-track>
+<h2>Integração de Funções Racionais</h2>
+
+
+<div class="box def">
+<span class="t">Divisão de Polinómios e Fração Própria</span>
+      N(x)/D(x) é <b>fração própria</b> se grau(N)&lt;grau(D). Se grau(N)≥grau(D): N(x)=D(x)Q(x)+R(x), com grau(R)&lt;grau(D), logo
+      <div class="fm">∫N(x)/D(x) dx = ∫Q(x)dx + ∫R(x)/D(x) dx</div>
+</div>
+<div class="box def">
+<span class="t">Frações Simples</span>
+      Do tipo A/(x−α)ᵖ ou (Bx+C)/(x²+βx+γ)q, com β²−4γ&lt;0. Toda a fração própria decompõe-se numa soma de frações simples.
+    </div>
+<div class="box met">
+<span class="t">Decomposição em Frações Simples</span>
+<ol>
+<li>Decompor D(x) em fatores irredutíveis: D(x)=a(x−α₁)^p₁···(x²+β₁x+γ₁)^q₁···</li>
+<li>Ao fator (x−α)^r associar A₁/(x−α)+A₂/(x−α)²+···+Aᵣ/(x−α)ʳ</li>
+<li>Ao fator (x²+βx+γ)^s associar (B₁x+C₁)/(x²+βx+γ)+···+(Bₛx+Cₛ)/(x²+βx+γ)ˢ</li>
+<li>Determinar as constantes pelo método dos coeficientes indeterminados</li>
+</ol>
+</div>
+<div class="box exa">
+<span class="t">Exemplo Completo</span>
+      ∫(2x+1)/(x³+x) dx: x³+x=x(x²+1), então (2x+1)/(x(x²+1)) = A/x + (Bx+C)/(x²+1).
+      <div class="fm">2x+1 = A(x²+1)+(Bx+C)x  ⟹  A=1, B=−1, C=2
+
+∫(2x+1)/(x³+x)dx = ln|x| − ½ln(x²+1) + 2arctg x + C</div>
+</div>
+
+</section>
+<section id="riem-dar" data-nav="Somas de Darboux" data-grp="Capítulo 3 · Integral de Riemann" data-track>
+<h2>Somas de Darboux e Integrabilidade</h2>
+<p class="lead">Construção do integral definido via somas de Darboux, condição de integrabilidade, propriedades algébricas, o Teorema Fundamental do Cálculo, a Regra de Barrow e aplicações ao cálculo de áreas.</p>
+
+<div class="box def">
+<span class="t">Partição e Somas de Darboux</span>
+      Partição P de [a,b]: a=x₀&lt;x₁&lt;...&lt;xₙ=b. Sendo f limitada em [a,b], mᵢ=inf f em [xᵢ₋₁,xᵢ], Mᵢ=sup f:
+      <div class="fm">s(f,P) = Σᵢ mᵢ(xᵢ−xᵢ₋₁)     [soma inferior]
+S(f,P) = Σᵢ Mᵢ(xᵢ−xᵢ₋₁)     [soma superior]
+
+s(f,P) ≤ S(f,P),  e para qualquer refinamento P' de P: s(f,P)≤s(f,P')≤S(f,P')≤S(f,P)</div>
+</div>
+<div class="box def">
+<span class="t">Integrais Inferior e Superior; Integrabilidade</span>
+<div class="fm">∫_a^b f dx (inf.) = sup{s(f,P) : P partição de [a,b]}
+_a^b f dx (sup.) = inf{S(f,P) : P partição de [a,b]}</div>
+      f é <b>integrável à Riemann</b> em [a,b] se o integral inferior = integral superior; esse valor comum é ∫ₐᵇf(x)dx.
+    </div>
+<div class="box teo">
+<span class="t">Critério de Integrabilidade de Riemann</span>
+      f limitada em [a,b] é integrável sse ∀ε&gt;0 ∃P partição de [a,b]: S(f,P)−s(f,P)&lt;ε.
+    </div>
+<div class="box teo">
+<span class="t">Classes de Funções Integráveis</span>
+      São integráveis em [a,b]: funções contínuas; funções monótonas; funções limitadas com um nº finito de descontinuidades.
+    </div>
+
+</section>
+<section id="propriedades-e-teorema-fundamental-do-c-" data-nav="Propriedades e Teorema Fundamental do Cálculo" data-grp="Capítulo 3 · Integral de Riemann" data-track>
+<h2>Propriedades e Teorema Fundamental do Cálculo</h2>
+
+
+<div class="box teo">
+<span class="t">Propriedades Algébricas do Integral</span>
+      Sendo f,g integráveis em [a,b], α∈ℝ:
+      <div class="fm">∫ₐᵇ(f+g)dx = ∫ₐᵇf dx + ∫ₐᵇg dx           ∫ₐᵇαf dx = α∫ₐᵇf dx
+∫ₐᵃf dx = 0                                ∫ₐᵇf dx = −∫ᵦᵃf dx
+∫ₐᵇf dx = ∫ₐᶜf dx + ∫ᶜᵇf dx   (aditividade, c∈[a,b])
+f≤g em [a,b] ⟹ ∫ₐᵇf dx ≤ ∫ₐᵇg dx           |∫ₐᵇf dx| ≤ ∫ₐᵇ|f|dx</div>
+</div>
+<div class="box teo">
+<span class="t">Teorema da Média (Valor Médio para Integrais)</span>
+      Se f é contínua em [a,b], existe c∈[a,b]: ∫ₐᵇf(x)dx = f(c)(b−a). O valor f(c) é o <b>valor médio</b> de f em [a,b].
+    </div>
+<div class="box def">
+<span class="t">Função Integral Indefinido</span>
+      Sendo f integrável em [a,b], define-se F(x)=∫ₐˣf(t)dt, x∈[a,b] (função integral). F é contínua em [a,b].
+    </div>
+<div class="box teo">
+<span class="t">Teorema Fundamental do Cálculo (TFC)</span>
+      Se f contínua em [a,b] e F(x)=∫ₐˣf(t)dt, então F é diferenciável em [a,b] e
+      <div class="fm">F'(x) = f(x),  ∀x∈[a,b]</div>
+      Mais geralmente, se g diferenciável: d/dx ∫ₐ^g(x) f(t)dt = f(g(x))·g′(x).
+    </div>
+
+</section>
+<section id="regra-de-barrow-m-todos-de-integra-o-e-r" data-nav="Regra de Barrow, Métodos de Integração e Áreas" data-grp="Capítulo 3 · Integral de Riemann" data-track>
+<h2>Regra de Barrow, Métodos de Integração e Áreas</h2>
+
+
+<div class="box teo">
+<span class="t">Regra de Barrow</span>
+      Se f contínua em [a,b] e F é uma primitiva de f em [a,b]:
+      <div class="fm">∫ₐᵇ f(x) dx = F(b) − F(a) = [F(x)]ₐᵇ</div>
+      Permite calcular integrais definidos a partir de uma primitiva qualquer, sem depender da constante C (que se cancela).
+    </div>
+<div class="box teo">
+<span class="t">Integração por Partes e Substituição em Integrais Definidos</span>
+<div class="fm">∫ₐᵇ f'(x)g(x)dx = [f(x)g(x)]ₐᵇ − ∫ₐᵇf(x)g'(x)dx
+
+∫ₐᵇ f(x)dx = ∫_{φ⁻¹(a)}^{φ⁻¹(b)} f(φ(t))φ'(t)dt     (x=φ(t), sem regressar à variável x)</div>
+</div>
+<div class="box def">
+<span class="t">Área de uma Região Plana</span>
+      Se f contínua e f(x)≥0 em [a,b]: Área = ∫ₐᵇf(x)dx. Se f(x)≤0: Área = −∫ₐᵇf(x)dx = ∫ₐᵇ|f(x)|dx.<br/>
+      Área entre gráficos de f e g em [a,b]: <b>∫ₐᵇ|f(x)−g(x)|dx</b> (na prática, dividir em subintervalos onde uma domina a outra).
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Área entre Curvas</span>
+      Área entre y=x² e y=x em [0,1]: como x≥x² em [0,1],
+      <div class="fm">A = ∫₀¹(x − x²)dx = [x²/2 − x³/3]₀¹ = 1/2 − 1/3 = 1/6</div>
+</div>
+
+</section>
+<section id="imp-1esp" data-nav="Integrais Impróprios" data-grp="Capítulo 4 · Integrais Impróprios e Transformada de Laplace" data-track>
+<h2>Integrais Impróprios de 1ª Espécie</h2>
+<p class="lead">Extensão do integral de Riemann a intervalos ilimitados (1ª espécie), critérios de convergência, e a Transformada de Laplace como ferramenta para resolver equações diferenciais.</p>
+
+<div class="box def">
+<span class="t">Definição — Intervalo Ilimitado</span>
+      Sendo f integrável em [a,t], ∀t&gt;a:
+      <div class="fm">∫ₐ^∞ f(x)dx = lim  ∫ₐᵗ f(x)dx        (t→+∞)
+∫_{−∞}^b f(x)dx = lim ∫ₛᵇ f(x)dx      (s→−∞)
+∫_{−∞}^∞ f(x)dx = ∫_{−∞}^c f dx + ∫_c^∞ f dx  (c∈ℝ qualquer, se ambos convergirem)</div>
+      O integral impróprio diz-se <b>convergente</b> se o limite existe e é finito; caso contrário, <b>divergente</b>.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo de Referência — Integral de Dirichlet</span>
+<div class="fm">∫₁^∞ 1/xᵖ dx  é convergente sse p&gt;1  (diverge se p≤1)</div>
+      Este resultado funciona como referência para o critério de comparação.
+    </div>
+<div class="box teo">
+<span class="t">Critérios de Convergência</span>
+<b>Comparação:</b> se 0≤f(x)≤g(x) em [a,+∞[ e ∫ₐ^∞g converge, então ∫ₐ^∞f converge; se ∫ₐ^∞f diverge, então ∫ₐ^∞g diverge.<br/>
+<b>Comparação no limite:</b> se f,g≥0 e lim<sub>x→∞</sub>f(x)/g(x)=L∈]0,+∞[, então ∫f e ∫g têm a mesma natureza.<br/>
+<b>Convergência absoluta:</b> se ∫ₐ^∞|f(x)|dx converge, então ∫ₐ^∞f(x)dx converge (o recíproco é falso).
+    </div>
+
+</section>
+<section id="lap-def" data-nav="Transformada Laplace" data-grp="Capítulo 4 · Integrais Impróprios e Transformada de Laplace" data-track>
+<h2>Transformada de Laplace — Definição e Propriedades</h2>
+
+
+<div class="box def">
+<span class="t">Definição da Transformada de Laplace</span>
+      Para f definida em [0,+∞[, a Transformada de Laplace de f é a função F(s)=L{f(t)}(s) dada por
+      <div class="fm">L{f(t)}(s) = ∫₀^∞ e⁻ˢᵗ f(t) dt,   para os valores de s para os quais o integral converge</div>
+      Diz-se que f é <b>de ordem exponencial α</b> se ∃M,α,T: |f(t)|≤Meᵃᵗ, ∀t&gt;T. Se f é seccionalmente contínua em [0,∞[ e de ordem exponencial α, então L{f} existe para s&gt;α.
+    </div>
+<div class="box teo">
+<span class="t">Transformadas Elementares</span>
+<div class="tw"><table>
+<tr><th>f(t)</th><th>L{f(t)}(s)</th><th>Domínio</th></tr>
+<tr><td>1</td><td>1/s</td><td>s&gt;0</td></tr>
+<tr><td>t<sup>n</sup> (n∈ℕ)</td><td>n!/s<sup>n+1</sup></td><td>s&gt;0</td></tr>
+<tr><td>e<sup>at</sup></td><td>1/(s−a)</td><td>s&gt;a</td></tr>
+<tr><td>sen(at)</td><td>a/(s²+a²)</td><td>s&gt;0</td></tr>
+<tr><td>cos(at)</td><td>s/(s²+a²)</td><td>s&gt;0</td></tr>
+<tr><td>senh(at)</td><td>a/(s²−a²)</td><td>s&gt;|a|</td></tr>
+<tr><td>cosh(at)</td><td>s/(s²−a²)</td><td>s&gt;|a|</td></tr>
+</table></div>
+</div>
+<div class="box teo">
+<span class="t">Propriedades da Transformada de Laplace</span>
+<div class="fm">Linearidade:  L{αf+βg}(s) = αL{f}(s) + βL{g}(s)
+
+1º Deslocamento:  L{eᵃᵗf(t)}(s) = F(s−a)
+
+Derivada da transformada:  L{tⁿf(t)}(s) = (−1)ⁿ Fⁿ(s)
+
+Transformada da derivada:  L{f'(t)}(s) = sF(s) − f(0)
+                            L{f''(t)}(s) = s²F(s) − sf(0) − f'(0)
+                            L{f⁽ⁿ⁾(t)}(s) = sⁿF(s) − sⁿ⁻¹f(0) − ... − f⁽ⁿ⁻¹⁾(0)</div>
+      A propriedade da <b>transformada da derivada</b> é a chave para resolver EDOs lineares com condições iniciais via Laplace (secção 5).
+    </div>
+
+</section>
+<section id="fun-o-de-heaviside-e-convolu-o" data-nav="Função de Heaviside e Convolução" data-grp="Capítulo 4 · Integrais Impróprios e Transformada de Laplace" data-track>
+<h2>Função de Heaviside e Convolução</h2>
+
+
+<div class="box def">
+<span class="t">Função de Heaviside (Degrau Unitário)</span>
+<div class="fm">u(t−c) = { 0, t&lt;c ; 1, t≥c }        L{u(t−c)}(s) = e⁻ᶜˢ/s
+
+2º Deslocamento:  L{f(t−c)u(t−c)}(s) = e⁻ᶜˢF(s)</div>
+      Permite representar funções descontínuas / definidas por ramos de forma compacta.
+    </div>
+<div class="box def">
+<span class="t">Produto de Convolução</span>
+<div class="fm">(f * g)(t) = ∫₀ᵗ f(τ)g(t−τ)dτ       L{f*g}(s) = F(s)·G(s)</div>
+      Propriedades: comutativo (f*g=g*f), associativo, distributivo relativamente à soma.
+    </div>
+
+</section>
+<section id="lap-inv" data-nav="Laplace Inversa" data-grp="Capítulo 4 · Integrais Impróprios e Transformada de Laplace" data-track>
+<h2>Transformada de Laplace Inversa</h2>
+
+
+<div class="box def">
+<span class="t">Definição</span>
+      L⁻¹{F(s)}(t) = f(t) se L{f(t)}(s)=F(s). A transformada inversa é única a menos de um conjunto de pontos de descontinuidade (funções seccionalmente contínuas).
+    </div>
+<div class="box met">
+<span class="t">Estratégia para Calcular L⁻¹</span>
+<ol>
+<li>Usar linearidade: L⁻¹{αF+βG} = αL⁻¹{F} + βL⁻¹{G}</li>
+<li>Decompor F(s) em frações simples (quando racional) — mesmo método do Cap. 2 §4</li>
+<li>Reconhecer transformadas elementares da tabela (1/s, 1/(s−a), s/(s²+a²), ...)</li>
+<li>Aplicar deslocamentos: se F(s−a) reconhecível como G(s), então L⁻¹{F(s−a)}=eᵃᵗg(t)</li>
+<li>Se F=G·H (produto), usar convolução: L⁻¹{GH}=g*h</li>
+</ol>
+</div>
+<div class="box exa">
+<span class="t">Exemplo</span>
+<div class="fm">L⁻¹{(2s+3)/(s²+4)}(t) = 2L⁻¹{s/(s²+4)} + (3/2)L⁻¹{2/(s²+4)} = 2cos(2t) + (3/2)sen(2t)</div>
+</div>
+
+</section>
+<section id="edo-intro" data-nav="EDO — Introdução" data-grp="Capítulo 5 · Equações Diferenciais Ordinárias (EDO)" data-track>
+<h2>Conceitos Fundamentais</h2>
+<p class="lead">Equações que relacionam uma função com as suas derivadas. Estudam-se EDOs de 1ª ordem (separáveis, lineares, homogéneas, Bernoulli) e de ordem n com coeficientes constantes, incluindo resolução via Transformada de Laplace.</p>
+
+<div class="box def">
+<span class="t">Equação Diferencial Ordinária</span>
+      Uma EDO de ordem n é uma equação que relaciona uma variável independente t, uma função incógnita y(t) e as suas derivadas até ordem n:
+      <div class="fm">F(t, y, y', y'', ..., y⁽ⁿ⁾) = 0      (forma implícita)
+y⁽ⁿ⁾ = f(t, y, y', ..., y⁽ⁿ⁻¹⁾)     (forma normal/explícita)</div>
+<b>Ordem</b> = maior ordem de derivada presente. EDO <b>linear</b> se F é combinação linear de y,y′,...,y⁽ⁿ⁾ (com coeficientes função de t apenas).
+    </div>
+<div class="box def">
+<span class="t">Solução, Problema de Valor Inicial (PVI)</span>
+      φ(t) é <b>solução</b> da EDO em I se φ é n vezes diferenciável em I e satisfaz a equação, ∀t∈I. A <b>solução geral</b> depende de n constantes arbitrárias. Um <b>PVI</b> (problema de Cauchy) impõe condições iniciais y(t₀)=y₀, y′(t₀)=y₁, ..., que determinam uma <b>solução particular</b>.
+    </div>
+<div class="box teo">
+<span class="t">Teorema de Existência e Unicidade (Picard-Lindelöf)</span>
+      Para y′=f(t,y), y(t₀)=y₀: se f e ∂f/∂y são contínuas num retângulo em torno de (t₀,y₀), existe uma única solução do PVI numa vizinhança de t₀.
+    </div>
+
+</section>
+<section id="edo-1ord" data-nav="EDO 1ª Ordem" data-grp="Capítulo 5 · Equações Diferenciais Ordinárias (EDO)" data-track>
+<h2>EDO de 1ª Ordem</h2>
+
+
+<div class="box def">
+<span class="t">Equações de Variáveis Separáveis</span>
+      Forma: y′ = g(t)h(y), com h(y)≠0.
+      <div class="fm">dy/h(y) = g(t)dt   ⟹   ∫dy/h(y) = ∫g(t)dt + C</div>
+</div>
+<div class="box exa">
+<span class="t">Exemplo</span>
+      y′=ty²: ∫dy/y² = ∫t dt ⟹ −1/y = t²/2+C ⟹ y(t) = −1/(t²/2+C) = −2/(t²+2C)
+    </div>
+<div class="box def">
+<span class="t">Equações Lineares de 1ª Ordem</span>
+      Forma: y′ + p(t)y = q(t). Fator integrante μ(t) = e^{∫p(t)dt}:
+      <div class="fm">(μ(t)y)' = μ(t)q(t)   ⟹   y(t) = 1/μ(t) [∫μ(t)q(t)dt + C]</div>
+      Se q(t)≡0, a equação diz-se <b>homogénea</b> e a solução geral é y(t)=Ce^{−∫p(t)dt}.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — Linear de 1ª Ordem</span>
+      y′+2y/t = t², t&gt;0. p(t)=2/t ⟹ μ(t)=e^{∫2/t dt}=t².
+      <div class="fm">(t²y)' = t⁴  ⟹  t²y = t⁵/5 + C  ⟹  y(t) = t³/5 + C/t²</div>
+</div>
+<div class="box def">
+<span class="t">Equações Homogéneas (em y/t)</span>
+      Forma: y′ = f(y/t). Substituição v=y/t (y=vt, y′=v+tv′):
+      <div class="fm">v + t v' = f(v)  ⟹  v'/(f(v)−v) = 1/t   (separável em v e t)</div>
+</div>
+<div class="box def">
+<span class="t">Equação de Bernoulli</span>
+      Forma: y′ + p(t)y = q(t)yⁿ, n≠0,1. Substituição v=y¹⁻ⁿ:
+      <div class="fm">v' + (1−n)p(t)v = (1−n)q(t)     [reduz-se a linear em v]</div>
+</div>
+<div class="box def">
+<span class="t">Equações Exatas</span>
+      M(t,y)dt + N(t,y)dy = 0 é <b>exata</b> se ∂M/∂y = ∂N/∂t. Nesse caso existe F(t,y) (função potencial) com ∂F/∂t=M, ∂F/∂y=N, e a solução geral é F(t,y)=C.
+    </div>
+
+</section>
+<section id="edo-nord" data-nav="EDO Ordem n" data-grp="Capítulo 5 · Equações Diferenciais Ordinárias (EDO)" data-track>
+<h2>EDO Lineares de Ordem n com Coeficientes Constantes</h2>
+
+
+<div class="box def">
+<span class="t">EDO Linear de Ordem n</span>
+<div class="fm">aₙy⁽ⁿ⁾ + aₙ₋₁y⁽ⁿ⁻¹⁾ + ... + a₁y' + a₀y = f(t),   aᵢ∈ℝ constantes, aₙ≠0</div>
+      Se f(t)≡0: equação <b>homogénea</b>. Solução geral da não-homogénea: y = y_h + y_p (solução da homogénea + solução particular).
+    </div>
+<div class="box teo">
+<span class="t">Equação Característica e Solução da Homogénea</span>
+      Associa-se o polinómio característico p(r)=aₙrⁿ+...+a₁r+a₀=0.
+      <div class="tw"><table>
+<tr><th>Tipo de raiz</th><th>Contribuição para y_h</th></tr>
+<tr><td>real simples r</td><td>C·eʳᵗ</td></tr>
+<tr><td>real de multiplicidade k</td><td>(C₁+C₂t+...+Cₖt^(k−1))eʳᵗ</td></tr>
+<tr><td>complexa simples α±βi</td><td>eᵃᵗ(C₁cos(βt)+C₂sen(βt))</td></tr>
+<tr><td>complexa mult. k</td><td>eᵃᵗ[(C₁+...+Cₖt^(k−1))cos(βt)+(D₁+...+Dₖt^(k−1))sen(βt)]</td></tr>
+</table></div>
+</div>
+<div class="box met">
+<span class="t">Método dos Coeficientes Indeterminados (solução particular y_p)</span>
+<div class="tw"><table>
+<tr><th>f(t)</th><th>Tentativa de y_p</th></tr>
+<tr><td>polinómio de grau k</td><td>polinómio de grau k (× tˢ se ressonância)</td></tr>
+<tr><td>Aeᵃᵗ</td><td>Beᵃᵗ (× tˢ se a é raiz de multiplicidade s)</td></tr>
+<tr><td>Acos(βt) ou Asen(βt)</td><td>Bcos(βt)+Csen(βt) (× tˢ se βi é raiz)</td></tr>
+<tr><td>eᵃᵗ(Acos(βt)+Bsen(βt))</td><td>eᵃᵗ(Ccos(βt)+Dsen(βt)) (× tˢ se ressonância)</td></tr>
+</table></div>
+      s = multiplicidade da raiz associada, quando f(t) "coincide" com uma solução da homogénea (ressonância).
+    </div>
+<div class="box exa">
+<span class="t">Exemplo Completo</span>
+      y″−3y′+2y = eᵗ. Característica: r²−3r+2=0 ⟹ r=1,2 ⟹ y_h=C₁eᵗ+C₂e²ᵗ.<br/>
+      Como eᵗ coincide com y_h (r=1 é raiz simples), tenta-se y_p=Atetᵗ:
+      <div class="fm">y_p' = A(eᵗ+teᵗ),  y_p'' = A(2eᵗ+teᵗ)
+Substituindo: A(2eᵗ+teᵗ) − 3A(eᵗ+teᵗ) + 2Atetᵗ = eᵗ  ⟹  −Aeᵗ = eᵗ  ⟹  A=−1
+y(t) = C₁eᵗ + C₂e²ᵗ − teᵗ</div>
+</div>
+<div class="box ex">
+<span class="t">Resolução de EDOs via Transformada de Laplace</span>
+      Aplicando L a ambos os membros da EDO (usando L{y⁽ᵏ⁾}=sᵏY(s)−...−y⁽ᵏ⁻¹⁾(0)), obtém-se uma equação <b>algébrica</b> em Y(s)=L{y(t)}(s), que incorpora automaticamente as condições iniciais. Resolve-se para Y(s) e aplica-se L⁻¹ (Cap. 4 §4) para obter y(t) — método particularmente eficaz em PVIs.
+    </div>
+<div class="box exa">
+<span class="t">Exemplo — via Laplace</span>
+      y″+4y=0, y(0)=1, y′(0)=0. L: s²Y−s−0+4Y=0 ⟹ Y(s)=s/(s²+4) ⟹ y(t)=L⁻¹{s/(s²+4)}=cos(2t).
+    </div>
+
+</section>
+<section id="t-c1-t1" data-nav="Teste 1 — 17/11/2023" data-grp="Testes Resolvidos 2023/24" data-track>
+<h2>Teste 1 — 17/11/2023</h2>
+<p class="lead">Os três enunciados de 2023/24 (Teste 1, Teste 2 e Exame Final), resolvidos passo a passo. Tenta cada pergunta primeiro e só depois abre a resolução. Todos os resultados foram confirmados por cálculo simbólico.</p><div class="box bad">⚠ Padrão destes testes: <b>T1</b> = funções inversas + Cauchy/Rolle + primitivas + integral com TFC/área/mudança de variável. <b>T2</b> = área entre curvas + impróprios + EDO 1.ª ordem + EDO linear de ordem n com coeficientes indeterminados. O <b>Exame</b> repete quase tudo do T2.</div>
+
+<p class="lead">Duração 1h30 · 4 perguntas · 20 valores</p>
+<div class="q">
+<div class="q-head"><span class="q-num">1.</span><span class="q-pts">4,0 val.</span></div>
+<p>Considere f(x) = √( arctan(x) + π/2 ).<br/>
+      (a) Caracterize f: domínio, contradomínio, zeros, monotonia.<br/>
+      (b) Mostre que f é invertível, determine f⁻¹ e caracterize-a.<br/>
+      (c) Calcule f′ e (f⁻¹)′ e mostre que, com y = f(x), f′(x) = 1 / (f⁻¹)′(y).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> arctan(x) ∈ ]−π/2, π/2[ para todo o x ∈ ℝ, logo arctan(x)+π/2 ∈ ]0, π[ — sempre positivo, a raiz está sempre definida.</p>
+<div class="fm">D_f = ℝ          CD_f = ]0, √π[
+Zeros: f(x)=0 ⟺ arctan x = −π/2 — impossível ⟹ f não tem zeros.
+Monotonia: arctan é estritamente crescente e √ também ⟹ f estritamente crescente.</div>
+<p><b>(b)</b> f é estritamente crescente ⟹ injetiva ⟹ invertível (sobre o seu contradomínio).</p>
+<div class="fm">y = √(arctan x + π/2)  ⟺  y² = arctan x + π/2  ⟺  arctan x = y² − π/2
+⟺  x = tan(y² − π/2) = −cot(y²)
+
+f⁻¹ : ]0, √π[ → ℝ,   f⁻¹(y) = tan(y² − π/2)
+D_{f⁻¹} = ]0, √π[     CD_{f⁻¹} = ℝ
+Zero: y² − π/2 = 0 ⟺ y = √(π/2)       Monotonia: estritamente crescente (como f)</div>
+<p><b>(c)</b></p>
+<div class="fm">f′(x) = 1 / [ 2(1+x²)·√(arctan x + π/2) ]
+
+(f⁻¹)′(y) = sec²(y² − π/2) · 2y = 2y / cos²(y² − π/2)
+
+Com y = f(x):  y² − π/2 = arctan x   ⟹  cos²(arctan x) = 1/(1+x²)
+(f⁻¹)′(y) = 2·√(arctan x + π/2)·(1+x²)   ⟹   1/(f⁻¹)′(y) = f′(x)  ✓</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">2.</span><span class="q-pts">4,0 val.</span></div>
+<p>f : ℝ₀⁺ → ℝ, f(x) = (x²+x)·ln(x) se x &gt; 0 e f(0) = 0.<br/>
+      (a) Calcule lim<sub>x→0⁺</sub> f(x) com a Regra de Cauchy; f é contínua em 0?<br/>
+      (b) Determine f′ e o seu domínio.<br/>
+      (c) Enuncie o Teorema de Rolle e mostre que f′ se anula em pelo menos um ponto.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Indeterminação 0·(−∞). Escreve-se como quociente ∞/∞:</p>
+<div class="fm">lim (x²+x) ln x = lim  ln x / [1/(x²+x)]     (−∞/+∞)
+ x→0⁺                 x→0⁺
+Cauchy: = lim  (1/x) / [ −(2x+1)/(x²+x)² ] = lim  −(x²+x)² / [x(2x+1)]
+        = lim  −x(x+1)² / (2x+1) = 0</div>
+<p>Como lim<sub>x→0⁺</sub> f(x) = 0 = f(0), <b>f é contínua em 0</b> (à direita, que é o que interessa no domínio ℝ₀⁺).</p>
+<p><b>(b)</b> Para x &gt; 0:</p>
+<div class="fm">f′(x) = (2x+1) ln x + (x²+x)·(1/x) = (2x+1) ln x + x + 1</div>
+<p>Em x = 0: (f(x)−f(0))/x = (x+1) ln x → −∞, logo f não é derivável em 0. <span class="ans">D_{f′} = ℝ⁺ = ]0,+∞[</span></p>
+<p><b>(c)</b> <b>Rolle:</b> se f é contínua em [a,b], derivável em ]a,b[ e f(a) = f(b), então existe c ∈ ]a,b[ tal que f′(c) = 0.</p>
+<p>Aplicação em [0,1]: f é contínua em [0,1] (por (a) e por ser produto de contínuas em ]0,1]); é derivável em ]0,1[; f(0) = 0 e f(1) = 2·ln 1 = 0. Logo <span class="ans">∃ c ∈ ]0,1[ : f′(c) = 0</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">3.</span><span class="q-pts">6,0 val.</span></div>
+<p>Calcule: (a) ∫ x² eˣ dx;  (b) ∫ 1/√(4−x²) dx;  (c) ∫ (x+1)/(x²+1)² dx.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Partes duas vezes (u = polinómio, v′ = eˣ):</p>
+<div class="fm">∫x²eˣ dx = x²eˣ − ∫2x eˣ dx = x²eˣ − (2x eˣ − ∫2eˣ dx)
+         = eˣ(x² − 2x + 2) + C</div>
+<p><b>(b)</b> Imediata (forma u′/√(1−u²) com u = x/2):</p>
+<div class="fm">∫ 1/√(4−x²) dx = ∫ (1/2)/√(1−(x/2)²) dx = arcsen(x/2) + C</div>
+<p><b>(c)</b> Separar: (x+1)/(x²+1)² = x/(x²+1)² + 1/(x²+1)².</p>
+<div class="fm">∫ x/(x²+1)² dx = (1/2)∫2x(x²+1)⁻² dx = −1 / [2(x²+1)]
+
+∫ 1/(x²+1)² dx :  x = tg t, dx = sec²t dt, 1+x² = sec²t
+  = ∫ cos²t dt = t/2 + sen(2t)/4 = (1/2)arctg x + x / [2(x²+1)]
+
+Total:  ∫ (x+1)/(x²+1)² dx = (x−1) / [2(x²+1)] + (1/2)·arctg x + C</div>
+<p>(sen 2t = 2tg t/(1+tg²t) = 2x/(1+x²).)</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">4.</span><span class="q-pts">6,0 val.</span></div>
+<p>(a) Determine F tal que F′(x) = ( ∫ₓ^{x²+1} eᵗ dt )′ e F(0) = 0.<br/>
+      (b) Determine k &gt; 0 tal que a área de {0 ≤ x ≤ ∛k, 0 ≤ y ≤ x²} seja π.<br/>
+      (c) Faça uma mudança de variável em ∫₀⁶⁴ √x / (∛x + 1) dx que dê uma integranda racional (não calcule).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Se F′ é a derivada de G(x) = ∫ₓ^{x²+1} eᵗ dt, então F = G + C. Calculando G:</p>
+<div class="fm">G(x) = [eᵗ]ₓ^{x²+1} = e^{x²+1} − eˣ
+F(0) = G(0) + C = (e − 1) + C = 0  ⟹  C = 1 − e
+
+F(x) = e^{x²+1} − eˣ + 1 − e</div>
+<p>(Confirmação pelo TFC: F′(x) = 2x·e^{x²+1} − eˣ.)</p>
+<p><b>(b)</b></p>
+<div class="fm">Área = ∫₀^{∛k} x² dx = [x³/3]₀^{∛k} = k/3 = π   ⟹   k = 3π</div>
+<p><b>(c)</b> Há √x e ∛x: usa-se x = t⁶ (6 = m.m.c. dos índices 2 e 3).</p>
+<div class="fm">x = t⁶,  dx = 6t⁵ dt,  √x = t³,  ∛x = t²
+x = 0 ⟹ t = 0;    x = 64 ⟹ t = 2
+
+∫₀⁶⁴ √x/(∛x+1) dx = ∫₀² t³·6t⁵/(t²+1) dt = ∫₀² 6t⁸/(t²+1) dt</div>
+</div></details>
+</div>
+
+</section>
+<section id="t-c1-t2" data-nav="Teste 2 — 11/01/2024" data-grp="Testes Resolvidos 2023/24" data-track>
+<h2>Teste 2 — 11/01/2024</h2>
+
+
+<p class="lead">Duração 2h00 · 4 perguntas · 20 valores</p>
+<div class="q">
+<div class="q-head"><span class="q-num">1.</span><span class="q-pts">4 val.</span></div>
+<p>D₁ = {(x,y) : 0 ≤ y ≤ 1−x²}, D₂ = {(x,y) : 2x² ≤ y ≤ x+1}.<br/>(a) Esboce D₁, D₂ e D = D₁ ∩ D₂.  (b) Calcule a área de D.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> D₁: região entre o eixo Ox e a parábola y = 1−x² (x ∈ [−1,1]). D₂: entre a parábola y = 2x² e a reta y = x+1. Interseções relevantes:</p>
+<div class="fm">2x² = x+1    ⟺ x = −1/2 ou x = 1      (pontos (−1/2, 1/2) e (1, 2))
+2x² = 1−x²   ⟺ x = ±1/√3              (ponto (1/√3, 2/3))
+1−x² = x+1   ⟺ x = 0 ou x = −1         (ponto (0, 1))</div>
+<p>Em D o teto é o menor entre y = x+1 e y = 1−x²: para x ∈ [−1/2, 0] é a reta (x+1 ≤ 1−x²); para x ∈ [0, 1/√3] é a parábola 1−x². O chão é sempre y = 2x² (≥ 0, por isso y ≥ 0 já está garantido).</p>
+<p><b>(b)</b></p>
+<div class="fm">A = ∫_{−1/2}^{0} (x+1−2x²) dx + ∫_{0}^{1/√3} (1−x²−2x²) dx
+  = [x²/2 + x − 2x³/3]_{−1/2}^{0} + [x − x³]_{0}^{1/√3}
+  = 7/24 + 2/(3√3)
+  = 7/24 + 2√3/9  ≈ 0,677</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">2.</span><span class="q-pts">5 val.</span></div>
+<p>Natureza e valor (se convergentes): (a) ∫₁^{+∞} (2+cos x)/x dx;  (b) ∫_{−∞}^{+∞} e⁻ˣ dx;  (c) ∫₀^{+∞} (t⁵ + e⁻²ᵗ) e⁻²ᵗ dt.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Critério de comparação: como cos x ≥ −1, para x ≥ 1:</p>
+<div class="fm">(2+cos x)/x ≥ 1/x ≥ 0    e    ∫₁^{+∞} 1/x dx = lim ln b = +∞  (divergente)</div>
+<p><span class="ans">Divergente</span></p>
+<p><b>(b)</b> Parte-se em 0; basta uma parte divergir.</p>
+<div class="fm">∫_{−∞}^{0} e⁻ˣ dx = lim_{a→−∞} [−e⁻ˣ]ₐ⁰ = lim (−1 + e⁻ᵃ) = +∞</div>
+<p><span class="ans">Divergente</span> (a parte ∫₀^{+∞} e⁻ˣ dx = 1 converge, mas não chega).</p>
+<p><b>(c)</b> Desenvolver: t⁵e⁻²ᵗ + e⁻⁴ᵗ. Usa-se ∫₀^{+∞} tⁿe⁻ˢᵗ dt = n!/sⁿ⁺¹ (é a transformada de Laplace de tⁿ):</p>
+<div class="fm">∫₀^{+∞} t⁵e⁻²ᵗ dt = 5!/2⁶ = 120/64 = 15/8
+∫₀^{+∞} e⁻⁴ᵗ dt = 1/4
+
+Total = 15/8 + 2/8 = 17/8</div>
+<p><span class="ans">Convergente, valor 17/8</span></p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">3.</span><span class="q-pts">5 val.</span></div>
+<p>(a) Determine f tal que f = x·f′ e f(1) = 1.<br/>
+      (b) Determine um fator integrante para y′ + (1/x)y = 1/x e a solução com y(1) = −1.<br/>
+      (c) Mude a variável em y′ = x/(x+y) para obter uma EDO de variáveis separáveis (separe, não resolva).</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> EDO de variáveis separáveis:</p>
+<div class="fm">y = x y′  ⟹  y′/y = 1/x  ⟹  ln|y| = ln|x| + c  ⟹  y = Cx
+f(1) = C = 1   ⟹   f(x) = x</div>
+<p><b>(b)</b> Linear com P(x) = 1/x:</p>
+<div class="fm">μ(x) = e^{∫1/x dx} = e^{ln x} = x       (fator integrante)
+x y′ + y = 1  ⟺  (x y)′ = 1  ⟹  x y = x + C  ⟹  y = 1 + C/x
+y(1) = 1 + C = −1  ⟹  C = −2         y(x) = 1 − 2/x</div>
+<p><b>(c)</b> A equação é homogénea (y′ = 1/(1 + y/x)). Substitui-se y = u·x, y′ = u + x u′:</p>
+<div class="fm">u + x u′ = 1/(1+u)   ⟹   x u′ = (1 − u − u²)/(1+u)
+
+Separando:   (1+u)/(1 − u − u²) du = (1/x) dx</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">4.</span><span class="q-pts">6 val.</span></div>
+<p>y⁽ⁱᵛ⁾ + 8y″ + 16y = sen(x) + eˣ.<br/>(a) Solução geral da homogénea. (b) Procedimento dos coeficientes indeterminados. (c) Solução geral da completa.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Equação característica:</p>
+<div class="fm">r⁴ + 8r² + 16 = (r² + 4)² = 0   ⟹   r = ±2i, cada uma com multiplicidade 2
+
+y_h = (C₁ + C₂x) cos(2x) + (C₃ + C₄x) sen(2x)</div>
+<p><b>(b)</b> O 2.º membro é soma de dois termos, por isso y_p = y_{p1} + y_{p2} (princípio da sobreposição):</p>
+<ul>
+<li>sen(x): associado a ±i, que <b>não</b> é raiz (as raízes são ±2i) ⟹ y_{p1} = A cos x + B sen x.</li>
+<li>eˣ: associado a r = 1, que não é raiz ⟹ y_{p2} = D eˣ.</li>
+<li>Substitui-se cada uma na equação e igualam-se coeficientes.</li>
+</ul>
+<p><b>(c)</b> Para y = A cos x + B sen x: y″ = −y e y⁽ⁱᵛ⁾ = y, logo (1 − 8 + 16)y = 9y:</p>
+<div class="fm">9(A cos x + B sen x) = sen x   ⟹   A = 0, B = 1/9
+y = D eˣ: (1 + 8 + 16) D eˣ = eˣ  ⟹  D = 1/25
+
+y = (C₁ + C₂x) cos(2x) + (C₃ + C₄x) sen(2x) + (1/9) sen x + (1/25) eˣ</div>
+</div></details>
+</div>
+
+</section>
+<section id="t-c1-ex" data-nav="Exame Final — 11/01/2024" data-grp="Testes Resolvidos 2023/24" data-track>
+<h2>Exame Final — 11/01/2024</h2>
+
+
+<p class="lead">Duração 2h45 · 5 perguntas · as perguntas 3, 4 e 5 são as do Teste 2</p>
+<div class="q">
+<div class="q-head"><span class="q-num">1.</span><span class="q-pts">4 val.</span></div>
+<p>f(x) = ln(arcsen x).<br/>
+      (a) Domínio e contradomínio. (b) Mostre que f é invertível, determine f⁻¹, domínio e contradomínio.<br/>
+      (c) Enuncie o Teorema de Weierstrass. Pode aplicar-se a f? (d) Calcule lim<sub>x→0⁺</sub> f(x)/x.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Precisa de x ∈ [−1,1] (arcsen) e arcsen x &gt; 0 (ln) ⟺ x ∈ ]0,1].</p>
+<div class="fm">D_f = ]0, 1]       arcsen(]0,1]) = ]0, π/2]   ⟹   CD_f = ]−∞, ln(π/2)]</div>
+<p><b>(b)</b> Composta de estritamente crescentes ⟹ estritamente crescente ⟹ injetiva ⟹ invertível.</p>
+<div class="fm">y = ln(arcsen x) ⟺ arcsen x = eʸ ⟺ x = sen(eʸ)
+
+f⁻¹(y) = sen(eʸ),   D_{f⁻¹} = ]−∞, ln(π/2)],   CD_{f⁻¹} = ]0, 1]</div>
+<p><b>(c)</b> <b>Weierstrass:</b> uma função contínua num intervalo fechado e limitado [a,b] tem máximo e mínimo nesse intervalo.</p>
+<p>Em todo o domínio <b>não</b>: ]0,1] não é fechado (e de facto f não tem mínimo, pois f(x) → −∞ quando x → 0⁺). Pode aplicar-se em qualquer [a,1] com 0 &lt; a &lt; 1, onde f é contínua.</p>
+<p><b>(d)</b> Não há indeterminação: o numerador → −∞ e o denominador → 0⁺.</p>
+<div class="fm">lim_{x→0⁺} ln(arcsen x)/x = (−∞)/(0⁺) = −∞</div>
+<div class="box bad">⚠ Não apliques Cauchy aqui: só se usa com 0/0 ou ∞/∞.</div>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">2.</span><span class="q-pts">4 val.</span></div>
+<p>Calcule: (a) ∫ 1/(x√(x²−9)) dx;  (b) ∫ 1/[(x²+4)(x−2)] dx.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Substituição trigonométrica para √(x²−a²): x = 3 sec t (para x &gt; 3, t ∈ ]0, π/2[):</p>
+<div class="fm">dx = 3 sec t tg t dt,     √(x²−9) = 3 tg t
+∫ 3 sec t tg t / (3 sec t · 3 tg t) dt = ∫ (1/3) dt = t/3 + C
+
+t = arcsec(x/3) = arccos(3/x)   ⟹   ∫ = (1/3)·arccos(3/x) + C</div>
+<p>(Para x &lt; −3 obtém-se o mesmo com |x|: (1/3)·arccos(3/|x|) + C.)</p>
+<p><b>(b)</b> Frações simples:</p>
+<div class="fm">1/[(x²+4)(x−2)] = A/(x−2) + (Bx + C)/(x²+4)
+x = 2:  1 = 8A  ⟹  A = 1/8
+Coef. x²: A + B = 0  ⟹  B = −1/8
+Termo indep.: 4A − 2C = 1  ⟹  C = −1/4
+
+∫ = (1/8) ln|x−2| − (1/16) ln(x²+4) − (1/8) arctg(x/2) + C</div>
+<p>(−(1/8)∫x/(x²+4) = −(1/16) ln(x²+4); −(1/4)∫1/(x²+4) = −(1/8) arctg(x/2).)</p>
+</div></details>
+</div>
+<div class="q">
+<div class="q-head"><span class="q-num">3.</span><span class="q-pts">4 val.</span></div>
+<p>(a) Área de D = {2x² ≤ y ≤ x+1}. (b) Natureza de ∫_{−∞}^{+∞} e⁻ˣ dx. (c) Valor de ∫₀^{+∞} (t⁵+e⁻²ᵗ)e⁻²ᵗ dt.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><b>(a)</b> Interseção em x = −1/2 e x = 1 (ver T2, 1):</p>
+<div class="fm">A = ∫_{−1/2}^{1} (x + 1 − 2x²) dx = [x²/2 + x − 2x³/3]_{−1/2}^{1} = 5/6 + 7/24 = 9/8</div>
+<p><b>(b)</b> e <b>(c)</b>: iguais ao Teste 2, pergunta 2 — divergente; 17/8.</p>
+</div></details>
+</div>
+<div class="box ex">
+<span class="t">Perguntas 4 e 5</span>
+      São exatamente as perguntas 3(a), 3(b) e 4 do Teste 2: f(x) = x; y = 1 − 2/x; y = (C₁+C₂x)cos 2x + (C₃+C₄x)sen 2x + (1/9)sen x + (1/25)eˣ.
+    </div>
+
+</section>

@@ -1,0 +1,160 @@
+<title>Guias de Estudo LEI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+<style>
+/* Layout: cabeçalho em grelha quadriculada, filtros em linha, cartões por semestre; ao abrir uma cadeira o guia ocupa o ecrã com uma barra de regresso. */
+:root{
+  --paper:#F3F5F9; --card:#FFFFFF; --ink:#16202E; --muted:#566275; --line:#D6DCE7;
+  --accent:#2340A8; --on-accent:#FFFFFF; --soft:#E5EAF9;
+  --ok:#0F7B5F; --okbg:#E2F3EC; --wip:#94530A; --wipbg:#FAEFDB;
+  --grid:rgba(35,64,168,.075);
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0F141C; --card:#161D28; --ink:#E6EBF3; --muted:#9AA6B8; --line:#2A3445;
+  --accent:#93AAFF; --on-accent:#0F141C; --soft:#1D2848;
+  --ok:#63D1AA; --okbg:#14302A; --wip:#F0B45A; --wipbg:#35290F; --grid:rgba(147,170,255,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0F141C; --card:#161D28; --ink:#E6EBF3; --muted:#9AA6B8; --line:#2A3445;
+  --accent:#93AAFF; --on-accent:#0F141C; --soft:#1D2848;
+  --ok:#63D1AA; --okbg:#14302A; --wip:#F0B45A; --wipbg:#35290F; --grid:rgba(147,170,255,.07); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.5;font-size:15px}
+.wrap{padding-inline:clamp(16px,5vw,64px)}
+.hero{padding-block:38px 26px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-size:clamp(28px,5vw,42px);line-height:1.1;margin:0 0 8px;letter-spacing:-.025em;font-weight:600;text-wrap:balance}
+.hero p{margin:0;color:var(--muted);font-family:var(--serif);font-size:17px;max-width:60ch}
+main.wrap{padding-block:22px 64px;max-width:1120px}
+.bar{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:flex-end;margin-bottom:10px}
+.grp{display:flex;flex-direction:column;gap:6px;min-width:0}
+.grp>.lbl{font-size:13px;color:var(--muted);font-weight:500}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:inherit;font-size:14px;padding:6px 13px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.search{flex:1 1 220px}
+.search input{width:100%;font:inherit;font-size:15px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.count{font-size:14px;color:var(--muted);margin:4px 0 6px;font-variant-numeric:tabular-nums}
+h2{font-size:19px;margin:28px 0 12px;font-weight:600;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+h2 small{font-weight:400;color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:4px;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 16px 14px;min-width:0}
+button.card{cursor:pointer}
+button.card:hover{border-color:var(--accent)}
+.card.off{opacity:.72}
+.sigla{font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--accent)}
+.nome{font-size:15px}
+.meta{font-size:13px;color:var(--muted)}
+.st{align-self:flex-start;font-size:12.5px;font-weight:500;padding:2px 9px;border-radius:999px;margin-top:6px}
+.st.ok{background:var(--okbg);color:var(--ok)}
+.st.wip{background:var(--wipbg);color:var(--wip)}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px;margin-top:16px}
+/* leitor */
+.viewer{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;background:var(--paper)}
+.vbar{display:flex;align-items:center;gap:12px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;border-bottom:1px solid var(--line);background:var(--card);min-width:0}
+.back{font:inherit;font-size:14px;font-weight:500;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap}
+.back:hover{border-color:var(--accent)}
+.vtitle{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.vtitle b{color:var(--accent);margin-right:6px}
+.vbody{flex:1;position:relative;display:flex;min-height:0}
+.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}
+.viewer iframe.ready{opacity:1}
+.viewer iframe{flex:1;width:100%;border:0;background:transparent;opacity:0;transition:opacity .12s;position:relative;padding-bottom:env(safe-area-inset-bottom,0px)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<header class="hero wrap">
+  <h1>Guias de estudo: 1.º e 2.º ano</h1>
+  <p>Resumos, métodos e testes resolvidos de cada cadeira. Escolhe o ano e o semestre e abre o guia.</p>
+</header>
+<main class="wrap">
+  <div class="bar">
+    <div class="grp"><span class="lbl" id="lAno">Ano</span><div class="chips" id="fAno" role="group" aria-labelledby="lAno"></div></div>
+    <div class="grp"><span class="lbl" id="lSem">Semestre</span><div class="chips" id="fSem" role="group" aria-labelledby="lSem"></div></div>
+    <div class="grp"><span class="lbl" id="lEst">Estado</span><div class="chips" id="fEst" role="group" aria-labelledby="lEst"></div></div>
+    <div class="grp search"><label class="lbl" for="q">Pesquisar</label><input id="q" type="search" placeholder="Sigla ou nome da cadeira" autocomplete="off"></div>
+  </div>
+  <div class="count" id="count" aria-live="polite"></div>
+  <div id="out"></div>
+  <div class="empty" id="empty" hidden>Nenhuma cadeira corresponde a estes filtros. Escolhe outro semestre ou limpa a pesquisa.</div>
+</main>
+
+<div class="viewer" id="viewer" hidden>
+  <div class="vbar"><button class="back" id="back" type="button">← Todas as cadeiras</button><span class="vtitle" id="vtitle"></span></div>
+  <div class="vbody"><div class="loading" aria-hidden="true">A abrir o guia…</div><iframe id="frame" title="Guia da cadeira"></iframe></div>
+</div>
+
+<!--GUIAS-->
+
+<script>
+(function(){
+var CADEIRAS=/*CADEIRAS*/[];
+var F={ano:"todos",sem:"todos",est:"todos",q:""};
+try{var saved=JSON.parse(localStorage.getItem("guias-filtros")||"null");if(saved){F.ano=saved.ano||F.ano;F.sem=saved.sem||F.sem;F.est=saved.est||F.est;}}catch(e){}
+function keep(){try{localStorage.setItem("guias-filtros",JSON.stringify({ano:F.ano,sem:F.sem,est:F.est}))}catch(e){}}
+function chips(id,key,opts){
+  var box=document.getElementById(id);
+  opts.forEach(function(o){
+    var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=o[1];
+    b.setAttribute("aria-pressed",String(F[key]===o[0]));
+    b.addEventListener("click",function(){F[key]=o[0];keep();
+      box.querySelectorAll(".chip").forEach(function(c,i){c.setAttribute("aria-pressed",String(opts[i][0]===F[key]))});render();});
+    box.appendChild(b);
+  });
+}
+var anos=Array.from(new Set(CADEIRAS.map(function(c){return c.ano}))).sort();
+chips("fAno","ano",[["todos","Todos"]].concat(anos.map(function(a){return[String(a),a+".º ano"]})));
+chips("fSem","sem",[["todos","Ambos"],["1","1.º semestre"],["2","2.º semestre"]]);
+chips("fEst","est",[["todos","Todas"],["ok","Guia pronto"],["wip","Em preparação"]]);
+document.getElementById("q").addEventListener("input",function(e){F.q=e.target.value.trim();render()});
+function norm(t){return t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
+function has(c){return !!document.getElementById("guia-"+c.id)}
+function render(){
+  var out=document.getElementById("out");out.innerHTML="";
+  var list=CADEIRAS.filter(function(c){
+    return (F.ano==="todos"||String(c.ano)===F.ano)&&(F.sem==="todos"||String(c.sem)===F.sem)&&
+      (F.est==="todos"||(F.est==="ok")===has(c))&&(!F.q||norm(c.s+" "+c.n).indexOf(norm(F.q))>-1);
+  });
+  var prontos=list.filter(has).length;
+  document.getElementById("count").textContent=list.length+(list.length===1?" cadeira":" cadeiras")+", "+prontos+" com guia pronto";
+  document.getElementById("empty").hidden=list.length>0;
+  var groups={};list.forEach(function(c){var k=c.ano+"-"+c.sem;(groups[k]=groups[k]||[]).push(c)});
+  Object.keys(groups).sort().forEach(function(k){
+    var p=k.split("-"),h=document.createElement("h2");
+    h.textContent=p[0]+".º ano, "+p[1]+".º semestre";
+    var sm=document.createElement("small");sm.textContent=groups[k].length+(groups[k].length===1?" cadeira":" cadeiras");h.appendChild(sm);
+    out.appendChild(h);
+    var g=document.createElement("div");g.className="grid";
+    groups[k].forEach(function(c){
+      var ok=has(c),el=document.createElement(ok?"button":"div");
+      el.className="card"+(ok?"":" off");if(ok){el.type="button";el.addEventListener("click",function(){location.hash=c.id});}
+      [["sigla",c.s],["nome",c.n],["meta",c.ano+".º ano, "+c.sem+".º semestre"]].forEach(function(x){var s=document.createElement("span");s.className=x[0];s.textContent=x[1];el.appendChild(s)});
+      var st=document.createElement("span");st.className="st "+(ok?"ok":"wip");st.textContent=ok?"Abrir guia":"Em preparação";el.appendChild(st);
+      g.appendChild(el);
+    });
+    out.appendChild(g);
+  });
+}
+var viewer=document.getElementById("viewer"),frame=document.getElementById("frame"),current=null;
+frame.addEventListener("load",function(){frame.classList.add("ready")});
+window.addEventListener("message",function(e){if(e.source===frame.contentWindow&&e.data==="guia-pronto")frame.classList.add("ready")});
+function route(){
+  var id=location.hash.replace("#","");
+  var c=CADEIRAS.filter(function(x){return x.id===id})[0];
+  var src=c&&document.getElementById("guia-"+c.id);
+  if(!src){viewer.hidden=true;document.body.style.overflow="";current=null;return;}
+  if(current!==id){frame.classList.remove("ready");frame.srcdoc=JSON.parse(src.textContent);current=id;}
+  document.getElementById("vtitle").innerHTML="";
+  var b=document.createElement("b");b.textContent=c.s;var t=document.createTextNode(c.n);
+  document.getElementById("vtitle").append(b,t);
+  viewer.hidden=false;document.body.style.overflow="hidden";document.title=c.s+" · Guias de Estudo";
+}
+document.getElementById("back").addEventListener("click",function(){location.hash="";});
+window.addEventListener("hashchange",function(){route();if(!location.hash)document.title="Guias de Estudo LEI"});
+render();route();
+})();
+</script>
