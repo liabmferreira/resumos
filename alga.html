@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALGA — Guia de estudo completo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<style>
+:root{
+  --paper:#F4F6F9; --card:#FFFFFF; --ink:#16202E; --muted:#5A6578; --line:#D8DEE8;
+  --accent:#2340A8; --accent-soft:#E6EBFA;
+  --def:#2340A8; --def-bg:#EAEEFB;
+  --teo:#0F7B5F; --teo-bg:#E4F4EE;
+  --met:#9A5700; --met-bg:#FBF0DC;
+  --bad:#B3261E; --bad-bg:#FBE9E7;
+  --exa:#6B3FA0; --exa-bg:#F1EAF8;
+  --ex:#475569; --ex-bg:#EEF1F5;
+  --grid:rgba(35,64,168,.07);
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+:root:not([data-theme="light"]){
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+    --accent:#8FA8FF; --accent-soft:#1E2A4D;
+    --def:#8FA8FF; --def-bg:#1B2544;
+    --teo:#5FD0A8; --teo-bg:#14302A;
+    --met:#F0B45A; --met-bg:#35290F;
+    --bad:#FF8F85; --bad-bg:#3A1E1B;
+    --exa:#C6A3F2; --exa-bg:#2A1F3D;
+    --ex:#A9B6C9; --ex-bg:#1E2735;
+    --grid:rgba(143,168,255,.07);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#171E29; --ink:#E7ECF4; --muted:#9BA7BA; --line:#2A3445;
+  --accent:#8FA8FF; --accent-soft:#1E2A4D;
+  --def:#8FA8FF; --def-bg:#1B2544;
+  --teo:#5FD0A8; --teo-bg:#14302A;
+  --met:#F0B45A; --met-bg:#35290F;
+  --bad:#FF8F85; --bad-bg:#3A1E1B;
+  --exa:#C6A3F2; --exa-bg:#2A1F3D;
+  --ex:#A9B6C9; --ex-bg:#1E2735;
+  --grid:rgba(143,168,255,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.66;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+/* sidebar */
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:22px 18px 28px;border-right:1px solid var(--line);background:var(--card);font-family:var(--sans);font-size:14px}
+.side h1{font-size:17px;margin:0 0 2px;font-weight:600;letter-spacing:-.01em}
+.side .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:6px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--teo);transition:width .25s}
+.barlbl{font-size:12px;color:var(--muted);margin-bottom:12px}
+.side nav a{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;margin:1px -8px;border-radius:6px;color:var(--ink);text-decoration:none;line-height:1.35}
+.side nav a:hover{background:var(--accent-soft)}
+.side nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side nav .grp{margin:14px 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+.side nav input{margin-top:3px;accent-color:var(--teo)}
+.side .tools{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.side button{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer}
+.side button:hover{border-color:var(--accent)}
+.mnav{display:none}
+/* main */
+main{padding:0 clamp(18px,4vw,56px) 80px;max-width:920px;width:100%}
+.hero{margin:0 calc(-1 * clamp(18px,4vw,56px)) 34px;padding:46px clamp(18px,4vw,56px) 34px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.hero h1{font-family:var(--sans);font-weight:600;font-size:clamp(30px,5vw,46px);line-height:1.08;margin:0 0 10px;letter-spacing:-.025em}
+.hero p{margin:0;max-width:60ch;color:var(--muted);font-size:18px}
+h2{font-family:var(--sans);font-size:28px;line-height:1.2;margin:56px 0 6px;letter-spacing:-.015em;font-weight:600;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+h2 .src{font-size:13px;font-weight:400;color:var(--muted)}
+h3{font-family:var(--sans);font-size:19px;margin:30px 0 8px;font-weight:600;letter-spacing:-.005em}
+h4{font-family:var(--sans);font-size:15.5px;margin:20px 0 4px;font-weight:600;color:var(--muted)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:1.35em}
+li{margin:3px 0}
+section{border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.done-tag{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--teo);display:none}
+section.done .done-tag{display:inline}
+/* boxes */
+.box{margin:16px 0;padding:12px 16px 10px;border-left:4px solid var(--ex);background:var(--ex-bg);border-radius:0 8px 8px 0}
+.box>.t{display:block;font-family:var(--sans);font-weight:600;font-size:13.5px;margin-bottom:4px}
+.box>:last-child{margin-bottom:2px}
+.box.def{border-color:var(--def);background:var(--def-bg)} .box.def>.t{color:var(--def)}
+.box.teo{border-color:var(--teo);background:var(--teo-bg)} .box.teo>.t{color:var(--teo)}
+.box.met{border-color:var(--met);background:var(--met-bg)} .box.met>.t{color:var(--met)}
+.box.bad{border-color:var(--bad);background:var(--bad-bg)} .box.bad>.t{color:var(--bad)}
+.box.exa{border-color:var(--exa);background:var(--exa-bg)} .box.exa>.t{color:var(--exa)}
+.box.ex>.t{color:var(--ex)}
+mjx-container[display="true"]{margin:.7em 0 !important;overflow-x:auto;overflow-y:hidden;max-width:100%}
+mjx-container{max-width:100%}
+mjx-container:not([display="true"]){display:inline-block;max-width:100%;overflow-x:auto;overflow-y:hidden;vertical-align:middle}
+main{min-width:0;overflow-wrap:break-word}
+/* tables */
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font-family:var(--sans);font-size:14.5px;width:100%;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-weight:600}
+td.c,th.c{text-align:center}
+/* details */
+details{margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+summary{cursor:pointer;padding:9px 14px;font-family:var(--sans);font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>.in{padding:10px 16px 6px}
+code,.k{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em}
+.tag{display:inline-block;font-family:var(--sans);font-size:12px;padding:1px 8px;border-radius:99px;background:var(--exa-bg);color:var(--exa);margin-left:6px;font-weight:500;white-space:nowrap}
+.chk{list-style:none;padding-left:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;font-family:var(--sans);font-size:15px}
+.chk input{margin-top:5px;accent-color:var(--teo)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cols>div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px 4px}
+.cols h4{margin-top:0}
+.sheet{columns:2 340px;column-gap:28px}
+.sheet .box{break-inside:avoid}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .layout{display:block}
+  .side{display:none}
+  .mnav{display:block;position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);font-family:var(--sans);font-size:14px;padding-top:env(safe-area-inset-top,0px)}
+  .mnav summary{padding:10px 16px}
+  .mnav .list{max-height:60vh;overflow:auto;padding:4px 16px 12px}
+  .mnav a{display:block;padding:6px 0;color:var(--ink);text-decoration:none}
+  body{font-size:16.5px}
+  h2{font-size:24px}
+}
+@media print{
+  .side,.mnav{display:none}.layout{display:block}
+  body{background:#fff;color:#000;font-size:11pt}
+  .hero{background:none}
+  details{border:0} details>summary{display:none}
+  details[open]>.in,details>.in{display:block}
+  section{break-inside:auto}.box{break-inside:avoid}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<details class="mnav" id="mnav"><summary>Índice</summary><div class="list" id="mlist"></div></details>
+<div class="layout">
+<aside class="side">
+  <h1>ALGA — guia de estudo</h1>
+  <p class="sub">Álgebra Linear e Geometria Analítica · UA</p>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl" id="plbl">0 de 12 capítulos estudados</div>
+  <nav id="nav">
+    <a href="#intro">Antes de começar</a>
+    <div class="grp">Matrizes e sistemas</div>
+    <a href="#cap1"><input type="checkbox" data-sec="cap1" aria-label="Marcar como estudado"><span>1 · Matrizes e sistemas</span></a>
+    <a href="#lu"><input type="checkbox" data-sec="lu" aria-label="Marcar como estudado"><span>1.2 · Decomposição LU e LDU</span></a>
+    <div class="grp">Espaços vetoriais</div>
+    <a href="#cap2"><input type="checkbox" data-sec="cap2" aria-label="Marcar como estudado"><span>2 · Subespaços, bases, mudança de base</span></a>
+    <a href="#espacos"><input type="checkbox" data-sec="espacos" aria-label="Marcar como estudado"><span>2.2 · Espaços das linhas, colunas e nulo</span></a>
+    <div class="grp">Determinantes</div>
+    <a href="#cap3"><input type="checkbox" data-sec="cap3" aria-label="Marcar como estudado"><span>3 · Determinantes e Cramer</span></a>
+    <a href="#leontief"><input type="checkbox" data-sec="leontief" aria-label="Marcar como estudado"><span>3.2 · Modelo de Leontief</span></a>
+    <div class="grp">Geometria e projeções</div>
+    <a href="#cap4"><input type="checkbox" data-sec="cap4" aria-label="Marcar como estudado"><span>4 · Produto interno, projeções, retas e planos</span></a>
+    <a href="#minq"><input type="checkbox" data-sec="minq" aria-label="Marcar como estudado"><span>4.2 · Mínimos quadrados</span></a>
+    <div class="grp">Valores próprios</div>
+    <a href="#cap5"><input type="checkbox" data-sec="cap5" aria-label="Marcar como estudado"><span>5.1 · Valores e vetores próprios</span></a>
+    <a href="#formas"><input type="checkbox" data-sec="formas" aria-label="Marcar como estudado"><span>5.2 · Formas quadráticas, Sylvester</span></a>
+    <a href="#conicas"><input type="checkbox" data-sec="conicas" aria-label="Marcar como estudado"><span>5.3 · Cónicas e quádricas</span></a>
+    <div class="grp">Aplicações lineares</div>
+    <a href="#cap6"><input type="checkbox" data-sec="cap6" aria-label="Marcar como estudado"><span>6 · Aplicações lineares</span></a>
+    <div class="grp">Treino</div>
+    <a href="#testes">Testes 2024/25 resolvidos</a>
+    <a href="#folha">Folha de fórmulas</a>
+    <a href="#erros">Erros clássicos</a>
+    <a href="#checklist">Lista de verificação final</a>
+  </nav>
+  <div class="tools"><button id="thm" type="button">Tema claro/escuro</button><button id="rst" type="button">Limpar progresso</button></div>
+</aside>
+
+<main>
+<div class="hero" id="top">
+  <h1>ALGA: tudo o que precisas para passar</h1>
+  <p>Resumo detalhado de todos os capítulos do TP_ALGA, com métodos passo a passo, exemplos resolvidos e os dois testes de 2024/25 corrigidos.</p>
+</div>
+
+<section id="intro">
+<h2>Antes de começar</h2>
+
+<h3>O que saiu nos testes do ano passado</h3>
+<p>Lendo os dois testes, o padrão é claro: quase tudo são <strong>cálculos mecânicos com método fixo</strong>. Quem domina os métodos faz a maior parte dos pontos sem precisar de ideias brilhantes. O 1.º teste cobriu sobretudo os capítulos 1 e 2; o 2.º teste cobriu determinantes, espaços euclidianos, valores próprios, formas quadráticas, cónicas e aplicações lineares.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Tipo de exercício</th><th>Onde estudar</th><th>Teste</th><th class="c">Cotação</th></tr></thead>
+<tbody>
+<tr><td>Resolver um sistema pela decomposição $A=LU$</td><td><a href="#lu">1.2 LU</a></td><td>T1 Q1</td><td class="c">4</td></tr>
+<tr><td>Invertibilidade com parâmetro e cálculo da inversa</td><td><a href="#cap1">1</a> e <a href="#cap3">3</a></td><td>T1 Q2</td><td class="c">7,5</td></tr>
+<tr><td>Resolver equação matricial $A^TX+5B=DC$</td><td><a href="#cap1">1</a></td><td>T1 Q2b</td><td class="c">(incl.)</td></tr>
+<tr><td>Provar que $S$ é subespaço; base e dimensão de $S$</td><td><a href="#cap2">2</a></td><td>T1 Q3</td><td class="c">6</td></tr>
+<tr><td>Valores do parâmetro para os quais vetores formam uma base</td><td><a href="#cap2">2</a> e <a href="#cap3">3</a></td><td>T1 Q4</td><td class="c">2,5</td></tr>
+<tr><td>Escolha múltipla: mudança de base, propriedades de det, Cramer, produto vetorial, base ortogonal, diagonalização, matriz de aplicação linear, Laplace</td><td>2, 3, 4, 5.1, 6</td><td>T2 Q1</td><td class="c">8</td></tr>
+<tr><td>Solução e erro dos mínimos quadrados</td><td><a href="#minq">4.2</a></td><td>T2 Q2</td><td class="c">3,5</td></tr>
+<tr><td>Demonstração curta sobre valores próprios (ex.: $\lambda^2$ é valor próprio de $A^2$)</td><td><a href="#cap5">5.1</a></td><td>T2 Q3</td><td class="c">2,5</td></tr>
+<tr><td>Equação reduzida e classificação de uma cónica; classificar forma quadrática</td><td><a href="#formas">5.2</a> e <a href="#conicas">5.3</a></td><td>T2 Q4</td><td class="c">6</td></tr>
+</tbody></table></div>
+
+<div class="box exa"><span class="t">Como usar este guia</span>
+<p>Cada capítulo tem: <strong>definições e teoremas</strong> (o que tens de saber), <strong>métodos</strong> (o que tens de fazer, por passos), <strong>cuidados</strong> (onde se perdem pontos) e <strong>exemplos resolvidos</strong>. No fim estão os testes de 2024/25 resolvidos pergunta a pergunta. Usa as caixas de seleção na barra lateral para acompanhar o que já estudaste.</p>
+</div>
+
+<h3>Ordem de estudo recomendada</h3>
+<ol>
+<li><strong>Cap. 1 e 1.2</strong>: escalonar, classificar sistemas, inversa por Gauss-Jordan, LU. Tudo o resto assenta aqui.</li>
+<li><strong>Cap. 2</strong>: subespaço, base, dimensão, mudança de base. Dá muitos pontos no 1.º teste.</li>
+<li><strong>Cap. 3</strong>: determinantes (Laplace, propriedades, Cramer). Aparece em todo o lado.</li>
+<li><strong>Cap. 4</strong>: produto interno, projeção, Gram-Schmidt, produto externo, mínimos quadrados.</li>
+<li><strong>Cap. 5</strong>: valores próprios, diagonalização, formas quadráticas, cónicas. É o maior bloco do 2.º teste.</li>
+<li><strong>Cap. 6</strong>: matriz de uma aplicação linear (curto, mas há pergunta quase certa).</li>
+<li>Faz os <a href="#testes">dois testes</a> sozinho/a, num tempo cronometrado (1h30 e 1h40), e só depois compara com as resoluções.</li>
+</ol>
+
+<div class="box bad"><span class="t">Regra de ouro</span>
+<p>Os testes dizem "justifique devidamente". Escreve sempre o raciocínio: a operação elementar usada, a propriedade invocada, a conta do determinante. Uma resposta certa sem justificação perde pontos.</p></div>
+</section>
+
+<section id="cap1">
+<h2>1 · Matrizes e sistemas de equações lineares <span class="done-tag">estudado ✓</span></h2>
+
+<h3>1.1 Matrizes: notação e tipos</h3>
+<p>Uma matriz $A=[a_{ij}]$ de ordem $m\times n$ tem $m$ linhas e $n$ colunas; $a_{ij}$ está na linha $i$, coluna $j$. Um vetor de $\mathbb{R}^n$ escreve-se como matriz coluna $n\times 1$.</p>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Condição</th></tr></thead>
+<tbody>
+<tr><td>Quadrada</td><td>$m=n$</td></tr>
+<tr><td>Diagonal</td><td>$a_{ij}=0$ para $i\ne j$</td></tr>
+<tr><td>Identidade $I_n$</td><td>diagonal com $1$ na diagonal principal</td></tr>
+<tr><td>Triangular superior / inferior</td><td>$a_{ij}=0$ para $i\gt j$ / para $i\lt j$</td></tr>
+<tr><td>Transposta $A^T$</td><td>$(A^T)_{ij}=a_{ji}$ (troca linhas por colunas)</td></tr>
+<tr><td>Simétrica</td><td>$A=A^T$ (obrigatoriamente quadrada)</td></tr>
+</tbody></table></div>
+
+<h3>1.2 Operações e propriedades</h3>
+<ul>
+<li><strong>Soma e produto por escalar</strong>: entrada a entrada; as matrizes têm de ter a mesma ordem. $(A+B)^T=A^T+B^T$, $(\alpha A)^T=\alpha A^T$.</li>
+<li><strong>Produto</strong>: se $A$ é $m\times n$ e $B$ é $n\times p$, então $AB$ é $m\times p$ com
+$$c_{ij}=a_{i1}b_{1j}+\cdots+a_{in}b_{nj}$$ 
+(linha $i$ de $A$ vezes coluna $j$ de $B$). O número de colunas de $A$ tem de igualar o número de linhas de $B$.</li>
+<li>Associativo, distributivo, $I_mA=A=AI_n$, $(AB)^T=B^TA^T$.</li>
+<li>Potência: $A^p=A\,A^{p-1}$, $A^0=I$. Propriedades $A^pA^q=A^{p+q}$ e $(A^p)^q=A^{pq}$.</li>
+</ul>
+<div class="box bad"><span class="t">Cuidados</span>
+<ul>
+<li>O produto de matrizes <strong>não é comutativo</strong>: em geral $AB\ne BA$.</li>
+<li>Em geral $(AB)^p\ne A^pB^p$ e $(A+B)^2\ne A^2+2AB+B^2$.</li>
+<li>$AB=0$ não implica $A=0$ ou $B=0$.</li>
+<li>$(AB)^T=B^TA^T$ (ordem trocada). O mesmo para a inversa: $(AB)^{-1}=B^{-1}A^{-1}$.</li>
+</ul></div>
+
+<h3>1.3 Sistemas lineares e forma matricial</h3>
+<p>Um sistema de $m$ equações com $n$ incógnitas escreve-se $AX=B$, onde $A$ é a matriz dos coeficientes ($m\times n$), $X$ a coluna das incógnitas e $B$ a coluna dos termos independentes. A <strong>matriz ampliada</strong> é $[A\,|\,B]$ ($m\times(n+1)$).</p>
+
+<h3>1.4 Escalonamento</h3>
+<div class="box def"><span class="t">Definições</span>
+<p><strong>Pivot</strong>: primeira entrada não nula de cada linha. Uma matriz está na <strong>forma escalonada por linhas</strong> se: abaixo de cada pivot só há zeros; o pivot de uma linha fica numa coluna à direita do pivot da linha anterior; as linhas nulas ficam em baixo. É <strong>reduzida</strong> se, além disso, todos os pivots são $1$ e acima de cada pivot só há zeros.</p>
+<p><strong>Operações elementares nas linhas</strong>: (1) trocar $L_i\leftrightarrow L_j$; (2) $L_i:=\alpha L_i$ com $\alpha\ne0$; (3) $L_i:=L_i+\beta L_j$. Duas matrizes são <em>equivalentes por linhas</em> ($A\sim C$) se uma resulta da outra por operações elementares.</p></div>
+
+<div class="box teo"><span class="t">Teoremas-chave</span>
+<ul>
+<li>Toda a matriz é equivalente por linhas a uma matriz escalonada (e a uma única reduzida).</li>
+<li>Se $[A|B]\sim[C|D]$, os dois sistemas têm o <strong>mesmo conjunto de soluções</strong>. Por isso se pode escalonar à vontade.</li>
+</ul></div>
+
+<div class="box met"><span class="t">Método: resolver $AX=B$ (Gauss e Gauss-Jordan)</span>
+<ol>
+<li>Escreve $[A|B]$.</li>
+<li>Escalona (Gauss) ou reduz (Gauss-Jordan). Em cada coluna: escolhe um pivot não nulo, troca linhas se for preciso, anula tudo abaixo (e acima, em Gauss-Jordan).</li>
+<li>Classifica o sistema (ver abaixo).</li>
+<li>Escreve o sistema equivalente ignorando linhas nulas e resolve por substituição ascendente. As colunas <em>sem pivot</em> correspondem a <strong>incógnitas livres</strong>: dá-lhes parâmetros.</li>
+</ol></div>
+
+<h3>1.5 Característica, nulidade e classificação</h3>
+<div class="box def"><span class="t">Definições</span>
+<p>$\operatorname{car}(A)$ = número de pivots de uma escalonada equivalente a $A$. $\operatorname{nul}(A)=n-\operatorname{car}(A)$ = número de incógnitas livres de $AX=0$ ($n$ = nº de colunas de $A$).</p></div>
+
+<div class="tw"><table>
+<thead><tr><th>Situação</th><th>Classificação</th></tr></thead>
+<tbody>
+<tr><td>$\operatorname{car}(A)\lt\operatorname{car}([A|B])$ (linha do tipo $0=c\ne0$)</td><td><strong>Impossível</strong></td></tr>
+<tr><td>$\operatorname{car}(A)=\operatorname{car}([A|B])=n$ (pivot em todas as colunas de $A$)</td><td><strong>Possível e determinado</strong> (solução única)</td></tr>
+<tr><td>$\operatorname{car}(A)=\operatorname{car}([A|B])\lt n$</td><td><strong>Possível e indeterminado</strong>, grau de indeterminação $n-\operatorname{car}(A)$</td></tr>
+</tbody></table></div>
+
+<div class="box ex"><span class="t">Exemplo: discutir um sistema com parâmetros</span>
+<p>Sistema $\begin{cases}x+y=1\\ x+ay=b\end{cases}$. Matriz ampliada e escalonamento ($L_2:=L_2-L_1$):</p>
+$$\left[\begin{array}{cc|c}1&1&1\\1&a&b\end{array}\right]\sim\left[\begin{array}{cc|c}1&1&1\\0&a-1&b-1\end{array}\right]$$
+<ul>
+<li>$a\ne1$: dois pivots, sistema possível e determinado.</li>
+<li>$a=1$ e $b=1$: segunda linha nula, possível e indeterminado (grau $1$).</li>
+<li>$a=1$ e $b\ne1$: linha $0=b-1\ne0$, impossível.</li>
+</ul></div>
+
+<div class="box exa"><span class="t">Dica de teste</span>
+<p>Em problemas com parâmetro, deixa o parâmetro aparecer só no último pivot e discute separadamente cada caso em que o pivot se anula. Se te der um determinante simples, usa-o: $\det\ne0$ garante solução única em sistemas quadrados.</p></div>
+
+<h3>1.6 Sistema homogéneo e espaço nulo</h3>
+<p>$AX=0$ é sempre possível (tem a solução trivial $X=0$). Tem soluções não triviais se e só se $\operatorname{car}(A)\lt n$; em particular, se $m\lt n$ há sempre solução não trivial. O <strong>espaço nulo</strong> é
+$$N(A)=\{X\in\mathbb{R}^n: AX=0\},\qquad \dim N(A)=\operatorname{nul}(A)=n-\operatorname{car}(A).$$
+É o conjunto de todas as combinações lineares de $n-\operatorname{car}(A)$ vetores (um por incógnita livre).</p>
+
+<h3>1.7 Matriz inversa</h3>
+<div class="box def"><span class="t">Definição</span>
+<p>$A$ ($n\times n$) é <strong>invertível</strong> se existe $B$ tal que $AB=BA=I_n$. Essa $B$ é única e escreve-se $A^{-1}$. Basta verificar um dos lados: se $BA=I$ então $AB=I$.</p></div>
+<p>Propriedades (para $A,B$ invertíveis e $a\ne0$): $(A^{-1})^{-1}=A$; $(AB)^{-1}=B^{-1}A^{-1}$; $(aA)^{-1}=a^{-1}A^{-1}$; $(A^T)^{-1}=(A^{-1})^T$.</p>
+
+<div class="box met"><span class="t">Método: calcular a inversa</span>
+<p>Forma $[A\,|\,I_n]$ e aplica Gauss-Jordan até obteres $[I_n\,|\,A^{-1}]$. Se a esquerda não chegar a $I_n$ (aparece linha nula), $A$ é singular.</p>
+<p>Alternativa para 3×3 ou com determinante à mão: $A^{-1}=\dfrac{1}{\det A}\operatorname{adj}A$ (ver capítulo 3). Para 2×2: $\begin{bmatrix}a&b\\c&d\end{bmatrix}^{-1}=\dfrac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}$.</p></div>
+
+<div class="box teo"><span class="t">Critérios de invertibilidade: para $A$ $n\times n$ são todas equivalentes</span>
+<ol>
+<li>$A$ é invertível</li>
+<li>$A\sim I_n$</li>
+<li>$\operatorname{car}(A)=n$</li>
+<li>$\operatorname{nul}(A)=0$</li>
+<li>$AX=0$ só tem a solução trivial</li>
+<li>$N(A)=\{0\}$</li>
+<li>$AX=B$ tem solução única $X=A^{-1}B$ para cada $B$</li>
+<li>$\det A\ne0$ (capítulo 3)</li>
+<li>as colunas (e as linhas) de $A$ são linearmente independentes (capítulo 2)</li>
+</ol></div>
+
+<div class="box met"><span class="t">Método: resolver equações matriciais (tipo T1 Q2b)</span>
+<p>Isola $X$ como em álgebra normal, mas <strong>respeitando a ordem</strong> dos produtos e multiplicando pela inversa do mesmo lado nos dois membros.</p>
+<ul>
+<li>$AX=C\Rightarrow X=A^{-1}C$ (inversa à esquerda).</li>
+<li>$XA=C\Rightarrow X=CA^{-1}$ (inversa à direita).</li>
+<li>$A^TX+5B=DC\Rightarrow A^TX=DC-5B\Rightarrow X=(A^T)^{-1}(DC-5B)=(A^{-1})^T(DC-5B)$.</li>
+</ul>
+<p>Antes de calcular, confirma as ordens: $D$ é $3\times1$ e $C$ é $1\times3$, logo $DC$ é $3\times3$.</p></div>
+</section>
+
+<section id="lu">
+<h2>1.2 · Decomposição LU e LDU <span class="done-tag">estudado ✓</span></h2>
+
+<h3>Ideia</h3>
+<p>Se $A$ pode ser reduzida a forma escalonada $U$ <strong>sem trocar linhas</strong>, então $A=LU$, com $L$ triangular inferior com $1$ na diagonal e $U$ escalonada. Útil quando se resolve $Ax=b_1,\;Ax=b_2,\dots$ com a mesma $A$: factoriza-se uma vez.</p>
+
+<div class="box teo"><span class="t">Resolver $Ax=b$ com $A=LU$</span>
+$$Ax=b\iff L(Ux)=b\;\Rightarrow\;\begin{cases}Ly=b&\text{(substituição descendente)}\\ Ux=y&\text{(substituição ascendente)}\end{cases}$$
+</div>
+
+<div class="box met"><span class="t">Método: construir $L$ e $U$</span>
+<ol>
+<li>Escalona $A$ até $U$ usando <strong>apenas</strong> operações do tipo $L_i:=L_i-m_{ij}L_j$ com $j\lt i$ (somar múltiplos de uma linha a linhas abaixo dela).</li>
+<li>Em $L$, na posição $(i,j)$ escreve o <strong>multiplicador</strong> $m_{ij}$ usado ($L_i:=L_i-m_{ij}L_j$). Diagonal a $1$, acima da diagonal zeros.</li>
+<li>Confirma multiplicando $LU$ e comparando com $A$.</li>
+</ol>
+<p>Atalho dos slides: cada coluna de $L$ é a coluna correspondente (já "em trabalho") dividida pelo pivot dessa coluna. Dá os mesmos multiplicadores.</p></div>
+
+<div class="box bad"><span class="t">Cuidados</span>
+<ul>
+<li>Sinal: se fizeste $L_2:=L_2+2L_1$, o multiplicador é $m_{21}=-2$ e <strong>$l_{21}=-2$</strong> (é o sinal contrário ao que somaste). Se fizeste $L_2:=L_2-2L_1$, então $l_{21}=2$.</li>
+<li>Se precisares de trocar linhas, o método dos slides ($A=LU$ sem trocas) deixa de se aplicar; nos exercícios de teste isto não acontece, porque a decomposição é pedida só quando é possível.</li>
+<li>$L$ é sempre $m\times m$ e $U$ tem a ordem de $A$ ($m\times n$).</li>
+</ul></div>
+
+<div class="box ex"><span class="t">Exemplo dos slides: resolver $Ax=b$</span>
+<p>Dados
+$$A=\begin{bmatrix}3&-7&-2&2\\-3&5&1&0\\6&-4&0&-5\\-9&5&-5&12\end{bmatrix}=\underbrace{\begin{bmatrix}1&0&0&0\\-1&1&0&0\\2&-5&1&0\\-3&8&3&1\end{bmatrix}}_{L}\underbrace{\begin{bmatrix}3&-7&-2&2\\0&-2&-1&2\\0&0&-1&1\\0&0&0&-1\end{bmatrix}}_{U},\quad b=\begin{bmatrix}-9\\5\\7\\11\end{bmatrix}$$
+<p>$Ly=b$ por substituição descendente: $y=(-9,\,-4,\,5,\,1)$. $Ux=y$ por substituição ascendente: $x=(3,\,4,\,-6,\,-1)$.</p></div>
+
+<h3>Matrizes elementares</h3>
+<p>Uma <strong>matriz elementar</strong> $E$ resulta de aplicar <em>uma</em> operação elementar a $I$. Aplicar essa operação a $A$ equivale a calcular $EA$. Por isso $E_p\cdots E_1A=U\Rightarrow A=(E_p\cdots E_1)^{-1}U=LU$, e a inversa de uma elementar de tipo "soma de múltiplo" é a elementar com o múltiplo trocado de sinal.</p>
+
+<h3>Decomposição LDU</h3>
+<p>Se $A$ é quadrada e invertível e $U$ tem diagonal $u_{ii}\ne0$, divide a linha $i$ de $U$ por $u_{ii}$ e põe esses valores numa diagonal $D$:
+$$A=LDU_1,\quad L\text{ e }U_1\text{ com }1\text{ na diagonal},\quad D=\operatorname{diag}(u_{11},\dots,u_{nn}).$$
+A matriz $D$ é única.</p>
+</section>
+
+<section id="cap2">
+<h2>2 · Espaços vetoriais <span class="done-tag">estudado ✓</span></h2>
+
+<h3>2.1 Definição e exemplos</h3>
+<div class="box def"><span class="t">Espaço vetorial real</span>
+<p>Conjunto $V$ com uma adição $\oplus$ e uma multiplicação por escalar real $\odot$ tais que, para todos $X,Y,Z\in V$ e $\alpha,\beta\in\mathbb{R}$:</p>
+<ul>
+<li>$V$ é fechado para a adição e para o produto por escalar;</li>
+<li>a adição é comutativa e associativa, tem elemento neutro $0_V$ e cada $X$ tem simétrico;</li>
+<li>$\alpha(X+Y)=\alpha X+\alpha Y$; $(\alpha+\beta)X=\alpha X+\beta X$; $(\alpha\beta)X=\alpha(\beta X)$; $1X=X$.</li>
+</ul></div>
+<p>Exemplos de espaços vetoriais: $\mathbb{R}^n$; $\mathbb{R}^{m\times n}$ (matrizes); o conjunto das funções reais; $P_n$ (polinómios de grau $\le n$); $P$ (todos os polinómios). Também $\mathbb{R}^+$ com $x\oplus y=xy$ e $\alpha\odot x=x^\alpha$ (um exemplo "estranho", mas válido).</p>
+<div class="box bad"><span class="t">Não são espaços vetoriais</span>
+<p>O conjunto dos polinómios de grau <em>exatamente</em> $n$ (a soma de $x^n$ com $-x^n$ tem grau menor, logo não é fechado). Conjuntos que não contêm o vetor nulo.</p></div>
+<p>Propriedades básicas: $0\cdot X=0_V$; $\alpha\cdot0_V=0_V$; $\alpha X=0_V\Rightarrow\alpha=0$ ou $X=0_V$; $(-1)X$ é o simétrico de $X$.</p>
+
+<h3>2.2 Subespaços</h3>
+<div class="box teo"><span class="t">Teorema (critério de subespaço)</span>
+<p>$S\subseteq V$ é subespaço de $V$ se e só se:</p>
+<ol><li>$S\ne\emptyset$ (na prática, $0_V\in S$);</li><li>$X,Y\in S\Rightarrow X+Y\in S$;</li><li>$X\in S,\ \alpha\in\mathbb{R}\Rightarrow\alpha X\in S$.</li></ol>
+<p>Consequência: <strong>se $0_V\notin S$, então $S$ não é subespaço.</strong></p></div>
+
+<div class="box met"><span class="t">Método: mostrar que $S$ é subespaço (T1 Q3a)</span>
+<p>Exemplo: $S=\{(x,y,z)\in\mathbb{R}^3: x-7y+3z=0\}$.</p>
+<ol>
+<li><strong>Não vazio</strong>: $(0,0,0)\in S$ pois $0-0+0=0$.</li>
+<li><strong>Soma</strong>: se $(x,y,z),(x',y',z')\in S$, então $(x+x')-7(y+y')+3(z+z')=(x-7y+3z)+(x'-7y'+3z')=0+0=0$.</li>
+<li><strong>Escalar</strong>: se $(x,y,z)\in S$ e $\alpha\in\mathbb{R}$, então $\alpha x-7\alpha y+3\alpha z=\alpha\cdot0=0$.</li>
+</ol>
+<p>Atalho válido: $S=N(A)$ com $A=[\,1\ \ {-7}\ \ 3\,]$, e todo o espaço nulo é subespaço de $\mathbb{R}^n$.</p></div>
+<p>Para <strong>mostrar que não é</strong> subespaço, basta um contra-exemplo: $0\notin S$ (ex.: $\{(1,y)\}$ não contém $(0,0)$), ou uma soma/múltiplo que sai de $S$ (ex.: $\{(x,y):xy=0\}$ não é fechado para a soma: $(1,0)+(0,1)=(1,1)$).</p>
+
+<h3>2.3 Espaço gerado, independência linear</h3>
+<div class="box def"><span class="t">Definições</span>
+<p>$\langle X_1,\dots,X_k\rangle=\{\alpha_1X_1+\cdots+\alpha_kX_k\}$ é o <strong>espaço gerado</strong> (sempre um subespaço).</p>
+<p>$\{X_1,\dots,X_k\}$ é <strong>linearmente independente (l.i.)</strong> se $\alpha_1X_1+\cdots+\alpha_kX_k=0\Rightarrow\alpha_1=\cdots=\alpha_k=0$. Caso contrário é <strong>l.d.</strong> (algum vetor é combinação linear dos outros).</p>
+<p>Se $0_V\in K$, então $K$ é l.d.</p></div>
+<div class="box met"><span class="t">Método: testar independência linear em $\mathbb{R}^n$</span>
+<p>Coloca os vetores como colunas de $M$ e escalona. São l.i. se e só se <strong>há pivot em todas as colunas</strong> ($\operatorname{car}(M)=$ nº de vetores). Com $n$ vetores em $\mathbb{R}^n$, equivale a $\det M\ne0$.</p></div>
+
+<h3>2.3.1 Combinação linear</h3>
+<div class="box def"><span class="t">Definição</span>
+<p>$v$ é <strong>combinação linear</strong> de $u_1,\dots,u_k$ se existem escalares $\alpha_1,\dots,\alpha_k$ tais que $$v=\alpha_1u_1+\alpha_2u_2+\cdots+\alpha_ku_k.$$</p>
+<p>Dizer "$v$ é combinação linear de $u_1,\dots,u_k$" é o mesmo que dizer $v\in\langle u_1,\dots,u_k\rangle$.</p></div>
+
+<div class="box met"><span class="t">Método: "$v$ é combinação linear de $u_1,\dots,u_k$? Se for, escreve-o."</span>
+<ol>
+<li>Escreve $\alpha_1u_1+\cdots+\alpha_ku_k=v$ e transforma num sistema: <strong>os vetores $u_i$ são as colunas</strong> e $v$ é a coluna dos termos independentes, $[\,u_1\ \cdots\ u_k\,|\,v\,]$.</li>
+<li>Escalona a matriz ampliada.</li>
+<li>Lê a resposta:
+<ul>
+<li><strong>Sistema impossível</strong> ($\operatorname{car}(A)\lt\operatorname{car}(A|v)$, aparece uma linha $[0\ \cdots\ 0\,|\,c]$ com $c\ne0$): $v$ <strong>não</strong> é combinação linear.</li>
+<li><strong>Possível e determinado</strong>: é combinação linear de <strong>uma só maneira</strong> (os $u_i$ são l.i.).</li>
+<li><strong>Possível e indeterminado</strong>: é combinação linear de <strong>infinitas maneiras</strong> (os $u_i$ são l.d.); basta dar uma.</li>
+</ul></li>
+<li>Escreve a resposta final como combinação, por exemplo $v=5u_1-3u_2-2u_3$, e confirma fazendo a conta.</li>
+</ol></div>
+
+<div class="box ex"><span class="t">Exemplo 1: é combinação linear (solução única)</span>
+<p>$v=(1,1,-4)$, $u_1=(1,2,1)$, $u_2=(0,1,3)$, $u_3=(2,3,0)$.</p>
+$$\left[\begin{array}{ccc|c}1&0&2&1\\2&1&3&1\\1&3&0&-4\end{array}\right]\xrightarrow[L_3-L_1]{L_2-2L_1}\left[\begin{array}{ccc|c}1&0&2&1\\0&1&-1&-1\\0&3&-2&-5\end{array}\right]\xrightarrow{L_3-3L_2}\left[\begin{array}{ccc|c}1&0&2&1\\0&1&-1&-1\\0&0&1&-2\end{array}\right]$$
+<p>Daqui $\alpha_3=-2$, $\alpha_2=-1+\alpha_3=-3$, $\alpha_1=1-2\alpha_3=5$. Logo $$v=5u_1-3u_2-2u_3.$$ Verificação: $(5,10,5)+(0,-3,-9)+(-4,-6,0)=(1,1,-4)$.</p></div>
+
+<div class="box ex"><span class="t">Exemplo 2: não é combinação linear</span>
+<p>$v=(2,3,4)$, $u_1=(1,0,2)$, $u_2=(0,1,-1)$.</p>
+$$\left[\begin{array}{cc|c}1&0&2\\0&1&3\\2&-1&4\end{array}\right]\xrightarrow{L_3-2L_1+L_2}\left[\begin{array}{cc|c}1&0&2\\0&1&3\\0&0&3\end{array}\right]$$
+<p>A última linha diz $0=3$: sistema impossível, $\operatorname{car}(A)=2\lt3=\operatorname{car}(A|v)$. Logo $v\notin\langle u_1,u_2\rangle$.</p></div>
+
+<div class="box ex"><span class="t">Exemplo 3: com parâmetro, "para que valores de $k$…"</span>
+<p>Para que valores de $k$ é $v=(1,k,3)$ combinação linear de $u_1=(1,0,2)$ e $u_2=(0,1,-1)$?</p>
+$$\left[\begin{array}{cc|c}1&0&1\\0&1&k\\2&-1&3\end{array}\right]\xrightarrow{L_3-2L_1+L_2}\left[\begin{array}{cc|c}1&0&1\\0&1&k\\0&0&1+k\end{array}\right]$$
+<p>O sistema é possível se e só se $1+k=0$, ou seja <strong>$k=-1$</strong>. Nesse caso $\alpha_1=1$, $\alpha_2=-1$ e $v=u_1-u_2=(1,-1,3)$.</p></div>
+
+<div class="box ex"><span class="t">Exemplo 4: polinómios (e matrizes) fazem-se igual</span>
+<p>Escreve $q(x)=3+3x+2x^2$ como combinação linear de $p_1=1+x$, $p_2=x+x^2$, $p_3=1+x^2$.</p>
+<p>$\alpha_1(1+x)+\alpha_2(x+x^2)+\alpha_3(1+x^2)=(\alpha_1+\alpha_3)+(\alpha_1+\alpha_2)x+(\alpha_2+\alpha_3)x^2$. Igualando os coeficientes de $1$, $x$ e $x^2$:</p>
+$$\begin{cases}\alpha_1+\alpha_3=3\\ \alpha_1+\alpha_2=3\\ \alpha_2+\alpha_3=2\end{cases}\ \Rightarrow\ \alpha_1=2,\ \alpha_2=1,\ \alpha_3=1,$$
+<p>logo $q=2p_1+p_2+p_3$. Com matrizes $2\times2$ é igual: iguala entrada a entrada (4 equações). Ou seja, usa as <strong>coordenadas na base canónica</strong> como colunas do sistema.</p></div>
+
+<div class="box bad"><span class="t">Erros comuns</span>
+<ul>
+<li>Pôr os vetores como <strong>linhas</strong> do sistema. Para combinação linear, os $u_i$ são <strong>colunas</strong> (as incógnitas são os $\alpha_i$). As linhas só servem no Método B, para achar uma base do espaço gerado.</li>
+<li>Responder só "sim" sem escrever a combinação. Quando pedem "escreve $v$ como…", a resposta é a expressão $v=\alpha_1u_1+\cdots$.</li>
+<li>Confundir: "$\{u_1,\dots,u_k\}$ gera $\mathbb{R}^n$" quer dizer que <strong>todo</strong> o $v$ é combinação linear, ou seja $\operatorname{car}[\,u_1\cdots u_k\,]=n$. Não basta verificar um só vetor.</li>
+</ul></div>
+
+<h3>2.4 Base, coordenadas e dimensão</h3>
+<div class="box def"><span class="t">Base</span>
+<p>Uma <strong>base</strong> de $V$ é um conjunto ordenado de vetores que é <strong>l.i.</strong> e <strong>gerador de $V$</strong>. Cada $X\in V$ escreve-se de forma única $X=a_1X_1+\cdots+a_nX_n$; $[X]_B=(a_1,\dots,a_n)$ são as <strong>coordenadas</strong> de $X$ na base $B$.</p>
+<p><strong>Dimensão</strong> $\dim V$ = nº de vetores de qualquer base (todas as bases têm o mesmo nº).</p></div>
+<p>Bases canónicas e dimensões: $\mathbb{R}^n$: $(e_1,\dots,e_n)$, $\dim=n$. $\mathbb{R}^{m\times n}$: matrizes $E_{ij}$, $\dim=mn$. $P_n$: $(1,x,\dots,x^n)$, $\dim=n+1$. $\dim\{0_V\}=0$.</p>
+
+<div class="box teo"><span class="t">Teoremas sobre dimensão (para $\dim V=n$ e $K$ com $r$ vetores)</span>
+<ul>
+<li>$K$ l.i. $\Rightarrow r\le n$. Logo $r\gt n\Rightarrow K$ é l.d.</li>
+<li>$K$ gera $V\Rightarrow r\ge n$. Logo $r\lt n\Rightarrow K$ não gera $V$.</li>
+<li>Com exatamente $n$ vetores: <strong>l.i. $\Rightarrow$ base</strong> e <strong>geradores $\Rightarrow$ base</strong>. Só precisas de verificar uma das condições!</li>
+<li>Para um subespaço $S\subseteq V$: $\dim S\le\dim V$.</li>
+</ul></div>
+
+<div class="box met"><span class="t">Método A: base e dimensão de um subespaço dado por equação (T1 Q3b)</span>
+<p>Resolve a equação, escrevendo as variáveis dependentes à custa das livres, e separa por parâmetro. Para $x-7y+3z=0$:</p>
+$$x=7y-3z\ \Rightarrow\ (x,y,z)=y(7,1,0)+z(-3,0,1).$$
+<p>Os dois vetores geram $S$ e são l.i. (não são múltiplos um do outro). Base $\big((7,1,0),(-3,0,1)\big)$ e $\dim S=2$ (= nº de variáveis livres).</p></div>
+
+<div class="box met"><span class="t">Método B: base de $\langle X_1,\dots,X_k\rangle$</span>
+<p>Coloca os vetores como <strong>linhas</strong> e escalona: as linhas não nulas da escalonada formam uma base. (Ou coloca como <strong>colunas</strong> e usa as colunas originais com pivot.) A dimensão é a característica.</p></div>
+
+<div class="box met"><span class="t">Método C: "para que valores de $a$ é isto uma base?" (T1 Q4)</span>
+<p>Com $n$ vetores em $\mathbb{R}^n$, forma a matriz $M$ e impõe $\det M\ne0$. Para $B=((1,a,2a),(0,1,0),(a,0,8a))$:</p>
+$$\det\begin{bmatrix}1&a&2a\\0&1&0\\a&0&8a\end{bmatrix}=1\cdot(8a-2a^2)=2a(4-a).$$
+<p>É base se e só se $a\ne0$ e $a\ne4$.</p></div>
+
+<div class="box met"><span class="t">Método D: coordenadas de $X$ numa base $B=(Y_1,\dots,Y_n)$</span>
+<p>Resolve $a_1Y_1+\cdots+a_nY_n=X$, ou seja, o sistema $[Y_1\cdots Y_n\,|\,X]$. Se a base for <strong>ortonormada</strong>, basta $a_i=X\cdot Y_i$ (capítulo 4).</p></div>
+
+<h3>2.5 Mudança de base</h3>
+<div class="box teo"><span class="t">Matriz de mudança de base</span>
+<p>Sejam $S$ e $T=(Y_1,\dots,Y_n)$ bases de $V$. A matriz $M_{S\leftarrow T}$ tem por colunas as <strong>coordenadas, na base $S$, dos vetores da base $T$</strong>:</p>
+$$M_{S\leftarrow T}=\big[\,[Y_1]_S\ \cdots\ [Y_n]_S\,\big],\qquad [X]_S=M_{S\leftarrow T}\,[X]_T.$$
+<p>É sempre invertível e $M_{S\leftarrow T}^{-1}=M_{T\leftarrow S}$.</p></div>
+
+<div class="box met"><span class="t">Como calcular</span>
+<ul>
+<li><strong>Se $S$ é a base canónica</strong>: $M_{C\leftarrow T}$ tem simplesmente como colunas os vetores de $T$. Foi isto que saiu no T2 Q1(a).</li>
+<li>Caso geral: resolve, para cada $Y_j$, o sistema que dá $[Y_j]_S$. Em simultâneo: $[\,S\,|\,T\,]\sim[\,I\,|\,M_{S\leftarrow T}\,]$ (matrizes com as bases por colunas).</li>
+<li>Para ir no sentido contrário, usa a inversa.</li>
+</ul></div>
+<div class="box ex"><span class="t">Exemplo dos slides</span>
+<p>$S=((1,1),(1,2))$ e $T=((0,1),(1,-1))$ em $\mathbb{R}^2$. $(0,1)=-1(1,1)+1(1,2)$ e $(1,-1)=3(1,1)-2(1,2)$. Logo
+$$M_{S\leftarrow T}=\begin{bmatrix}-1&3\\1&-2\end{bmatrix}.$$</p></div>
+<div class="box bad"><span class="t">Cuidado com o sentido</span>
+<p>$M_{S\leftarrow T}$ converte coordenadas <em>de $T$ para $S$</em>. Colunas = vetores da base de <strong>partida</strong> ($T$), escritos na base de <strong>chegada</strong> ($S$).</p></div>
+</section>
+
+<section id="espacos">
+<h2>2.2 · Espaços das linhas, das colunas e nulo <span class="done-tag">estudado ✓</span></h2>
+<p>Para $A$ de ordem $m\times n$ com linhas $L_i\in\mathbb{R}^n$ e colunas $C_j\in\mathbb{R}^m$:</p>
+<div class="tw"><table>
+<thead><tr><th>Espaço</th><th>Definição</th><th>Dimensão</th><th>Base</th></tr></thead>
+<tbody>
+<tr><td>Linhas $L(A)\subseteq\mathbb{R}^n$</td><td>$\langle L_1,\dots,L_m\rangle$</td><td>$\operatorname{car}(A)$</td><td>linhas não nulas de uma escalonada de $A$</td></tr>
+<tr><td>Colunas $C(A)\subseteq\mathbb{R}^m$</td><td>$\langle C_1,\dots,C_n\rangle$ $=\{AX\}$</td><td>$\operatorname{car}(A)$</td><td>colunas <strong>de $A$</strong> nas posições dos pivots da escalonada</td></tr>
+<tr><td>Nulo $N(A)\subseteq\mathbb{R}^n$</td><td>$\{X:AX=0\}$</td><td>$n-\operatorname{car}(A)$</td><td>vetores associados às incógnitas livres</td></tr>
+</tbody></table></div>
+<div class="box teo"><span class="t">Factos</span>
+<ul>
+<li>Matrizes equivalentes por linhas têm o mesmo espaço das linhas $L(A)=L(B)$ (mas <em>não</em> o mesmo espaço das colunas).</li>
+<li>$\dim C(A)=\dim L(A)=\operatorname{car}(A)$. A característica é o nº máximo de linhas (colunas) l.i.</li>
+<li>$\operatorname{car}(A)+\operatorname{nul}(A)=n$.</li>
+<li>$B\in C(A)\iff AX=B$ é possível.</li>
+</ul></div>
+<div class="box ex"><span class="t">Exemplo completo</span>
+<p>$A=\begin{bmatrix}1&-2&-4&3\\2&-4&-7&5\\1&-2&-3&2\end{bmatrix}$. Escalonando: $\tilde A=\begin{bmatrix}1&-2&-4&3\\0&0&1&-1\\0&0&0&0\end{bmatrix}$, $\operatorname{car}(A)=2$.</p>
+<ul>
+<li><strong>Linhas</strong>: base $\big((1,-2,-4,3),(0,0,1,-1)\big)$.</li>
+<li><strong>Colunas</strong>: pivots nas colunas 1 e 3, base $\big((1,2,1),(-4,-7,-3)\big)$. Para descrever $C(A)$ com equação: ampliando com $(a,b,c)$ aparece a condição $a-b+c=0$, logo $C(A)=\{(a,b,c):a-b+c=0\}$.</li>
+<li><strong>Nulo</strong>: $x_1=2x_2+x_4$, $x_3=x_4$, com $x_2,x_4$ livres:
+$X=x_2(2,1,0,0)+x_4(1,0,1,1)$, $\operatorname{nul}(A)=2=4-2$.</li>
+</ul></div>
+</section>
+
+<section id="cap3">
+<h2>3 · Determinantes <span class="done-tag">estudado ✓</span></h2>
+
+<h3>3.1 Cálculo</h3>
+<ul>
+<li><strong>2×2</strong>: $\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=ad-bc$.</li>
+<li><strong>3×3, regra de Sarrus</strong> (só 3×3): $+a_{11}a_{22}a_{33}+a_{12}a_{23}a_{31}+a_{13}a_{21}a_{32}-a_{13}a_{22}a_{31}-a_{11}a_{23}a_{32}-a_{12}a_{21}a_{33}$.</li>
+<li><strong>Teorema de Laplace</strong> (qualquer ordem): expande por uma linha ou coluna,
+$$\det A=a_{i1}A_{i1}+\cdots+a_{in}A_{in},\qquad A_{ij}=(-1)^{i+j}\det M_{ij},$$
+onde $M_{ij}$ é a submatriz sem a linha $i$ e coluna $j$ ($A_{ij}$ = cofator).</li>
+<li>Matriz triangular (ou diagonal): $\det$ = produto da diagonal.</li>
+</ul>
+<p>Padrão de sinais $(-1)^{i+j}$ para 3×3: $\begin{bmatrix}+&-&+\\-&+&-\\+&-&+\end{bmatrix}$.</p>
+<div class="box met"><span class="t">Estratégia para calcular</span>
+<p>Escolhe a linha ou coluna com <strong>mais zeros</strong> e expande por ela. Ou escalona usando só operações do tipo $L_i:=L_i+\beta L_j$ (não alteram o $\det$) e multiplica a diagonal no fim. Em matrizes com parâmetros, cria zeros primeiro e depois expande.</p></div>
+
+<h3>3.2 Propriedades</h3>
+<div class="tw"><table>
+<thead><tr><th>Operação</th><th>Efeito no determinante</th></tr></thead>
+<tbody>
+<tr><td>$\det A^T$</td><td>$=\det A$</td></tr>
+<tr><td>Trocar duas linhas (ou colunas)</td><td>muda o sinal</td></tr>
+<tr><td>Multiplicar uma linha por $\alpha$</td><td>multiplica por $\alpha$</td></tr>
+<tr><td>$L_i:=L_i+\alpha L_j$</td><td><strong>não altera</strong></td></tr>
+<tr><td>Linha/coluna nula, ou duas linhas iguais</td><td>$\det=0$</td></tr>
+<tr><td>$\det(AB)$</td><td>$=\det A\cdot\det B$</td></tr>
+<tr><td>$\det(\alpha A)$ ($A$ $n\times n$)</td><td>$=\alpha^n\det A$</td></tr>
+<tr><td>$\det(A^{-1})$</td><td>$=1/\det A$</td></tr>
+<tr><td>$\det(A+B)$</td><td>$\ne\det A+\det B$ em geral</td></tr>
+</tbody></table></div>
+<div class="box exa"><span class="t">Sai nos testes</span>
+<p>Nas escolhas múltiplas do T2: "$\det(2A)=2\det A$" é falso (para $2\times2$ é $4\det A$); "$\det A=-\det A^{-1}$" é falso (o correto é $\det A^{-1}=1/\det A$); "$\det A=\det$ da matriz depois de $L_2:=L_2-kL_1$" é verdadeiro.</p></div>
+
+<h3>3.3 Determinante, inversa e sistemas</h3>
+<div class="box teo"><span class="t">Teoremas</span>
+<ul>
+<li>$A$ é invertível $\iff\det A\ne0$. $AX=0$ tem solução não trivial $\iff\det A=0$.</li>
+<li><strong>Adjunta</strong>: $\operatorname{adj}A=[A_{ij}]^T$ (transposta da matriz dos cofatores). Se $\det A\ne0$: $A^{-1}=\dfrac{1}{\det A}\operatorname{adj}A$.</li>
+<li><strong>Regra de Cramer</strong>: se $A$ é $n\times n$ com $\det A\ne0$, o sistema $AX=B$ tem solução única, com
+$$x_i=\frac{\det A_i}{\det A},\quad A_i=A\text{ com a coluna }i\text{ substituída por }B.$$ 
+Um sistema nestas condições diz-se <strong>sistema de Cramer</strong>.</li>
+</ul></div>
+<div class="box met"><span class="t">Método: inversa por cofatores</span>
+<ol><li>Calcula $\det A$ (se $0$, não há inversa).</li><li>Calcula os $n^2$ cofatores $A_{ij}=(-1)^{i+j}\det M_{ij}$.</li><li>Transpõe para obter a adjunta e divide por $\det A$.</li><li>Confirma $AA^{-1}=I$ numa linha ou duas.</li></ol></div>
+<div class="box ex"><span class="t">Exemplo (T1 Q2a): $\det\begin{bmatrix}1&-1&2\\0&1&1\\\alpha&0&3\end{bmatrix}$</span>
+<p>Expandindo pela 1.ª linha: $1(3-0)+1(0-\alpha)+2(0-\alpha)=3-3\alpha=3(1-\alpha)$. Logo $A$ é invertível $\iff\alpha\ne1$.</p></div>
+
+<h3>3.4 Significado geométrico</h3>
+<p>$|\det[u\ v]|$ é a <strong>área do paralelogramo</strong> de lados $u,v$ ($\mathbb{R}^2$). $|\det[u\ v\ w]|$ é o <strong>volume do paralelepípedo</strong> de arestas $u,v,w$ ($\mathbb{R}^3$). Área do triângulo: metade da do paralelogramo.</p>
+</section>
+
+<section id="leontief">
+<h2>3.2 · Modelo input-output de Leontief <span class="done-tag">estudado ✓</span></h2>
+<p>Economia com $n$ setores. $x$ = vetor de produção, $d$ = vetor de consumo final (procura externa), $C$ = <strong>matriz de consumo</strong>: a coluna $j$ de $C$ lista o que o setor $j$ precisa de cada setor (incluindo dele próprio) para produzir <em>uma unidade</em>.</p>
+<div class="box teo"><span class="t">Equação de produção</span>
+$$x=Cx+d\iff(I-C)x=d\iff x=(I-C)^{-1}d.$$
+<p>$Cx$ = consumo intermédio. Se $C,d$ têm entradas $\ge0$ e a <strong>soma de cada coluna de $C$ é $\lt1$</strong>, então $(I-C)^{-1}$ existe e $x\ge0$ é a única solução.</p></div>
+<div class="box met"><span class="t">Método</span>
+<ol>
+<li>Monta $C$ <strong>por colunas</strong> a partir do enunciado: "uma unidade de output de bens requer $0{,}2$ de bens e $0{,}5$ de serviços" dá a coluna dos bens $(0{,}2;\,0{,}5)^T$.</li>
+<li>Escreve $d$ com o consumo final.</li>
+<li>Calcula $I-C$ e resolve $(I-C)x=d$ por Gauss-Jordan.</li>
+</ol></div>
+<div class="box ex"><span class="t">Exemplo dos slides</span>
+<p>Setores manufatura, agricultura, serviços, com
+$$C=\begin{bmatrix}0{,}5&0{,}4&0{,}2\\0{,}2&0{,}3&0{,}1\\0{,}1&0{,}1&0{,}3\end{bmatrix},\quad d=\begin{bmatrix}50\\30\\20\end{bmatrix}.$$ 
+Resolvendo $(I-C)x=d$ obtém-se, arredondado, $x\approx(226,\,119,\,78)$.</p>
+<p>Outro: bens e serviços, uma unidade de bens requer $0{,}2$ bens e $0{,}5$ serviços; uma unidade de serviços requer $0{,}4$ bens e $0{,}3$ serviços; $d=(20,30)$. Então $C=\begin{bmatrix}0{,}2&0{,}4\\0{,}5&0{,}3\end{bmatrix}$ e $x=Cx+d$.</p></div>
+<div class="box bad"><span class="t">Cuidado</span>
+<p>Colunas, não linhas: a coluna $j$ é o consumo <em>do setor $j$</em>. Trocar isto dá a matriz transposta e um resultado errado. Se a soma das colunas é $\lt1$ ou não, confere antes de concluir que a economia é viável.</p></div>
+</section>
+
+<section id="cap4">
+<h2>4 · Espaços euclidianos <span class="done-tag">estudado ✓</span></h2>
+
+<h3>4.1 Produto interno, norma, ângulo</h3>
+<div class="box def"><span class="t">Definições em $\mathbb{R}^n$</span>
+$$X\cdot Y=X^TY=x_1y_1+\cdots+x_ny_n,\qquad \|X\|=\sqrt{X\cdot X}=\sqrt{x_1^2+\cdots+x_n^2}.$$
+$$\cos\theta=\frac{X\cdot Y}{\|X\|\,\|Y\|},\ \theta\in[0,\pi]\ (X,Y\ne0).$$
+<p>Vetor unitário: norma $1$. Para $X\ne0$, $\dfrac{X}{\|X\|}$ é unitário com a mesma direção e sentido.</p></div>
+<div class="box teo"><span class="t">Propriedades e desigualdades</span>
+<ul>
+<li>$X\cdot X\ge0$ e $X\cdot X=0\iff X=0$; $X\cdot Y=Y\cdot X$; linear em cada variável; $\|\alpha X\|=|\alpha|\|X\|$.</li>
+<li><strong>Cauchy-Schwarz</strong>: $|X\cdot Y|\le\|X\|\|Y\|$.</li>
+<li><strong>Triangular</strong>: $\|X+Y\|\le\|X\|+\|Y\|$.</li>
+</ul></div>
+<div class="tw"><table>
+<thead><tr><th>Relação entre $X,Y\ne0$</th><th>Condição</th></tr></thead>
+<tbody>
+<tr><td>Ortogonais $X\perp Y$</td><td>$X\cdot Y=0$ ($\theta=\pi/2$)</td></tr>
+<tr><td>Colineares (paralelos)</td><td>$|X\cdot Y|=\|X\|\|Y\|$</td></tr>
+<tr><td>Mesmo sentido / sentidos opostos</td><td>$X\cdot Y=\pm\|X\|\|Y\|$</td></tr>
+</tbody></table></div>
+
+<h3>4.2 Conjuntos ortogonais e ortonormados</h3>
+<ul>
+<li><strong>Ortogonal</strong>: $X_i\cdot X_j=0$ para $i\ne j$. <strong>Ortonormado (o.n.)</strong>: ortogonal e todos de norma $1$.</li>
+<li>Todo o conjunto ortogonal de vetores <strong>não nulos</strong> é l.i. Logo, $n$ vetores ortogonais não nulos de $\mathbb{R}^n$ formam uma base.</li>
+<li>Se $B=(X_1,\dots,X_n)$ é base o.n., as coordenadas são $[X]_B=(X\cdot X_1,\dots,X\cdot X_n)$.</li>
+</ul>
+<div class="box exa"><span class="t">Dica de teste (T2 Q1e)</span>
+<p>"Uma base ortogonal de $F=\{x+y+z=0\}$": verifica duas coisas em cada candidata: (i) os vetores pertencem a $F$ (substitui na equação); (ii) o produto interno entre eles é $0$. $\big((-1,1,0),(-1,0,1)\big)$ é base de $F$ mas <strong>não</strong> é ortogonal (produto $=1$); $\big((-1,1,0),(1,1,-2)\big)$ é ortogonal e pertence a $F$.</p></div>
+
+<h3>4.3 Projeção ortogonal</h3>
+<div class="box teo"><span class="t">Projeção sobre um subespaço $W$</span>
+<p>$X=\operatorname{proj}_WX+Y$ com $\operatorname{proj}_WX\in W$ e $Y\perp W$. Se $(X_1,\dots,X_k)$ é <strong>base o.n.</strong> de $W$:</p>
+$$\operatorname{proj}_WX=(X\cdot X_1)X_1+\cdots+(X\cdot X_k)X_k.$$
+<p>Se a base $(X_1,\dots,X_k)$ é só <em>ortogonal</em>: $\operatorname{proj}_WX=\sum_i\dfrac{X\cdot X_i}{X_i\cdot X_i}X_i$. A componente ortogonal é $Y=X-\operatorname{proj}_WX$ e $\|Y\|=d(X,W)$ é a distância de $X$ a $W$.</p>
+<p>Um vetor é ortogonal a $W$ se e só se é ortogonal a cada vetor de uma base de $W$.</p></div>
+<p><strong>Teorema da melhor aproximação</strong>: $\operatorname{proj}_Wy$ é o vetor de $W$ mais próximo de $y$, isto é, $\|y-\hat y\|\lt\|y-v\|$ para todo o $v\in W$, $v\ne\hat y$. É a base dos mínimos quadrados.</p>
+
+<h3>4.4 Gram-Schmidt</h3>
+<div class="box met"><span class="t">Método: construir uma base ortogonal/o.n. a partir de $(X_1,\dots,X_m)$</span>
+$$Y_1=\frac{X_1}{\|X_1\|},\qquad X_k'=X_k-\sum_{i=1}^{k-1}(X_k\cdot Y_i)Y_i,\qquad Y_k=\frac{X_k'}{\|X_k'\|}.$$
+<p><strong>Versão sem raízes</strong> (mais segura em teste): trabalha com vetores ortogonais $Z_k$ sem normalizar,
+$Z_1=X_1,\ Z_k=X_k-\sum_{i\lt k}\dfrac{X_k\cdot Z_i}{Z_i\cdot Z_i}Z_i$, e normaliza só no fim se pedirem base o.n. Podes multiplicar cada $Z_k$ por um escalar para limpar frações.</p></div>
+<div class="box ex"><span class="t">Exemplo: base o.n. de $\langle(1,1,1,1),(1,2,-1,3),(2,1,-2,2)\rangle$</span>
+<ol>
+<li>$Z_1=(1,1,1,1)$, $\|Z_1\|^2=4$.</li>
+<li>$X_2\cdot Z_1=5$: $Z_2=(1,2,-1,3)-\tfrac54(1,1,1,1)=\tfrac14(-1,3,-9,7)$. Usa $Z_2=(-1,3,-9,7)$, $\|Z_2\|^2=140$.</li>
+<li>$X_3\cdot Z_1=3$ e $X_3\cdot Z_2=(2,1,-2,2)\cdot(-1,3,-9,7)=33$. $Z_3=X_3-\tfrac34Z_1-\tfrac{33}{140}Z_2\propto(26,-8,-11,-7)$, $\|Z_3\|^2=910$.</li>
+<li>Base o.n.: $\tfrac12(1,1,1,1)$, $\tfrac1{\sqrt{140}}(-1,3,-9,7)$, $\tfrac1{\sqrt{910}}(26,-8,-11,-7)$.</li>
+</ol></div>
+
+<h3>4.5 Produto externo (vetorial) em $\mathbb{R}^3$</h3>
+<div class="box def"><span class="t">Definição</span>
+$$X\times Y=(x_2y_3-x_3y_2,\ x_3y_1-x_1y_3,\ x_1y_2-x_2y_1)=\det\begin{bmatrix}\mathbf i&\mathbf j&\mathbf k\\x_1&x_2&x_3\\y_1&y_2&y_3\end{bmatrix}$$
+<p>(determinante simbólico, expandido pela 1.ª linha). Exemplo (T2 Q1d): $(1,1,1)\times(1,2,-1)=(-3,2,1)$.</p></div>
+<ul>
+<li>$X\times Y=-(Y\times X)$; $X\times X=0$; bilinear; $X\times Y$ é <strong>ortogonal a $X$ e a $Y$</strong>.</li>
+<li>$\|X\times Y\|=\|X\|\|Y\|\sin\theta$. Área do paralelogramo $=\|X\times Y\|$; área do triângulo $=\tfrac12\|X\times Y\|$.</li>
+<li>$X\times Y=0\iff X,Y$ colineares.</li>
+</ul>
+<div class="box bad"><span class="t">Cuidado</span>
+<p>O produto interno dá um <strong>escalar</strong>; o produto externo dá um <strong>vetor</strong>. Uma opção "$u\times v=2$" (número) é obviamente falsa. Confirma sempre o resultado com $(u\times v)\cdot u=0$.</p></div>
+
+<h3>4.6 Retas e planos em $\mathbb{R}^3$</h3>
+<div class="tw"><table>
+<thead><tr><th>Objeto</th><th>Equação vetorial / paramétrica</th><th>Cartesiana</th></tr></thead>
+<tbody>
+<tr><td>Reta por $P$, vetor diretor $v$</td><td>$X=P+\alpha v$; $x=x_0+\alpha v_1$, $y=y_0+\alpha v_2$, $z=z_0+\alpha v_3$</td><td>2 equações (eliminar $\alpha$); grau de indeterminação $1$</td></tr>
+<tr><td>Plano por $P$, vetores diretores $u,v$ (não colineares)</td><td>$X=P+\alpha u+\beta v$</td><td>$ax+by+cz+d=0$ com $(a,b,c)=u\times v$ <em>normal</em> ao plano</td></tr>
+</tbody></table></div>
+<ul>
+<li>Plano por 3 pontos $P,Q,R$: $u=Q-P$, $v=R-P$, normal $n=u\times v$, e $d=-n\cdot P$.</li>
+<li>Reta como interseção de dois planos: o vetor diretor é o produto externo das normais.</li>
+</ul>
+
+<h3>4.7 Distâncias</h3>
+<div class="box teo"><span class="t">Fórmulas</span>
+<ul>
+<li>Ponto–ponto: $d(P,Q)=\|\overrightarrow{PQ}\|$.</li>
+<li>Ponto–plano ($ax+by+cz+d=0$): $\displaystyle d(P,\pi)=\frac{|ax_0+by_0+cz_0+d|}{\sqrt{a^2+b^2+c^2}}$.</li>
+<li>Ponto–reta (por $Q$, diretor $u$): $\displaystyle d(P,r)=\frac{\|u\times\overrightarrow{QP}\|}{\|u\|}$.</li>
+</ul>
+<p>Alternativa geométrica: determina o pé da perpendicular $Q$ (interseção da reta/plano com a perpendicular por $P$) e calcula $d(P,Q)$.</p></div>
+</section>
+
+<section id="minq">
+<h2>4.2 · Problema dos mínimos quadrados <span class="done-tag">estudado ✓</span></h2>
+<p>Quando $Ax=b$ é <strong>impossível</strong> ($b\notin C(A)$), procuramos $\hat x$ que torna $\|b-Ax\|$ mínimo.</p>
+<div class="box def"><span class="t">Definição</span>
+<p>$\hat x$ é <strong>solução dos mínimos quadrados</strong> de $Ax=b$ se $\|b-A\hat x\|\le\|b-Ax\|$ para todo $x$. O <strong>erro dos mínimos quadrados</strong> é $\|b-A\hat x\|$. Sempre existe solução, porque $A\hat x=\hat b$ com $\hat b=\operatorname{proj}_{C(A)}b$ é um sistema possível.</p></div>
+
+<div class="box teo"><span class="t">Equações normais (o método a usar em teste)</span>
+$$\hat x\ \text{é solução de mínimos quadrados}\iff A^TA\,\hat x=A^Tb.$$
+<ul>
+<li>Solução <strong>única</strong> $\iff$ colunas de $A$ l.i. $\iff A^TA$ invertível; então $\hat x=(A^TA)^{-1}A^Tb$.</li>
+<li>Se as colunas de $A$ são l.d., há <strong>infinitas</strong> soluções (resolve $A^TA\hat x=A^Tb$ por Gauss: terá incógnitas livres).</li>
+<li>Se $Ax=b$ já era possível, as soluções de mínimos quadrados são as soluções normais e o erro é $0$.</li>
+</ul></div>
+
+<div class="box met"><span class="t">Método</span>
+<ol>
+<li>Calcula $A^TA$ e $A^Tb$.</li>
+<li>Resolve $A^TA\hat x=A^Tb$ (inversa se for $2\times2$, Gauss em geral).</li>
+<li>Erro: calcula o resíduo $r=b-A\hat x$ e depois $\|r\|=\sqrt{r\cdot r}$.</li>
+<li><strong>Verificação grátis</strong>: $A^Tr$ deve ser $0$ (o resíduo é ortogonal às colunas de $A$).</li>
+</ol></div>
+<div class="box ex"><span class="t">Exemplo dos slides</span>
+<p>$A=\begin{bmatrix}4&0\\0&2\\1&1\end{bmatrix}$, $b=\begin{bmatrix}2\\0\\11\end{bmatrix}$. $A^TA=\begin{bmatrix}17&1\\1&5\end{bmatrix}$, $A^Tb=\begin{bmatrix}19\\11\end{bmatrix}$. Resolvendo, $\hat x=(1,2)$.</p></div>
+<div class="box ex"><span class="t">Regressão linear</span>
+<p>Para ajustar $y=\alpha x+\beta$ aos pontos $(2,1),(2,2),(-2,0),(-2,-1)$, cada ponto dá uma linha $[x_i\ \ 1]\begin{bmatrix}\alpha\\\beta\end{bmatrix}=y_i$. Com $A=\begin{bmatrix}2&1\\2&1\\-2&1\\-2&1\end{bmatrix}$, $b=(1,2,0,-1)$: $A^TA=\begin{bmatrix}16&0\\0&4\end{bmatrix}$, $A^Tb=(8,2)$, logo $\alpha=\tfrac12$, $\beta=\tfrac12$ e a reta é $y=\tfrac12x+\tfrac12$.</p></div>
+<p>A resolução completa do T2 Q2 está na secção de testes.</p>
+</section>
+
+<section id="cap5">
+<h2>5.1 · Valores e vetores próprios <span class="done-tag">estudado ✓</span></h2>
+
+<div class="box def"><span class="t">Definições</span>
+<p>$\lambda\in\mathbb{R}$ é <strong>valor próprio</strong> de $A$ ($n\times n$) se existe $X\ne0$ com $AX=\lambda X$; esse $X$ é um <strong>vetor próprio</strong> associado a $\lambda$. Equivalências:
+$$\lambda\text{ valor próprio}\iff(A-\lambda I)X=0\text{ tem solução não trivial}\iff\det(A-\lambda I)=0.$$
+O <strong>polinómio característico</strong> é $p_A(\lambda)=\det(A-\lambda I)$ (grau $n$). Os valores próprios são as raízes <strong>reais</strong> de $p_A$.</p>
+<p><strong>Subespaço próprio</strong>: $U_\lambda=N(A-\lambda I)$ (vetores próprios mais o vetor nulo).</p></div>
+
+<div class="box met"><span class="t">Método: valores e subespaços próprios</span>
+<ol>
+<li>Calcula $p_A(\lambda)=\det(A-\lambda I)$ e factoriza: $p_A(\lambda)=(\lambda_1-\lambda)^{n_1}\cdots(\lambda_k-\lambda)^{n_k}$. Os $n_i$ são as <strong>multiplicidades algébricas</strong>.</li>
+<li>Para cada $\lambda_i$, resolve $(A-\lambda_iI)X=0$ por Gauss. A base de $U_{\lambda_i}$ vem das incógnitas livres.</li>
+<li>$\dim U_{\lambda_i}=\operatorname{nul}(A-\lambda_iI)=n-\operatorname{car}(A-\lambda_iI)$, e <strong>$1\le\dim U_{\lambda_i}\le n_i$</strong>.</li>
+</ol>
+<p>Matriz triangular: os valores próprios são as entradas da diagonal.</p>
+<p>Verificações rápidas: soma dos valores próprios $=$ traço de $A$ (soma da diagonal); produto $=\det A$ (contando multiplicidades).</p></div>
+
+<div class="box ex"><span class="t">Exemplo 1</span>
+<p>$A=\begin{bmatrix}1&1\\-2&4\end{bmatrix}$: $p_A=\lambda^2-5\lambda+6=(2-\lambda)(3-\lambda)$. Valores próprios $2$ e $3$. $U_2=\langle(1,1)\rangle$, $U_3=\langle(1,2)\rangle$.</p></div>
+
+<h3>Diagonalização</h3>
+<div class="box def"><span class="t">Definições</span>
+<p>$A$ e $B$ são <strong>semelhantes</strong> se $P^{-1}AP=B$ para alguma $P$ invertível; matrizes semelhantes têm o mesmo polinómio característico. $A$ é <strong>diagonalizável</strong> se é semelhante a uma matriz diagonal: $P^{-1}AP=D$.</p></div>
+<div class="box teo"><span class="t">Teoremas</span>
+<ul>
+<li>$A$ diagonalizável $\iff A$ tem $n$ vetores próprios l.i. Então as <strong>colunas de $P$</strong> são esses vetores e $D$ tem os valores próprios correspondentes na diagonal (mesma ordem).</li>
+<li>Vetores próprios de valores próprios <strong>distintos</strong> são l.i.</li>
+<li>$A$ é diagonalizável $\iff\dim U_{\lambda_i}=n_i$ para todo o $i$ (multiplicidade geométrica $=$ algébrica).</li>
+<li>$A$ com $n$ valores próprios distintos $\Rightarrow$ diagonalizável. <strong>O recíproco é falso.</strong></li>
+</ul></div>
+<div class="box met"><span class="t">Método: decidir se é diagonalizável e diagonalizar</span>
+<ol>
+<li>Acha os valores próprios e multiplicidades.</li>
+<li>Se há $n$ distintos: diagonalizável, fim. Senão, para cada valor com $n_i\gt1$ calcula $\dim U_{\lambda_i}$. (Os de multiplicidade $1$ têm automaticamente dimensão $1$.)</li>
+<li>Se algum $\dim U_{\lambda_i}\lt n_i$: <strong>não</strong> diagonalizável.</li>
+<li>Caso contrário, junta bases de todos os $U_{\lambda_i}$ nas colunas de $P$; $D=\operatorname{diag}$ pela mesma ordem.</li>
+</ol></div>
+<div class="tw"><table>
+<thead><tr><th>Matriz</th><th>Valores próprios</th><th>Conclusão</th></tr></thead>
+<tbody>
+<tr><td>$\begin{bmatrix}1&1&0\\0&1&0\\0&0&2\end{bmatrix}$</td><td>$1$ ($n=2$), $2$ ($n=1$)</td><td>$A-I$ tem $\operatorname{car}=2$, $\dim U_1=1\lt2$: <strong>não</strong> diagonalizável</td></tr>
+<tr><td>$\begin{bmatrix}1&1&0\\0&2&0\\0&0&1\end{bmatrix}$</td><td>$1$ ($n=2$), $2$ ($n=1$)</td><td>$A-I$ tem $\operatorname{car}=1$, $\dim U_1=2$: diagonalizável, com $P=\begin{bmatrix}1&0&1\\0&0&1\\0&1&0\end{bmatrix}$, $D=\operatorname{diag}(1,1,2)$</td></tr>
+</tbody></table></div>
+
+<h3>Potências e inversa</h3>
+<p>Se $A=PDP^{-1}$, então $A^k=PD^kP^{-1}$ (basta elevar a diagonal) e, se $A$ é invertível, $A^{-1}=PD^{-1}P^{-1}$.</p>
+<div class="box ex"><span class="t">Exemplo</span>
+<p>$A=\begin{bmatrix}5&-3\\6&-4\end{bmatrix}$ tem valores próprios $2$ e $-1$ (vetores $(1,1)$ e $(1,2)$). Logo $A^8=P\,\operatorname{diag}(2^8,(-1)^8)\,P^{-1}=\begin{bmatrix}511&-255\\510&-254\end{bmatrix}$.</p></div>
+
+<h3>Matrizes simétricas: diagonalização ortogonal</h3>
+<div class="box teo"><span class="t">Teoremas</span>
+<ul>
+<li>Uma matriz simétrica real tem $n$ valores próprios reais (contando multiplicidades).</li>
+<li>Vetores próprios de uma simétrica associados a valores próprios <strong>distintos</strong> são ortogonais.</li>
+<li>$P$ é <strong>ortogonal</strong> se $P^TP=I$, isto é, $P^{-1}=P^T$; equivale a ter colunas formando uma base o.n.</li>
+<li>$A$ é simétrica $\iff A$ é ortogonalmente diagonalizável: existe $P$ ortogonal com $P^TAP=D$.</li>
+</ul></div>
+<div class="box met"><span class="t">Método: diagonalizar ortogonalmente uma simétrica</span>
+<ol>
+<li>Valores próprios e subespaços próprios, como antes.</li>
+<li>Dentro de cada $U_{\lambda}$ escolhe uma base <strong>ortogonal</strong> (se $\dim\gt1$, usa Gram-Schmidt) e normaliza todos os vetores.</li>
+<li>$P=[P_1\cdots P_n]$ com essas colunas; $P^TAP=D$ (sem calcular inversa!).</li>
+</ol>
+<p>Exemplo: $A=\begin{bmatrix}1&2\\2&1\end{bmatrix}$: $\lambda=3$ com $(1,1)/\sqrt2$ e $\lambda=-1$ com $(-1,1)/\sqrt2$. $P=\tfrac1{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix}$, $D=\operatorname{diag}(3,-1)$.</p></div>
+
+<h3>Demonstrações típicas (tipo T2 Q3)</h3>
+<p>Estas provas curtas saem com frequência e têm sempre a mesma estrutura: parte da definição $AX=\lambda X$ com $X\ne0$.</p>
+<details><summary>Mostrar que $\lambda^2$ é valor próprio de $A^2$</summary><div class="in">
+<p>Seja $X\ne0$ com $AX=\lambda X$. Então $A^2X=A(AX)=A(\lambda X)=\lambda(AX)=\lambda^2X$. Como $X\ne0$, $\lambda^2$ é valor próprio de $A^2$ (com o mesmo vetor próprio). $\blacksquare$</p></div></details>
+<details><summary>Se $A$ é diagonalizável, então $A^2$ também</summary><div class="in">
+<p>Existe $P$ invertível e $D$ diagonal com $A=PDP^{-1}$. Então $A^2=PDP^{-1}PDP^{-1}=PD^2P^{-1}$ e $D^2$ é diagonal (os quadrados da diagonal). Logo $A^2$ é semelhante a uma diagonal. $\blacksquare$</p></div></details>
+<details><summary>Se $A$ é invertível e $AX=\lambda X$, então $\lambda\ne0$ e $A^{-1}X=\lambda^{-1}X$</summary><div class="in">
+<p>$\lambda\ne0$ porque $\det A\ne0$ (senão $AX=0$ com $X\ne0$, e $A$ seria singular). Multiplicando $AX=\lambda X$ por $A^{-1}$: $X=\lambda A^{-1}X$, logo $A^{-1}X=\lambda^{-1}X$. $\blacksquare$</p></div></details>
+<details><summary>$A$ e $A^T$ têm os mesmos valores próprios</summary><div class="in">
+<p>$\det(A^T-\lambda I)=\det\big((A-\lambda I)^T\big)=\det(A-\lambda I)$, logo têm o mesmo polinómio característico. $\blacksquare$</p></div></details>
+<details><summary>Os valores próprios de $kA$ são $k\lambda$ e os de $A+cI$ são $\lambda+c$</summary><div class="in">
+<p>$(kA)X=k\lambda X$ e $(A+cI)X=(\lambda+c)X$ com o mesmo $X$. $\blacksquare$</p></div></details>
+</section>
+
+<section id="formas">
+<h2>5.2 · Formas quadráticas e critério de Sylvester <span class="done-tag">estudado ✓</span></h2>
+
+<div class="box def"><span class="t">Forma quadrática</span>
+<p>$Q:\mathbb{R}^n\to\mathbb{R}$, $Q(X)=X^TAX$ com $A$ <strong>simétrica</strong>.</p></div>
+<div class="box met"><span class="t">Como obter $A$ a partir do polinómio</span>
+<p>Diagonal: coeficientes dos quadrados. Fora da diagonal: <strong>metade</strong> do coeficiente do termo cruzado (porque $a_{ij}=a_{ji}$ aparece duas vezes). Exemplos:</p>
+<ul>
+<li>$Q=x^2-4xy+y^2\Rightarrow A=\begin{bmatrix}1&-2\\-2&1\end{bmatrix}$.</li>
+<li>$Q=3x_1^2+4x_1x_2-x_2^2\Rightarrow A=\begin{bmatrix}3&2\\2&-1\end{bmatrix}$.</li>
+</ul></div>
+
+<h3>Mudança de variável</h3>
+<p>Com $X=PY$ ($P$ invertível): $X^TAX=Y^T(P^TAP)Y$. Se $P$ é ortogonal e $P^TAP=D=\operatorname{diag}(\lambda_1,\dots,\lambda_n)$, então
+$$Q=\lambda_1y_1^2+\cdots+\lambda_ny_n^2\quad(\text{sem termos cruzados}).$$
+$Y$ são as coordenadas de $X$ na base formada pelas colunas de $P$.</p>
+
+<h3>Classificação</h3>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Condição sobre $Q(X)$, $X\ne0$</th><th>Valores próprios de $A$</th></tr></thead>
+<tbody>
+<tr><td>Definida positiva</td><td>$Q\gt0$</td><td>todos $\gt0$</td></tr>
+<tr><td>Semidefinida positiva</td><td>$Q\ge0$</td><td>todos $\ge0$</td></tr>
+<tr><td>Definida negativa</td><td>$Q\lt0$</td><td>todos $\lt0$</td></tr>
+<tr><td>Semidefinida negativa</td><td>$Q\le0$</td><td>todos $\le0$</td></tr>
+<tr><td>Indefinida</td><td>toma valores positivos e negativos</td><td>há $\gt0$ e $\lt0$</td></tr>
+</tbody></table></div>
+
+<div class="box teo"><span class="t">Critério de Sylvester</span>
+<p><strong>Menor principal</strong>: determinante de uma submatriz obtida eliminando linhas e colunas com os mesmos índices. <strong>Menores principais dominantes</strong> $\Delta_k$: determinante da submatriz $k\times k$ do canto superior esquerdo.</p>
+<ul>
+<li>Definida positiva $\iff\Delta_1,\dots,\Delta_n\gt0$.</li>
+<li>Definida negativa $\iff\Delta_1\lt0,\ \Delta_2\gt0,\ \Delta_3\lt0,\dots$ (sinais alternados, ordem ímpar negativa, par positiva).</li>
+<li>Semidefinida positiva $\iff$ <strong>todos</strong> os menores principais (não só os dominantes) são $\ge0$.</li>
+<li>Semidefinida negativa $\iff$ menores principais de ordem par $\ge0$ e de ordem ímpar $\le0$ (todos).</li>
+<li>Indefinida: nenhum dos casos anteriores.</li>
+</ul></div>
+<div class="box bad"><span class="t">Cuidados</span>
+<ul>
+<li>Se algum $\Delta_k=0$, Sylvester dominante não decide: tens de olhar para <strong>todos</strong> os menores principais, ou usar valores próprios. Ex.: $A=\begin{bmatrix}1&1&0\\1&1&0\\0&0&4\end{bmatrix}$ tem $\Delta=(1,0,0)$ mas é semidefinida positiva (todos os menores principais $\ge0$).</li>
+<li>Em $2\times2$: $\det A\lt0\Rightarrow$ indefinida (valores próprios de sinais contrários).</li>
+<li>Se ficas com $\Delta_1\gt0$ e $\Delta_3\lt0$ (ex.: $\Delta=(2,0,-8)$), é indefinida: uma definida/semidefinida positiva nunca tem $\det A\lt0$, e uma negativa teria $\Delta_1\lt0$.</li>
+</ul></div>
+<div class="box ex"><span class="t">Exemplo (T2 Q4b)</span>
+<p>$Q(x,y)=x^2-4xy+y^2$: $A=\begin{bmatrix}1&-2\\-2&1\end{bmatrix}$, $\Delta_1=1\gt0$, $\Delta_2=1-4=-3\lt0$, logo <strong>indefinida</strong> (valores próprios $3$ e $-1$).</p></div>
+</section>
+
+<section id="conicas">
+<h2>5.3 · Cónicas e quádricas <span class="done-tag">estudado ✓</span></h2>
+
+<h3>Cónicas</h3>
+<p>Equação geral: $\alpha x^2+\beta y^2+2\gamma xy+\delta x+\eta y+\mu=0$, em forma matricial
+$$X^TAX+BX+\mu=0,\quad A=\begin{bmatrix}\alpha&\gamma\\\gamma&\beta\end{bmatrix},\ B=[\delta\ \ \eta].$$</p>
+<div class="tw"><table>
+<thead><tr><th>Cónica</th><th>Equação reduzida</th></tr></thead>
+<tbody>
+<tr><td>Elipse (circunferência se $a=b$)</td><td>$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$</td></tr>
+<tr><td>Hipérbole</td><td>$\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}=1$ (ou com os papéis de $x$ e $y$ trocados)</td></tr>
+<tr><td>Parábola</td><td>$y=ax^2$ (ou $x=ay^2$)</td></tr>
+</tbody></table></div>
+<p>Por valores próprios de $A$ ($\lambda_1\lambda_2=\det A$): ambos do mesmo sinal $\to$ elipse; sinais opostos $\to$ hipérbole; um deles nulo $\to$ parábola (quando não é degenerada).</p>
+
+<div class="box met"><span class="t">Método completo (com termo cruzado $xy$)</span>
+<ol>
+<li>Escreve $A$, $B$ e $\mu$.</li>
+<li><strong>Rotação</strong>: diagonaliza ortogonalmente $A$ ($P^TAP=D$). Escolhe $P$ com $\det P=+1$ (troca o sinal de uma coluna se for preciso, para ser uma rotação).</li>
+<li>Substitui $X=P\hat X$ e calcula $\hat B=BP$. A equação fica $\lambda_1\hat x^2+\lambda_2\hat y^2+\hat\delta\hat x+\hat\eta\hat y+\mu=0$.</li>
+<li><strong>Translação</strong>: completa quadrados em $\hat x$ e/ou $\hat y$ para eliminar os termos lineares, obtendo $\tilde x,\tilde y$.</li>
+<li>Divide para ficar com $1$ (ou na forma $\tilde y=a\tilde x^2$) e identifica a cónica. Indica as mudanças de variável usadas.</li>
+</ol>
+<p>Sem termo cruzado ($\gamma=0$), salta direto para o passo 4 (completar quadrados).</p></div>
+
+<div class="box ex"><span class="t">Exemplo A (slides): $x^2+y^2+4xy-2x+2y-6=0$</span>
+<p>$A=\begin{bmatrix}1&2\\2&1\end{bmatrix}$, $B=[-2\ \ 2]$, $\mu=-6$. Valores próprios $3$ e $-1$, $P=\tfrac1{\sqrt2}\begin{bmatrix}1&-1\\1&1\end{bmatrix}$ (rotação). $BP=[0\ \ 2\sqrt2]$. Então
+$$3\hat x^2-\hat y^2+2\sqrt2\,\hat y=6\iff3\hat x^2-(\hat y-\sqrt2)^2=4\iff\frac{\tilde x^2}{4/3}-\frac{\tilde y^2}{4}=1,$$
+com $\tilde x=\hat x$, $\tilde y=\hat y-\sqrt2$ (translação). <strong>Hipérbole.</strong></p></div>
+<div class="box ex"><span class="t">Exemplo B (slides): só completar quadrados</span>
+<ul>
+<li>$2x^2+y^2+12x+4y+18=0\Rightarrow2(x+3)^2+(y+2)^2=4\Rightarrow\dfrac{\tilde x^2}{2}+\dfrac{\tilde y^2}{4}=1$: <strong>elipse</strong>.</li>
+<li>$2x^2+12x+3y+15=0\Rightarrow2(x+3)^2+3(y-1)=0\Rightarrow\tilde y=-\tfrac23\tilde x^2$: <strong>parábola</strong>.</li>
+</ul></div>
+
+<h4>Cónicas degeneradas</h4>
+<p>Depois de completar quadrados podes obter: $\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=-1$ (<strong>conjunto vazio</strong>); $\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=0$ (<strong>um ponto</strong>); $\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}=0$ (<strong>duas retas concorrentes</strong> $y=\pm\frac bax$); $x^2=0$ (<strong>reta dupla</strong>); $x^2=a^2$ (<strong>duas retas paralelas</strong>). Ex.: $2(x+3)^2+(y+2)^2=-2$ é vazio; $=0$ é o ponto $(-3,-2)$.</p>
+
+<h3>Quádricas</h3>
+<p>Equação geral $X^TAX+BX+\mu=0$ com $A$ simétrica $3\times3$. O processo é o mesmo (rotação + translação). Depois de reduzida, identifica pela forma:</p>
+<div class="tw"><table>
+<thead><tr><th>Quádrica</th><th>Equação reduzida</th></tr></thead>
+<tbody>
+<tr><td>Elipsóide (esfera se $a=b=c$)</td><td>$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}+\dfrac{z^2}{c^2}=1$</td></tr>
+<tr><td>Hiperbolóide de uma folha</td><td>$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}-\dfrac{z^2}{c^2}=1$</td></tr>
+<tr><td>Hiperbolóide de duas folhas</td><td>$\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}-\dfrac{z^2}{c^2}=1$</td></tr>
+<tr><td>Cone</td><td>$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}-\dfrac{z^2}{c^2}=0$</td></tr>
+<tr><td>Parabolóide elíptico</td><td>$z=\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}$</td></tr>
+<tr><td>Parabolóide hiperbólico (sela)</td><td>$z=\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}$</td></tr>
+<tr><td>Cilindros</td><td>elíptico $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$; hiperbólico $\frac{x^2}{a^2}-\frac{y^2}{b^2}=1$; parabólico $y=ax^2$</td></tr>
+</tbody></table></div>
+<p>Truque: com o lado direito a $1$, conta os sinais negativos nos quadrados: nenhum $\to$ elipsóide; um $\to$ hiperbolóide de uma folha; dois $\to$ de duas folhas. Para confirmar, interseta com os planos coordenados e vê que curvas aparecem.</p>
+<div class="box ex"><span class="t">Exemplo dos slides</span>
+<p>$-8x^2-8y^2+10z^2+32xy-4xz-4yz-24=0$: $A=\begin{bmatrix}-8&16&-2\\16&-8&-2\\-2&-2&10\end{bmatrix}$ tem valores próprios $12,6,-24$. Logo $12\hat x^2+6\hat y^2-24\hat z^2=24\iff\dfrac{\hat x^2}{2}+\dfrac{\hat y^2}{4}-\hat z^2=1$: <strong>hiperbolóide de uma folha</strong>.</p></div>
+</section>
+
+<section id="cap6">
+<h2>6 · Aplicações lineares <span class="done-tag">estudado ✓</span></h2>
+<div class="box def"><span class="t">Definição</span>
+<p>$L:V\to W$ é <strong>linear</strong> se, para todos $X,Y\in V$ e $c\in\mathbb{R}$: $L(X+Y)=L(X)+L(Y)$ e $L(cX)=cL(X)$. Se $W=V$ é um <em>operador linear</em>. Consequências: $L(0_V)=0_W$ e $L(c_1X_1+\cdots+c_kX_k)=c_1L(X_1)+\cdots+c_kL(X_k)$.</p></div>
+<p>Uma aplicação linear fica <strong>totalmente determinada pelas imagens dos vetores de uma base</strong> do domínio.</p>
+<div class="box met"><span class="t">Para mostrar que $L$ é linear</span>
+<p>Verifica as duas condições com vetores genéricos. Para mostrar que <em>não é</em>: um contra-exemplo, ou $L(0)\ne0$ (ex.: $L(x)=x+1$ falha).</p></div>
+
+<div class="box teo"><span class="t">Matriz representativa</span>
+<p>Sejam $S=(X_1,\dots,X_n)$ base de $V$ e $T$ base de $W$.</p>
+$$[L]_{S,T}=\big[\,[L(X_1)]_T\ \cdots\ [L(X_n)]_T\,\big],\qquad[L(X)]_T=[L]_{S,T}\,[X]_S.$$
+<p>Colunas = coordenadas, na base de chegada $T$, das imagens dos vetores da base de partida $S$.</p></div>
+<div class="box exa"><span class="t">Caso mais comum (T2 Q1g)</span>
+<p>Com as bases <strong>canónicas</strong> de ambos os lados, as colunas são simplesmente $L(e_1),\dots,L(e_n)$. Para $L(x,y)=(2x+y,\,3x-4y,\,x-y)$: $L(1,0)=(2,3,1)$ e $L(0,1)=(1,-4,-1)$, logo
+$$[L]=\begin{bmatrix}2&1\\3&-4\\1&-1\end{bmatrix}\ (3\times2).$$
+Dica de ordem: para $L:\mathbb{R}^n\to\mathbb{R}^m$ a matriz é $m\times n$. Os coeficientes de cada componente de saída formam <em>uma linha</em>.</p></div>
+<div class="box ex"><span class="t">Exemplo dos slides: bases não canónicas</span>
+<p>$S=((1,1),(1,0))$, $T=((1,0,1),(1,1,0),(0,1,1))$, $L(1,1)=(2,3,1)$, $L(1,0)=(1,2,1)$.</p>
+<ol>
+<li>Escreve na base $T$: $L(1,1)=0\cdot(1,0,1)+2\cdot(1,1,0)+1\cdot(0,1,1)$ e $L(1,0)=0\cdot(1,0,1)+1\cdot(1,1,0)+1\cdot(0,1,1)$.</li>
+<li>Logo $[L]_{S,T}=\begin{bmatrix}0&0\\2&1\\1&1\end{bmatrix}$.</li>
+<li>Fórmula de $L$: $(x_1,x_2)=x_2(1,1)+(x_1-x_2)(1,0)\Rightarrow L(x_1,x_2)=x_2(2,3,1)+(x_1-x_2)(1,2,1)=(x_1+x_2,\ 2x_1+x_2,\ x_1)$.</li>
+</ol></div>
+<div class="box met"><span class="t">Passar de uma base de partida/chegada para outra</span>
+<p>Se $S,S'$ são bases de $V$ e $T,T'$ bases de $W$:
+$$[L]_{S',T'}=M_{T'\leftarrow T}\,[L]_{S,T}\,M_{S\leftarrow S'}.$$
+Nota: núcleo e imagem de $L$ correspondem a $N$ e $C$ da matriz representativa, que já sabes calcular (secção 2.2).</p></div>
+</section>
+
+<section id="testes">
+<h2>Testes de 2024/25 resolvidos</h2>
+<p>Tenta cada pergunta sozinho/a antes de abrir a resolução. Todas as contas foram verificadas.</p>
+
+<h3>1.º Teste (30 de outubro de 2024, 1h30)</h3>
+
+<h4>Questão 1 (4 val.): resolver o sistema com $A=LU$</h4>
+<p>$\begin{cases}x-y+2z+3w=2\\2x+2z+4w=6\\-2y+z=-2\end{cases}$, com $A=\begin{bmatrix}1&-1&2&3\\2&0&2&4\\0&-2&1&0\end{bmatrix}$, $b=(2,6,-2)$.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>Escalonar.</strong> $L_2:=L_2-2L_1$ (multiplicador $2$): $(0,2,-2,-2)$. $L_3$ já tem $0$ na 1.ª coluna (multiplicador $0$). Depois $L_3:=L_3+L_2$ (multiplicador $-1$): $(0,0,-1,-2)$.</p>
+$$L=\begin{bmatrix}1&0&0\\2&1&0\\0&-1&1\end{bmatrix},\qquad U=\begin{bmatrix}1&-1&2&3\\0&2&-2&-2\\0&0&-1&-2\end{bmatrix}.$$
+<p>Confirmação (linha 3 de $LU$): $-1\cdot(0,2,-2,-2)+1\cdot(0,0,-1,-2)=(0,-2,1,0)$, que é a linha 3 de $A$ ✓.</p>
+<p><strong>$Ly=b$:</strong> $y_1=2$; $2\cdot2+y_2=6\Rightarrow y_2=2$; $-y_2+y_3=-2\Rightarrow y_3=0$. Logo $y=(2,2,0)$.</p>
+<p><strong>$Ux=y$:</strong> última equação $-z-2w=0\Rightarrow z=-2w$. Segunda: $2y-2z-2w=2\Rightarrow2y+4w-2w=2\Rightarrow y=1-w$. Primeira: $x=2+y-2z-3w=2+(1-w)+4w-3w=3$.</p>
+<p><strong>Solução:</strong> $(x,y,z,w)=(3,\,1-w,\,-2w,\,w)$, $w\in\mathbb{R}$. Sistema possível e indeterminado de grau $1$.</p>
+</div></details>
+
+<h4>Questão 2 (7,5 val.)</h4>
+<p>$A=\begin{bmatrix}1&-1&2\\0&1&1\\\alpha&0&3\end{bmatrix}$. (a) $A$ invertível $\iff\alpha\ne1$. (b) Com $\alpha=2$: (i) $A^{-1}$; (ii) $X$ ($3\times3$) com $A^TX+5B=DC$, onde $B=\begin{bmatrix}1&-1&2\\1&1&0\\0&0&1\end{bmatrix}$, $C=[5\ \ {-5}\ \ 0]$, $D=\begin{bmatrix}2\\1\\0\end{bmatrix}$.</p>
+<details><summary>(a) Ver resolução</summary><div class="in">
+<p>$A$ é invertível $\iff\det A\ne0$. Por Laplace na 1.ª linha:
+$$\det A=1\cdot\begin{vmatrix}1&1\\0&3\end{vmatrix}-(-1)\begin{vmatrix}0&1\\\alpha&3\end{vmatrix}+2\begin{vmatrix}0&1\\\alpha&0\end{vmatrix}=3+(-\alpha)+2(-\alpha)=3-3\alpha=3(1-\alpha).$$
+Logo $\det A\ne0\iff\alpha\ne1$. $\blacksquare$</p>
+</div></details>
+<details><summary>(b)(i) Ver resolução</summary><div class="in">
+<p>Com $\alpha=2$, $\det A=-3$. Matriz dos cofatores $[A_{ij}]=\begin{bmatrix}3&2&-2\\3&-1&-2\\-3&-1&1\end{bmatrix}$, adjunta (transposta) $\begin{bmatrix}3&3&-3\\2&-1&-1\\-2&-2&1\end{bmatrix}$. Então
+$$A^{-1}=-\tfrac13\begin{bmatrix}3&3&-3\\2&-1&-1\\-2&-2&1\end{bmatrix}=\begin{bmatrix}-1&-1&1\\-\tfrac23&\tfrac13&\tfrac13\\\tfrac23&\tfrac23&-\tfrac13\end{bmatrix}.$$
+<p>(Também sai por Gauss-Jordan em $[A|I]$.)</p>
+</div></details>
+<details><summary>(b)(ii) Ver resolução</summary><div class="in">
+<p>$A^TX=DC-5B\Rightarrow X=(A^T)^{-1}(DC-5B)=(A^{-1})^T(DC-5B)$.</p>
+<p>$DC=\begin{bmatrix}2\\1\\0\end{bmatrix}[5\ -5\ 0]=\begin{bmatrix}10&-10&0\\5&-5&0\\0&0&0\end{bmatrix}$; $5B=\begin{bmatrix}5&-5&10\\5&5&0\\0&0&5\end{bmatrix}$; $DC-5B=\begin{bmatrix}5&-5&-10\\0&-10&0\\0&0&-5\end{bmatrix}$.</p>
+<p>$(A^{-1})^T=\begin{bmatrix}-1&-\tfrac23&\tfrac23\\-1&\tfrac13&\tfrac23\\1&\tfrac13&-\tfrac13\end{bmatrix}$. Multiplicando:
+$$X=\begin{bmatrix}-5&\tfrac{35}{3}&\tfrac{20}{3}\\-5&\tfrac53&\tfrac{20}{3}\\5&-\tfrac{25}{3}&-\tfrac{25}{3}\end{bmatrix}.$$
+<p>Verificação rápida: $A^TX$ dá a 1.ª linha $(5,-5,-10)$ de $DC-5B$ ✓.</p>
+</div></details>
+
+<h4>Questão 3 (6 val.): $S=\{(x,y,z)\in\mathbb{R}^3:x-7y+3z=0\}$</h4>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(a)</strong> $(0,0,0)\in S$. Se $u=(x,y,z)$ e $u'=(x',y',z')$ estão em $S$, então $(x+x')-7(y+y')+3(z+z')=0+0=0$, logo $u+u'\in S$. Se $\alpha\in\mathbb{R}$, $\alpha x-7\alpha y+3\alpha z=\alpha\cdot0=0$, logo $\alpha u\in S$. Portanto $S$ é subespaço de $\mathbb{R}^3$.</p>
+<p><strong>(b)</strong> $x=7y-3z$, logo $(x,y,z)=y(7,1,0)+z(-3,0,1)$ com $y,z$ livres. Os dois vetores geram $S$ e são l.i. (nenhum é múltiplo do outro). <strong>Base: $\big((7,1,0),(-3,0,1)\big)$; $\dim S=2$.</strong></p>
+</div></details>
+
+<h4>Questão 4 (2,5 val.)</h4>
+<p>Para que valores de $a$ é $B=((1,a,2a),(0,1,0),(a,0,8a))$ base de $\mathbb{R}^3$?</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>São 3 vetores em $\mathbb{R}^3$ ($\dim=3$), logo formam base $\iff$ são l.i. $\iff$ o determinante da matriz é não nulo. Expandindo pela 2.ª linha:
+$$\begin{vmatrix}1&a&2a\\0&1&0\\a&0&8a\end{vmatrix}=1\cdot(1\cdot8a-2a\cdot a)=8a-2a^2=2a(4-a).$$
+<strong>$B$ é base $\iff a\ne0$ e $a\ne4$.</strong></p>
+</div></details>
+
+<h3>2.º Teste (10 de janeiro de 2025, 1h40)</h3>
+
+<h4>Parte I: escolha múltipla (1 valor cada)</h4>
+<details><summary>(a) Mudança de base de $B=((1,-1),(-3,4))$ para a canónica</summary><div class="in">
+<p>As colunas de $M_{C\leftarrow B}$ são as coordenadas na canónica dos vetores de $B$, que são os próprios vetores: $\begin{bmatrix}1&-3\\-1&4\end{bmatrix}$. As opções com inversa ou com as linhas trocadas correspondem a outras matrizes ($M_{B\leftarrow C}$ seria a inversa).</p>
+</div></details>
+<details><summary>(b) $A=\begin{bmatrix}1&-1\\k&2k+3\end{bmatrix}$</summary><div class="in">
+<p>$L_2:=L_2-kL_1$ não altera o determinante e dá $\begin{bmatrix}1&-1\\0&3k+3\end{bmatrix}$. Verdadeira: <strong>$\det A=\det\begin{bmatrix}1&-1\\0&3k+3\end{bmatrix}$</strong>. Falsas: $A$ não é invertível para $k=-1$ ($\det=3k+3=0$); $\det A^{-1}=1/\det A\ne-\det A$; $\det(2A)=4\det A$.</p>
+</div></details>
+<details><summary>(c) Sistema $\begin{cases}x+z=3\\x+2y-z=2\\ax+4z=1\end{cases}$</summary><div class="in">
+<p>$\det\begin{bmatrix}1&0&1\\1&2&-1\\a&0&4\end{bmatrix}=2(4-a)$ (expandindo pela 2.ª coluna). É de Cramer $\iff a\ne4$. Pela regra de Cramer, $y=\det A_2/\det A$ com a 2.ª coluna substituída por $b=(3,2,1)$: o numerador é $\det\begin{bmatrix}1&3&1\\1&2&-1\\0&1&4\end{bmatrix}$ (com $a=0$) e o denominador é $\det\begin{bmatrix}1&0&1\\1&2&-1\\0&0&4\end{bmatrix}$. É a <strong>1.ª opção</strong>.</p>
+</div></details>
+<details><summary>(d) Produto externo de $u=(1,1,1)$ e $v=(1,2,-1)$</summary><div class="in">
+<p>$u\times v=(1\cdot(-1)-1\cdot2,\ 1\cdot1-1\cdot(-1),\ 1\cdot2-1\cdot1)=(-3,2,1)$. Confirma: $(-3,2,1)\cdot u=0$ e $\cdot v=0$ ✓.</p>
+</div></details>
+<details><summary>(e) Base ortogonal de $F=\{x+y+z=0\}$</summary><div class="in">
+<p>$(-1,1,0)$ e $(1,1,-2)$ pertencem a $F$ ($-1+1+0=0$; $1+1-2=0$) e $(-1,1,0)\cdot(1,1,-2)=-1+1=0$. A opção $\big((-1,1,0),(-1,0,1)\big)$ é base mas não ortogonal (produto $1$). $\big((1,0,0),(0,1,0)\big)$ não está em $F$. $(1,1,1)$ é normal a $F$, não pertence a $F$.</p>
+</div></details>
+<details><summary>(f) Diagonalização</summary><div class="in">
+<p>Verdadeira: <strong>$A$ $4\times4$ com dois valores próprios distintos, um deles com $\dim U=3$, é diagonalizável.</strong> O outro valor tem $\dim U\ge1$, e $3+1=4$, logo há 4 vetores próprios l.i.</p>
+<p>Falsas: "diagonalizável $\iff$ 3 valores próprios distintos" (é só suficiente); "com dois valores próprios um subespaço tem dim $\gt1$" (contra-exemplo: $\begin{bmatrix}1&1&0\\0&1&0\\0&0&2\end{bmatrix}$ tem $\dim U_1=\dim U_2=1$).</p>
+</div></details>
+<details><summary>(g) Matriz de $L(x,y)=(2x+y,3x-4y,x-y)$ nas bases canónicas</summary><div class="in">
+<p>Colunas: $L(1,0)=(2,3,1)$ e $L(0,1)=(1,-4,-1)$: $\begin{bmatrix}2&1\\3&-4\\1&-1\end{bmatrix}$ (de ordem $3\times2$).</p>
+</div></details>
+<details><summary>(h) $\det\begin{bmatrix}a&b&0\\4&0&c\\2&2&5\end{bmatrix}$</summary><div class="in">
+<p>Laplace pela 2.ª linha (sinais $-,+,-$): $-4\begin{vmatrix}b&0\\2&5\end{vmatrix}+0-c\begin{vmatrix}a&b\\2&2\end{vmatrix}$. É a 1.ª opção.</p>
+</div></details>
+
+<h4>Parte II</h4>
+<h4>Questão 2 (3,5 val.): mínimos quadrados</h4>
+<p>$A=\begin{bmatrix}1&1\\-1&3\\0&1\end{bmatrix}$, $B=\begin{bmatrix}2\\2\\-2\end{bmatrix}$.</p>
+<details><summary>Ver resolução</summary><div class="in">
+<p>$A^TA=\begin{bmatrix}2&-2\\-2&11\end{bmatrix}$, $A^TB=\begin{bmatrix}0\\6\end{bmatrix}$. Equações normais: $\begin{cases}2x_1-2x_2=0\\-2x_1+11x_2=6\end{cases}\Rightarrow x_1=x_2$ e $9x_2=6$.</p>
+<p><strong>$\hat x=\big(\tfrac23,\tfrac23\big)$</strong> (única, pois as colunas de $A$ são l.i.).</p>
+<p>$A\hat x=(\tfrac43,\tfrac43,\tfrac23)$, resíduo $B-A\hat x=(\tfrac23,\tfrac23,-\tfrac83)$. Verificação: $A^T(\text{resíduo})=(\tfrac23-\tfrac23,\ \tfrac23+2-\tfrac83)=(0,0)$ ✓.</p>
+<p><strong>Erro:</strong> $\|B-A\hat x\|=\sqrt{\tfrac49+\tfrac49+\tfrac{64}9}=\sqrt{8}=2\sqrt2$.</p>
+</div></details>
+
+<h4>Questão 3 (2,5 val.): $\lambda$ valor próprio de $A$</h4>
+<details><summary>Ver resolução</summary><div class="in">
+<p><strong>(a)</strong> Seja $X\ne0$ com $AX=\lambda X$. Então $A^2X=A(\lambda X)=\lambda AX=\lambda^2X$, logo $\lambda^2$ é valor próprio de $A^2$.</p>
+<p><strong>(b)</strong> $A$ diagonalizável: $A=PDP^{-1}$. Então $A^2=PDP^{-1}PDP^{-1}=PD^2P^{-1}$ com $D^2$ diagonal, logo $A^2$ é diagonalizável (com a mesma $P$).</p>
+</div></details>
+
+<h4>Questão 4 (6 val.): $x^2-4xy+y^2-6x+6y+9=0$</h4>
+<details><summary>(a) Ver resolução da cónica</summary><div class="in">
+<p><strong>1. Matrizes.</strong> $A=\begin{bmatrix}1&-2\\-2&1\end{bmatrix}$, $B=[-6\ \ 6]$, $\mu=9$.</p>
+<p><strong>2. Valores próprios.</strong> $\det(A-\lambda I)=(1-\lambda)^2-4=0\Rightarrow\lambda=3$ ou $\lambda=-1$.</p>
+<ul>
+<li>$\lambda=3$: $A-3I=\begin{bmatrix}-2&-2\\-2&-2\end{bmatrix}\Rightarrow x=-y$, vetor $(-1,1)$; normalizado, $P_1=\tfrac1{\sqrt2}(1,-1)$.</li>
+<li>$\lambda=-1$: $A+I=\begin{bmatrix}2&-2\\-2&2\end{bmatrix}\Rightarrow x=y$, vetor $(1,1)$; $P_2=\tfrac1{\sqrt2}(1,1)$.</li>
+</ul>
+<p>$P=[P_1\ P_2]=\tfrac1{\sqrt2}\begin{bmatrix}1&1\\-1&1\end{bmatrix}$, $\det P=1$ (rotação), $P^TAP=\operatorname{diag}(3,-1)$.</p>
+<p><strong>3. Rotação.</strong> $X=P\hat X$ e $BP=[-6\ \ 6]\,P=\tfrac1{\sqrt2}[-12\ \ 0]=[-6\sqrt2\ \ 0]$. A equação fica
+$$3\hat x^2-\hat y^2-6\sqrt2\,\hat x+9=0.$$</p>
+<p><strong>4. Translação (completar quadrados em $\hat x$).</strong>
+$3(\hat x^2-2\sqrt2\hat x+2)-6-\hat y^2+9=0\Rightarrow3(\hat x-\sqrt2)^2-\hat y^2=-3.$ Com $\tilde x=\hat x-\sqrt2$, $\tilde y=\hat y$:
+$$\frac{\tilde y^2}{3}-\tilde x^2=1.$$</p>
+<p><strong>Equação reduzida: $\dfrac{\tilde y^2}{3}-\dfrac{\tilde x^2}{1}=1$. É uma hipérbole</strong> (valores próprios de sinais opostos).</p>
+</div></details>
+<details><summary>(b) Classificação de $Q(x,y)=x^2-4xy+y^2$</summary><div class="in">
+<p>$Q=X^TAX$ com a mesma $A$. Valores próprios $3$ e $-1$ (um positivo e um negativo), logo <strong>indefinida</strong>. Por Sylvester: $\Delta_1=1\gt0$ e $\Delta_2=\det A=-3\lt0$, também indefinida.</p>
+</div></details>
+</section>
+
+<section id="folha">
+<h2>Folha de fórmulas</h2>
+<p>Revisão rápida para as últimas horas. Imprime (Ctrl+P) ou guarda em PDF: o botão de impressão abre todas as soluções.</p>
+<div class="sheet">
+<div class="box def"><span class="t">Sistemas e matrizes</span>
+<ul>
+<li>$\operatorname{car}(A)+\operatorname{nul}(A)=n$</li>
+<li>Impossível: $\operatorname{car}(A)\lt\operatorname{car}[A|B]$. Determinado: $=n$. Indeterminado: $\lt n$.</li>
+<li>$[A|I]\sim[I|A^{-1}]$; $(AB)^{-1}=B^{-1}A^{-1}$; $(AB)^T=B^TA^T$</li>
+<li>$A=LU$: $Ly=b$, depois $Ux=y$; $l_{ij}$ = multiplicador de $L_i:=L_i-m\,L_j$</li>
+</ul></div>
+<div class="box def"><span class="t">Espaços vetoriais</span>
+<ul>
+<li>Subespaço: $0\in S$, fechado para $+$ e para escalar</li>
+<li>Base = l.i. + geradora; $n$ vetores em $\dim n$: l.i. $\Leftrightarrow$ base $\Leftrightarrow\det\ne0$</li>
+<li>$M_{S\leftarrow T}=[\,[Y_1]_S\cdots[Y_n]_S\,]$; $[X]_S=M_{S\leftarrow T}[X]_T$</li>
+<li>$\dim L(A)=\dim C(A)=\operatorname{car}A$; $\dim N(A)=n-\operatorname{car}A$</li>
+</ul></div>
+<div class="box def"><span class="t">Determinantes</span>
+<ul>
+<li>$\det(AB)=\det A\det B$; $\det A^T=\det A$; $\det(\alpha A)=\alpha^n\det A$; $\det A^{-1}=1/\det A$</li>
+<li>Troca de linhas: muda sinal. $L_i:=L_i+\beta L_j$: não altera.</li>
+<li>$A^{-1}=\frac1{\det A}\operatorname{adj}A$; Cramer: $x_i=\det A_i/\det A$</li>
+<li>Leontief: $x=(I-C)^{-1}d$, $C$ por colunas</li>
+</ul></div>
+<div class="box def"><span class="t">Euclidiano</span>
+<ul>
+<li>$\cos\theta=\frac{X\cdot Y}{\|X\|\|Y\|}$; $|X\cdot Y|\le\|X\|\|Y\|$</li>
+<li>$\operatorname{proj}_WX=\sum(X\cdot X_i)X_i$ (base o.n.)</li>
+<li>Gram-Schmidt: $X_k'=X_k-\sum_{i\lt k}(X_k\cdot Y_i)Y_i$</li>
+<li>$\|X\times Y\|=\|X\|\|Y\|\sin\theta$; área triângulo $=\frac12\|X\times Y\|$</li>
+<li>$d(P,\pi)=\frac{|ax_0+by_0+cz_0+d|}{\sqrt{a^2+b^2+c^2}}$; $d(P,r)=\frac{\|u\times\overrightarrow{QP}\|}{\|u\|}$</li>
+<li>Mínimos quadrados: $A^TA\hat x=A^Tb$; erro $\|b-A\hat x\|$</li>
+</ul></div>
+<div class="box def"><span class="t">Valores próprios</span>
+<ul>
+<li>$\det(A-\lambda I)=0$; $U_\lambda=N(A-\lambda I)$; $1\le\dim U_\lambda\le n_\lambda$</li>
+<li>Diagonalizável $\iff\dim U_\lambda=n_\lambda$ para todo $\lambda$</li>
+<li>$A=PDP^{-1}\Rightarrow A^k=PD^kP^{-1}$</li>
+<li>Simétrica $\Rightarrow$ $P^TAP=D$ com $P$ ortogonal</li>
+<li>Traço $=\sum\lambda_i$; $\det=\prod\lambda_i$</li>
+</ul></div>
+<div class="box def"><span class="t">Formas quadráticas e cónicas</span>
+<ul>
+<li>$\lambda_i\gt0$ todos: def. positiva; $\lt0$ todos: def. negativa; sinais mistos: indefinida</li>
+<li>Sylvester: $\Delta_k\gt0$ $\Rightarrow$ def. positiva; alternância $-,+,-,\dots$ $\Rightarrow$ def. negativa</li>
+<li>Cónica: rodar com $P$ ($\hat B=BP$), depois completar quadrados</li>
+<li>Elipse $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$; hipérbole $\frac{x^2}{a^2}-\frac{y^2}{b^2}=1$; parábola $y=ax^2$</li>
+</ul></div>
+<div class="box def"><span class="t">Aplicações lineares</span>
+<ul>
+<li>$L(X+Y)=L(X)+L(Y)$, $L(cX)=cL(X)$; $L(0)=0$</li>
+<li>$[L]_{S,T}$: colunas $=[L(X_j)]_T$; $[L(X)]_T=[L]_{S,T}[X]_S$</li>
+<li>Bases canónicas: colunas $=L(e_j)$; $L:\mathbb{R}^n\to\mathbb{R}^m\Rightarrow m\times n$</li>
+</ul></div>
+</div>
+</section>
+
+<section id="erros">
+<h2>Erros clássicos (onde se perdem pontos)</h2>
+<div class="cols">
+<div><h4>Contas</h4>
+<ul>
+<li>Trocar ordem em $(AB)^T$, $(AB)^{-1}$ ou na resolução de $AX=C$ vs $XA=C$.</li>
+<li>Sinal do multiplicador em $L$.</li>
+<li>Esquecer o sinal alternado dos cofatores $(-1)^{i+j}$.</li>
+<li>Aplicar Sarrus a matrizes $4\times4$ (só funciona em $3\times3$).</li>
+<li>Usar $\det(A+B)=\det A+\det B$ ou $\det(\alpha A)=\alpha\det A$.</li>
+</ul></div>
+<div><h4>Conceitos</h4>
+<ul>
+<li>Esquecer que $0\in S$ é <em>necessário</em> mas não suficiente para subespaço.</li>
+<li>Confundir base (precisa de l.i. <strong>e</strong> gerador) com só um dos dois.</li>
+<li>Montar $M_{S\leftarrow T}$ ao contrário (colunas na base errada).</li>
+<li>Dizer que $n$ valores próprios distintos é <em>necessário</em> para diagonalizar (é só suficiente).</li>
+<li>Em Leontief, construir $C$ por linhas.</li>
+</ul></div>
+<div><h4>Apresentação</h4>
+<ul>
+<li>Não justificar ("justifique devidamente").</li>
+<li>Em cónicas, não indicar as mudanças de variável (rotação e translação).</li>
+<li>Em mínimos quadrados, dar $\hat x$ mas esquecer o <em>erro</em> $\|b-A\hat x\|$.</li>
+<li>Deixar $\sqrt{8}$ sem simplificar ($2\sqrt2$).</li>
+<li>Não verificar o resultado quando a verificação é barata ($AA^{-1}=I$, $A^Tr=0$, $u\times v\perp u$).</li>
+</ul></div>
+</div>
+</section>
+
+<section id="checklist">
+<h2>Lista de verificação final</h2>
+<p>Se consegues fazer tudo isto sem consultar nada, estás pronto/a.</p>
+<ul class="chk" id="chk">
+<li><label><input type="checkbox" data-k="c1"> Escalonar uma matriz e classificar um sistema, incluindo com parâmetro</label></li>
+<li><label><input type="checkbox" data-k="c2"> Calcular $A^{-1}$ por Gauss-Jordan e por cofatores</label></li>
+<li><label><input type="checkbox" data-k="c3"> Resolver equações matriciais como $A^TX+5B=DC$</label></li>
+<li><label><input type="checkbox" data-k="c4"> Construir $L$ e $U$ e resolver $Ax=b$ com $Ly=b$, $Ux=y$</label></li>
+<li><label><input type="checkbox" data-k="c5"> Provar que um conjunto é (ou não é) subespaço</label></li>
+<li><label><input type="checkbox" data-k="c5b"> Ver se $v$ é combinação linear de $u_1,\dots,u_k$ e escrevê-la (com e sem parâmetro)</label></li>
+<li><label><input type="checkbox" data-k="c6"> Achar base e dimensão de um subespaço dado por equações ou por geradores</label></li>
+<li><label><input type="checkbox" data-k="c7"> Calcular $M_{S\leftarrow T}$ e usá-la</label></li>
+<li><label><input type="checkbox" data-k="c8"> Calcular determinantes (Laplace) e usar as suas propriedades</label></li>
+<li><label><input type="checkbox" data-k="c9"> Aplicar a regra de Cramer e escrever a fórmula de uma incógnita</label></li>
+<li><label><input type="checkbox" data-k="c10"> Montar e resolver o modelo de Leontief</label></li>
+<li><label><input type="checkbox" data-k="c11"> Projetar sobre um subespaço e aplicar Gram-Schmidt</label></li>
+<li><label><input type="checkbox" data-k="c12"> Produto externo, equação de plano e distâncias (ponto–plano, ponto–reta)</label></li>
+<li><label><input type="checkbox" data-k="c13"> Mínimos quadrados: solução e erro</label></li>
+<li><label><input type="checkbox" data-k="c14"> Valores/vetores próprios; decidir se é diagonalizável e diagonalizar</label></li>
+<li><label><input type="checkbox" data-k="c15"> Diagonalizar ortogonalmente uma matriz simétrica</label></li>
+<li><label><input type="checkbox" data-k="c16"> Demonstrações curtas sobre valores próprios ($\lambda^2$, $A^2$, $A^{-1}$)</label></li>
+<li><label><input type="checkbox" data-k="c17"> Classificar formas quadráticas (valores próprios e Sylvester)</label></li>
+<li><label><input type="checkbox" data-k="c18"> Reduzir e classificar uma cónica com termo cruzado; identificar quádricas</label></li>
+<li><label><input type="checkbox" data-k="c19"> Escrever a matriz de uma aplicação linear em bases canónicas e não canónicas</label></li>
+<li><label><input type="checkbox" data-k="c20"> Fazer os dois testes de 2024/25 em tempo real, sem consulta</label></li>
+</ul>
+</section>
+
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY='alga-guia-v1';
+  var state={};
+  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+
+  var secBoxes=document.querySelectorAll('#nav input[data-sec]');
+  var chkBoxes=document.querySelectorAll('#chk input[data-k]');
+  var pbar=document.getElementById('pbar'), plbl=document.getElementById('plbl');
+
+  function refresh(){
+    var n=0;
+    secBoxes.forEach(function(cb){
+      var id=cb.getAttribute('data-sec'), on=!!state['s:'+id];
+      cb.checked=on; if(on) n++;
+      var sec=document.getElementById(id); if(sec) sec.classList.toggle('done',on);
+    });
+    pbar.style.width=(100*n/secBoxes.length)+'%';
+    plbl.textContent=n+' de '+secBoxes.length+' capítulos estudados';
+    chkBoxes.forEach(function(cb){ cb.checked=!!state['k:'+cb.getAttribute('data-k')]; });
+  }
+  secBoxes.forEach(function(cb){
+    cb.addEventListener('click',function(e){ e.stopPropagation(); });
+    cb.addEventListener('change',function(){ state['s:'+cb.getAttribute('data-sec')]=cb.checked; save(); refresh(); });
+  });
+  chkBoxes.forEach(function(cb){
+    cb.addEventListener('change',function(){ state['k:'+cb.getAttribute('data-k')]=cb.checked; save(); });
+  });
+  document.getElementById('rst').addEventListener('click',function(){
+    if(confirm('Limpar todo o progresso guardado neste navegador?')){ state={}; save(); refresh(); }
+  });
+  var root=document.documentElement;
+  document.getElementById('thm').addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme',dark?'light':'dark');
+  });
+
+  // índice móvel
+  var ml=document.getElementById('mlist');
+  document.querySelectorAll('#nav a').forEach(function(a){
+    var l=document.createElement('a'); l.href=a.getAttribute('href'); l.textContent=a.textContent.trim();
+    l.addEventListener('click',function(){ document.getElementById('mnav').removeAttribute('open'); });
+    ml.appendChild(l);
+  });
+
+  // secção ativa
+  var links={}; document.querySelectorAll('#nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if(en.isIntersecting){
+          Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+          if(links[en.target.id]) links[en.target.id].classList.add('on');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  // imprimir: abrir todas as soluções
+  window.addEventListener('beforeprint',function(){ document.querySelectorAll('details').forEach(function(d){ d.setAttribute('open',''); }); });
+  refresh();
+})();
+</script>
+</body>
+</html>
